@@ -1,5 +1,7 @@
 use fake::Fake;
 use rand;
+use tiberius;
+use tiberius::ToSql;
 #[derive(Debug)]
 pub struct Team {
     team_name: String,
@@ -12,12 +14,12 @@ impl Team {
         }
     }
 
-    pub fn to_insert_statement(&self) -> String {
-        format!(
-            "INSERT INTO TEAM (Team_Name) VALUES ('{}')",
-            self.team_name
-        )
+    pub fn to_insert_query(&self) -> (&str, Vec<Box<dyn tiberius::ToSql>>) {
+        let query = "INSERT INTO Teams (Name) VALUES (@P1)";
+        let params: Vec<Box<dyn tiberius::ToSql>> = vec![Box::new(self.team_name.clone())];
+        (query, params)
     }
+        
 
     pub fn generate_fake_team() -> Self {
         Self {

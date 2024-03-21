@@ -1,5 +1,7 @@
 use fake::Fake;
 use rand;
+use std::sync::Arc;
+use tiberius::ToSql;
 #[derive(Debug)]
 pub struct User {
     email: String,
@@ -17,13 +19,15 @@ impl User {
             last_name: last_name.to_string(),
         }
     }
-
-
-    pub fn to_insert_statement(&self) -> String {
-        format!(
-            "INSERT INTO users (email, address, first_name, last_name) VALUES ('{}', '{}', '{}', '{}');",
-            self.email, self.address, self.first_name, self.last_name
-        ) 
+    pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
+        let query = "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4);";
+        let params = vec![
+            Arc::new(self.email.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.address.clone()),
+            Arc::new(self.first_name.clone()),
+            Arc::new(self.last_name.clone()),
+        ];
+        (query, params)
     }
 
     pub fn generate_fake_user() -> Self {
@@ -42,5 +46,4 @@ impl User {
     pub fn change_address(&mut self, new_address: &str) {
         self.address = new_address.to_string();
     }
-
 }

@@ -1,12 +1,20 @@
-
-IF OBJECT_ID('users') IS NULL
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'MyDatabase')
 BEGIN
-    CREATE TABLE users (
-        User_ID INT IDENTITY PRIMARY KEY,
+    CREATE DATABASE MyDatabase;
+END
+GO
+
+USE MyDatabase;
+GO
+
+IF OBJECT_ID('Users') IS NULL
+BEGIN
+    CREATE TABLE Users (
+        ID INT IDENTITY PRIMARY KEY,
         Email NVARCHAR(50) NOT NULL,
         Address NVARCHAR(50) NOT NULL,
-        First_Name NVARCHAR(50) NOT NULL,
-        Last_Name NVARCHAR(50) NOT NULL
+        FirstName NVARCHAR(50) NOT NULL,
+        LastName NVARCHAR(50) NOT NULL
     );
 END
 GO
@@ -14,53 +22,57 @@ GO
 IF OBJECT_ID('Staff') IS NULL
 BEGIN
     CREATE TABLE Staff (
-        Staff_ID INT IDENTITY PRIMARY KEY,
-        User_ID INT NOT NULL,
+        ID INT IDENTITY PRIMARY KEY,
+        UserID INT NOT NULL,
         NAS NVARCHAR(50) NOT NULL,
-        Hiring_Date DATE NOT NULL,
-        FOREIGN KEY (User_ID) REFERENCES users(User_ID) ON DELETE CASCADE ON UPDATE CASCADE
+        HiringDate DATE NOT NULL,
+        FOREIGN KEY (UserID) REFERENCES Users(ID) ON DELETE CASCADE ON UPDATE CASCADE
     );
 END
 GO
   
-IF OBJECT_ID('Team') IS NULL
+IF OBJECT_ID('Teams') IS NULL
 BEGIN
-    CREATE TABLE Team (
-        Team_ID INT IDENTITY PRIMARY KEY,
-        Team_Name NVARCHAR(50) NOT NULL
+    CREATE TABLE Teams (
+        ID INT IDENTITY PRIMARY KEY,
+        Name NVARCHAR(50) NOT NULL
     );
 END
+GO
 
-IF OBJECT_ID('Sport') IS NULL 
+IF OBJECT_ID('Sports') IS NULL 
 BEGIN
-    CREATE TABLE Sport (
-        Sport_ID INT IDENTITY PRIMARY KEY,
-        Sport_Name NVARCHAR(50) NOT NULL,
-        Score_Format NVARCHAR(50) NOT NULL
+    CREATE TABLE Sports (
+        ID INT IDENTITY PRIMARY KEY,
+        Name NVARCHAR(50) NOT NULL,
+        ScoreFormat NVARCHAR(50) NOT NULL
     );
 END 
+GO
 
-IF OBJECT_ID('Event') IS NULL 
+IF OBJECT_ID('Events') IS NULL 
 BEGIN
-    CREATE TABLE Event (
-        Event_ID INT IDENTITY PRIMARY KEY,
-        Date_Start DATE NOT NULL,
-        Date_End DATE NOT NULL
+    CREATE TABLE Events (
+        ID INT IDENTITY PRIMARY KEY,
+        StartDate DATE NOT NULL,
+        EndDate DATE NOT NULL
     );
 END 
+GO
 
-IF OBJECT_ID('Game') IS NULL
+IF OBJECT_ID('Games') IS NULL
 BEGIN
-    CREATE TABLE Game (
-        Game_ID INT IDENTITY PRIMARY KEY,
-        Sport_ID INT NOT NULL,
-        Event_ID INT NOT NULL,
-        Game_Date DATE NOT NULL,
-        Final_Score INT,
-        FOREIGN KEY (Sport_ID) REFERENCES Sport(Sport_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID) ON DELETE CASCADE ON UPDATE CASCADE
+    CREATE TABLE Games (
+        ID INT IDENTITY PRIMARY KEY,
+        SportID INT NOT NULL,
+        EventID INT NOT NULL,
+        GameDate DATE NOT NULL,
+        FinalScore INT,
+        FOREIGN KEY (SportID) REFERENCES Sports(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (EventID) REFERENCES Events(ID) ON DELETE CASCADE ON UPDATE CASCADE
     );
 END 
+GO
 -- DECLARE @ConstraintName nvarchar(256), @TableName nvarchar(256), @Sql nvarchar(1000);
 --
 -- -- Loop through the foreign key constraints that reference the 'Sport' table
@@ -92,34 +104,34 @@ END
 -- WHERE 
 --     OBJECT_NAME(fk.referenced_object_id) = 'Sport' -- Or replace 'Sport' with 'Event' or 'users' as needed
 -- DROP TABLE IF EXISTS Sport; -- Repeat for 'Event' and 'users' as necessary
+--
 
+ IF OBJECT_ID('users') IS NOT NULL 
+ BEGIN
+   SELECT * FROM users;
+ END
 
-IF OBJECT_ID('users') IS NOT NULL 
-BEGIN
-  SELECT * FROM users;
-END
+ IF OBJECT_ID('Staff') IS NOT NULL 
+ BEGIN
+   SELECT * FROM Staff;
+ END
 
-IF OBJECT_ID('Staff') IS NOT NULL 
-BEGIN
-  SELECT * FROM Staff;
-END
+ IF OBJECT_ID('Team') IS NOT NULL 
+ BEGIN
+   SELECT * FROM Team;
+ END 
 
-IF OBJECT_ID('Team') IS NOT NULL 
-BEGIN
-  SELECT * FROM Team;
-END 
+ IF OBJECT_ID('Sport') IS NOT NULL 
+ BEGIN
+   SELECT * FROM Sport;
+ END 
 
-IF OBJECT_ID('Sport') IS NOT NULL 
-BEGIN
-  SELECT * FROM Sport;
-END 
+ IF OBJECT_ID('Event') IS NOT NULL
+ BEGIN
+   SELECT * FROM Event;
+ END
 
-IF OBJECT_ID('Event') IS NOT NULL
-BEGIN
-  SELECT * FROM Event;
-END
-
-IF OBJECT_ID('Game') IS NOT NULL 
-BEGIN
-  SELECT * FROM Game;
-END
+ IF OBJECT_ID('Game') IS NOT NULL 
+ BEGIN
+   SELECT * FROM Game;
+ END

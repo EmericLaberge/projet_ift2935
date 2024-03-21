@@ -1,17 +1,13 @@
-
-
-
+use fake::Fake;
 #[derive(Debug)]
 pub struct Sport {
-    sport_id: u16,
     sport_name: String,
     score_format: String,
 }
 
 impl Sport {
-    pub fn new(sport_id: u16, sport_name: &str, score_format: &str) -> Self {
+    pub fn new(sport_name: &str, score_format: &str) -> Self {
         Self {
-            sport_id,
             sport_name: sport_name.to_string(),
             score_format: score_format.to_string(),
         }
@@ -19,8 +15,15 @@ impl Sport {
 
     pub fn to_insert_statement(&self) -> String {
         format!(
-            "INSERT INTO Sport (Sport_ID, Sport_Name, Score_Format) VALUES ({}, '{}', '{}')",
-            self.sport_id, self.sport_name, self.score_format
+            "INSERT INTO Sports (Name, ScoreFormat) VALUES ('{}', '{}');",
+            self.sport_name, self.score_format
         )
+    }
+
+    pub fn generate_fake_sport() -> Self {
+        Self {
+            sport_name: fake::faker::company::en::Profession().fake(),
+            score_format: fake::faker::company::en::Buzzword().fake(),
+        }
     }
 }

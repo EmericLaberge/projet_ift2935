@@ -15,4 +15,5 @@ tokio-util = {version = "0.7.10", features = ["compat"]}
 fake = { version = "2.9.2", features = ["derive"] }
 random-string = "1.1.0"
 chrono = "0.4.35"
+axum = "0.7.4"
 

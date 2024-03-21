@@ -1,5 +1,5 @@
-use fake::{Fake, Faker};
-use rand;
+
+
 
 #[derive(Debug)]
 pub struct Sport {

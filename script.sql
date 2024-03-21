@@ -1,167 +1,125 @@
-IF DB_ID('GANGGANG') IS NULL
+
+IF OBJECT_ID('users') IS NULL
 BEGIN
-    CREATE DATABASE GANGGANG;
+    CREATE TABLE users (
+        User_ID INT IDENTITY PRIMARY KEY,
+        Email NVARCHAR(50) NOT NULL,
+        Address NVARCHAR(50) NOT NULL,
+        First_Name NVARCHAR(50) NOT NULL,
+        Last_Name NVARCHAR(50) NOT NULL
+    );
+END
+GO
+
+IF OBJECT_ID('Staff') IS NULL
+BEGIN
+    CREATE TABLE Staff (
+        Staff_ID INT IDENTITY PRIMARY KEY,
+        User_ID INT NOT NULL,
+        NAS NVARCHAR(50) NOT NULL,
+        Hiring_Date DATE NOT NULL,
+        FOREIGN KEY (User_ID) REFERENCES users(User_ID) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+END
+GO
+  
+IF OBJECT_ID('Team') IS NULL
+BEGIN
+    CREATE TABLE Team (
+        Team_ID INT IDENTITY PRIMARY KEY,
+        Team_Name NVARCHAR(50) NOT NULL
+    );
 END
 
-USE GANGGANG;
+IF OBJECT_ID('Sport') IS NULL 
+BEGIN
+    CREATE TABLE Sport (
+        Sport_ID INT IDENTITY PRIMARY KEY,
+        Sport_Name NVARCHAR(50) NOT NULL,
+        Score_Format NVARCHAR(50) NOT NULL
+    );
+END 
 
+IF OBJECT_ID('Event') IS NULL 
+BEGIN
+    CREATE TABLE Event (
+        Event_ID INT IDENTITY PRIMARY KEY,
+        Date_Start DATE NOT NULL,
+        Date_End DATE NOT NULL
+    );
+END 
 
-CREATE TABLE users (
-  User_ID INT PRIMARY KEY,
-  Email NVARCHAR(50) NOT NULL,
-  Address NVARCHAR(50) NOT NULL,
-  First_Name NVARCHAR(50) NOT NULL,
-  Last_Name NVARCHAR(50) NOT NULL,
-);
-
-CREATE TABLE Staff (
-  Staff_ID INT PRIMARY KEY,
-  User_ID INT NOT NULL,
-  NAS NVARCHAR(50) NOT NULL,
-  Hiring_Date DATE NOT NULL,
-  FOREIGN KEY (User_ID) REFERENCES users(User_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Team (
-  Team_ID INT PRIMARY KEY,
-  Team_Name NVARCHAR(50) NOT NULL,
-);
-
-CREATE TABLE Sport (
-  Sport_ID INT PRIMARY KEY,
-  Sport_Name NVARCHAR(50) NOT NULL,
-  Score_Format NVARCHAR(50) NOT NULL,
-);
-
-CREATE TABLE Event (
-  Event_ID INT PRIMARY KEY,
-  Date_Start DATE NOT NULL,
-  Date_End DATE NOT NULL,
-);
-
-
-CREATE TABLE Game (
-  Game_ID INT PRIMARY KEY,
-  Sport_ID INT NOT NULL,
-  Event_ID INT NOT NULL,
-  Game_Date DATE NOT NULL,
-  Final_Score INT,
-  FOREIGN KEY (Sport_ID) REFERENCES Sport(Sport_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-
-
-
-CREATE TABLE Team_Composed_Of_Users (
-  Team_ID INT NOT NULL,
-  User_ID INT NOT NULL,
-  Role NVARCHAR(50) NOT NULL,
-  PRIMARY KEY (Team_ID, User_ID),
-  FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (User_ID) REFERENCES users(User_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE User_Plays_Sport (
-  Sport_ID INT NOT NULL,
-  User_ID INT NOT NULL,
-  PRIMARY KEY (Sport_ID, User_ID),
-  FOREIGN KEY (Sport_ID) REFERENCES Sport(Sport_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (User_ID) REFERENCES users(User_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Team_Participate_In_Game (
-  Team_ID INT NOT NULL,
-  Game_ID INT NOT NULL,
-  Final_Score INT,
-  PRIMARY KEY (Team_ID, Game_ID),
-  FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (Game_ID) REFERENCES Game(Game_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Staff_Works_For_Event (
-  Event_ID INT NOT NULL,
-  User_ID INT NOT NULL,
-  Role NVARCHAR(50) NOT NULL,
-  Salary INT NOT NULL,
-  PRIMARY KEY (Event_ID, User_ID),
-  FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (User_ID) REFERENCES users(User_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Staff_Works_For_Game (
-  Game_ID INT NOT NULL,
-  User_ID INT NOT NULL,
-  Role NVARCHAR(50) NOT NULL,
-  Salary INT NOT NULL,
-  PRIMARY KEY (Game_ID, User_ID),
-  FOREIGN KEY (Game_ID) REFERENCES Game(Game_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (User_ID) REFERENCES users(User_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Sport_Intervenes_In_Event (
-  Sport_ID INT NOT NULL,
-  Event_ID INT NOT NULL,
-  PRIMARY KEY (Sport_ID, Event_ID),
-  FOREIGN KEY (Sport_ID) REFERENCES Sport(Sport_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-
+IF OBJECT_ID('Game') IS NULL
+BEGIN
+    CREATE TABLE Game (
+        Game_ID INT IDENTITY PRIMARY KEY,
+        Sport_ID INT NOT NULL,
+        Event_ID INT NOT NULL,
+        Game_Date DATE NOT NULL,
+        Final_Score INT,
+        FOREIGN KEY (Sport_ID) REFERENCES Sport(Sport_ID) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+END 
+-- DECLARE @ConstraintName nvarchar(256), @TableName nvarchar(256), @Sql nvarchar(1000);
 --
--- ALTER TABLE Team_Composed_Of_Users
--- ADD CONSTRAINT FK_Team_Composed_Of_Users_User
--- FOREIGN KEY (User_ID) REFERENCES users(User_ID);
---   
--- ALTER TABLE Team_Composed_Of_Users
--- ADD CONSTRAINT FK_Team_Composed_Of_Users_Team
--- FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID);
+-- -- Loop through the foreign key constraints that reference the 'Sport' table
+-- DECLARE fk_cursor CURSOR FOR 
+--     SELECT fk.name, OBJECT_NAME(fk.parent_object_id)
+--     FROM sys.foreign_keys AS fk
+--     INNER JOIN sys.foreign_key_columns AS fkc ON fk.object_id = fkc.constraint_object_id
+--     INNER JOIN sys.tables AS t ON fk.referenced_object_id = t.object_id
+--     WHERE t.name = 'Sport';
 --
--- ALTER TABLE User_Plays_Sport
--- ADD CONSTRAINT FK_User_Plays_Sport_User
--- FOREIGN KEY (User_ID) REFERENCES users(User_ID);
---   
--- ALTER TABLE User_Plays_Sport
--- ADD CONSTRAINT FK_User_Plays_Sport_Sport
--- FOREIGN KEY (Sport_ID) REFERENCES Sport(Sport_ID);
+-- OPEN fk_cursor;
+-- FETCH NEXT FROM fk_cursor INTO @ConstraintName, @TableName;
 --
--- ALTER TABLE Team_Participate_In_Game
--- ADD CONSTRAINT FK_Team_Participate_In_Game_Team
--- FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID);
---   
--- ALTER TABLE Team_Participate_In_Game
--- ADD CONSTRAINT FK_Team_Participate_In_Game_Game
--- FOREIGN KEY (Game_ID) REFERENCES Game(Game_ID);
+-- WHILE @@FETCH_STATUS = 0
+-- BEGIN
+--     SET @Sql = 'ALTER TABLE ' + QUOTENAME(@TableName) + ' DROP CONSTRAINT ' + QUOTENAME(@ConstraintName);
+--     EXEC sp_executesql @Sql;
+--     FETCH NEXT FROM fk_cursor INTO @ConstraintName, @TableName;
+-- END
 --
--- ALTER TABLE Staff_Works_For_Event
--- ADD CONSTRAINT FK_Staff_Works_For_Event_User
--- FOREIGN KEY (User_ID) REFERENCES users(User_ID);
---
--- ALTER TABLE Staff_Works_For_Event
--- ADD CONSTRAINT FK_Staff_Works_For_Event_Event
--- FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID);
---   
--- ALTER TABLE Staff_Works_For_Game
--- ADD CONSTRAINT FK_Staff_Works_For_Game_User
--- FOREIGN KEY (User_ID) REFERENCES users(User_ID);
---
--- ALTER TABLE Staff_Works_For_Game
--- ADD CONSTRAINT FK_Staff_Works_For_Game_Game
--- FOREIGN KEY (Game_ID) REFERENCES Game(Game_ID);
---
--- ALTER TABLE Sport_Intervenes_In_Event
--- ADD CONSTRAINT FK_Sport_Intervenes_In_Event_Sport
--- FOREIGN KEY (Sport_ID) REFERENCES Sport(Sport_ID);
---
--- ALTER TABLE Sport_Intervenes_In_Event
--- ADD CONSTRAINT FK_Sport_Intervenes_In_Event_Event
--- FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID);
---
-Insert into users (User_ID, Email, Address, First_Name, Last_Name)
-values (1, 'issou@issou.com', '1234 rue de la rue', 'Issou', 'C');
-Insert into users (User_ID, Email, Address, First_Name, Last_Name)
-values (2, 'ganggang@icecream.yesyesyes', '1234 rue de la rue', 'Gang', 'Gang');
+-- CLOSE fk_cursor;
+-- DEALLOCATE fk_cursor;
+-- SELECT 
+--     fk.name AS ForeignKey,
+--     OBJECT_NAME(fk.parent_object_id) AS TableName,
+--     OBJECT_NAME(fk.referenced_object_id) AS ReferencedTable
+-- FROM 
+--     sys.foreign_keys AS fk
+-- WHERE 
+--     OBJECT_NAME(fk.referenced_object_id) = 'Sport' -- Or replace 'Sport' with 'Event' or 'users' as needed
+-- DROP TABLE IF EXISTS Sport; -- Repeat for 'Event' and 'users' as necessary
 
 
+IF OBJECT_ID('users') IS NOT NULL 
+BEGIN
+  SELECT * FROM users;
+END
 
+IF OBJECT_ID('Staff') IS NOT NULL 
+BEGIN
+  SELECT * FROM Staff;
+END
 
+IF OBJECT_ID('Team') IS NOT NULL 
+BEGIN
+  SELECT * FROM Team;
+END 
+
+IF OBJECT_ID('Sport') IS NOT NULL 
+BEGIN
+  SELECT * FROM Sport;
+END 
+
+IF OBJECT_ID('Event') IS NOT NULL
+BEGIN
+  SELECT * FROM Event;
+END
+
+IF OBJECT_ID('Game') IS NOT NULL 
+BEGIN
+  SELECT * FROM Game;
+END

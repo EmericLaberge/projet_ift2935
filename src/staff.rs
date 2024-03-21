@@ -1,19 +1,14 @@
-use chrono::prelude::*;
-use fake::{Fake, Faker};
-use rand;
-
+use random_string::generate;
 #[derive(Debug)]
 pub struct Staff {
-    staff_id: u16,
     user_id: u16,
     nas: String,
     hiring_date: String,
 }
 
 impl Staff {
-    pub fn new(staff_id: u16, user_id: u16, nas: &str, hiring_date: &str) -> Staff {
+    pub fn new(user_id: u16, nas: &str, hiring_date: &str) -> Staff {
         Staff {
-            staff_id,
             user_id,
             nas: nas.to_string(),
             hiring_date: hiring_date.to_string(),
@@ -22,10 +17,16 @@ impl Staff {
 
     pub fn to_insert_statement(&self) -> String {
         format!(
-            "INSERT INTO Staff (Staff_ID, User_ID, NAS, Hiring_Date) VALUES ({}, {}, '{}', '{}')",
-            self.staff_id, self.user_id, self.nas, self.hiring_date
+            "INSERT INTO staff (User_ID, NAS, Hiring_Date) VALUES ({}, '{}', '{}')",
+            self.user_id, self.nas, self.hiring_date
         )
     }
+
+    pub fn generate_fake_staff() -> Staff {
+        Staff {
+            user_id: 3,
+            nas: generate(9, "1234567890"),
+            hiring_date: "2021-01-01".to_string(),
+        }
+    }
 }
-
-

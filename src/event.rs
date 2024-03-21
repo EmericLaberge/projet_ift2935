@@ -1,5 +1,5 @@
-use rand;
-use fake::{Fake, Faker};
+
+
 
 #[derive(Debug)]
 pub struct Event {

@@ -1,4 +1,4 @@
-use fake::{Fake, Faker};
+use fake::{Fake};
 use rand;
 #[derive(Debug)]
 pub struct Team {

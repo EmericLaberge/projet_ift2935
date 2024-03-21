@@ -5,17 +5,17 @@ mod staff;
 mod team;
 mod test;
 mod users;
-use chrono::prelude::*;
-use event::Event;
-use game::Game;
-use rand;
-use random_string::generate;
-use sport::Sport;
+
+
+
+
+
+
 use staff::Staff;
 use std::fs;
 use team::Team;
 use test::{insert_fake_staff_with_compatibility, insert_fake_teams_with_compatibility, insert_fake_users_with_compatibility};
-use tiberius::{AuthMethod, Client, Config, Query};
+use tiberius::{AuthMethod, Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::compat::TokioAsyncWriteCompatExt;
 use users::User;
@@ -40,10 +40,10 @@ async fn main() -> anyhow::Result<()> {
     println!("Successfully connected to the server");
 
     // Read the SQL file
-    let sql_file: String = fs::read_to_string("script.sql")?;
+    let _sql_file: String = fs::read_to_string("script.sql")?;
     println!("Successfully read the file");
-    insert_fake_staff_with_compatibility(&mut client).await?;
     insert_fake_users_with_compatibility(&mut client).await?;
+    insert_fake_staff_with_compatibility(&mut client).await?;
     insert_fake_teams_with_compatibility(&mut client).await?;
     Ok(())
 }

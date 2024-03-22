@@ -5,38 +5,22 @@ mod staff;
 mod team;
 mod test;
 mod users;
+mod db;
+mod config;
 
 use staff::Staff;
 use crate::test::{insert_fake_teams, insert_fake_staff, insert_fake_users};
 use std::fs;
 use team::Team;
-use tiberius::{AuthMethod, Client, Config};
-use tokio::net::TcpStream;
-use tokio_util::compat::TokioAsyncWriteCompatExt;
 use users::User;
+use db::connect_to_db;
+use config::get_config;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // configure the connection
-    let mut config = Config::new();
-    config.host("localhost");
-    config.port(1433);
-    config.authentication(AuthMethod::sql_server("SA", "Rust4life"));
-    // NOTE: Removed the encryption for now because tcp handshake is failing
-    // and I dont know how to fix it
-    config.encryption(tiberius::EncryptionLevel::NotSupported);
-
-    // Establish the tcp connection
-    let tcp = TcpStream::connect(config.get_addr()).await?;
-    tcp.set_nodelay(true)?;
-
-    // Connect to the MSSQL server
-    let mut client = Client::connect(config, tcp.compat_write()).await?;
-    println!("Successfully connected to the server");
-
-    // Read the SQL file
-    client.execute("USE MyDatabase", &[]).await?;
-
+    // Try to connect to the database using db module (see db.rs)
+    let config: tiberius::Config = get_config().await?;
+    let mut client = connect_to_db(config).await?;
     println!("Successfully read the file");
     insert_fake_users(&mut client).await?;
     insert_fake_staff(&mut client).await?;

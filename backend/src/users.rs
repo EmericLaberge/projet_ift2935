@@ -19,6 +19,7 @@ impl User {
             last_name: last_name.to_string(),
         }
     }
+
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
         let query = "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4);";
         let params = vec![
@@ -30,6 +31,12 @@ impl User {
         (query, params)
     }
 
+    /// Generate a fake user 
+    ///
+    /// # Example 
+    /// ```
+    /// let user = User::generate_fake_user();
+    /// ```
     pub fn generate_fake_user() -> Self {
         Self {
             email: fake::faker::internet::en::FreeEmail().fake(),

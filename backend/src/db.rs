@@ -1,3 +1,6 @@
+use crate::models::{User, Staff, Game, Team, Sport, Event};
+use std::sync::Arc;
+use tiberius::ToSql;
 use tiberius::{Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
@@ -25,3 +28,66 @@ pub async fn connect_to_db(
     // return the client
     Ok(client)
 }
+
+async fn create_user(
+    client: &mut Client<Compat<TcpStream>>,
+    user: User,
+) -> Result<(), tiberius::error::Error> {
+    let (query, params) = user.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    client.execute(query, &params[..]).await?;
+    Ok(())
+}
+
+
+async fn create_staff(
+    client: &mut Client<Compat<TcpStream>>,
+    staff: Staff,
+) -> Result<(), tiberius::error::Error> {
+    let (query, params) = staff.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    client.execute(query, &params[..]).await?;
+    Ok(())
+}
+async fn create_team(
+    client: &mut Client<Compat<TcpStream>>,
+    team: Team,
+) -> Result<(), tiberius::error::Error> {
+    let (query, params) = team.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    client.execute(query, &params[..]).await?;
+    Ok(())
+}
+
+async fn create_sport(
+    client: &mut Client<Compat<TcpStream>>,
+    sport: Sport,
+) -> Result<(), tiberius::error::Error> {
+    let (query, params) = sport.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    client.execute(query, &params[..]).await?;
+    Ok(())
+}
+
+async fn create_event(
+    client: &mut Client<Compat<TcpStream>>,
+    event: Event,
+) -> Result<(), tiberius::error::Error> {
+    let (query, params) = event.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    client.execute(query, &params[..]).await?;
+    Ok(())
+}
+
+async fn create_game(
+    client: &mut Client<Compat<TcpStream>>,
+    game: Game,
+) -> Result<(), tiberius::error::Error> {
+    let (query, params) = game.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    client.execute(query, &params[..]).await?;
+    Ok(())
+}
+
+
+

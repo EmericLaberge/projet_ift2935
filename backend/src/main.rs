@@ -1,12 +1,8 @@
 mod config;
 mod db;
-mod event;
-mod game;
-mod sport;
-mod staff;
-mod team;
+mod models;
 mod test;
-mod users;
+use crate::models::{staff, team, users};
 
 use crate::test::{insert_fake_staff, insert_fake_teams, insert_fake_users};
 use config::get_config;

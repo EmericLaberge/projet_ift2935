@@ -6,6 +6,7 @@ use tiberius::{AuthMethod, Config};
 /// # Example
 /// ```rust
 /// let config: tiberius::Config = get_config().await?;
+/// ```
 ///
 
 pub async fn get_config() -> Result<tiberius::Config, tiberius::error::Error> {

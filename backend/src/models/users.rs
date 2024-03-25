@@ -1,9 +1,15 @@
+use actix_web::FromRequest;
 use fake::Fake;
-use rand;
+use rand::Rng;
 use std::sync::Arc;
+use tiberius::{Client, Config};
+use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
 use tiberius::ToSql;
-#[derive(Debug)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, derive_new::new, Deserialize, Serialize)]
 pub struct User {
+    id: Option<i32>,
     email: String,
     address: String,
     first_name: String,
@@ -11,17 +17,9 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(email: &str, address: &str, first_name: &str, last_name: &str) -> Self {
-        Self {
-            email: email.to_string(),
-            address: address.to_string(),
-            first_name: first_name.to_string(),
-            last_name: last_name.to_string(),
-        }
-    }
-
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
-        let query = "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4);";
+        let query =
+            "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4);";
         let params = vec![
             Arc::new(self.email.clone()) as Arc<dyn ToSql>,
             Arc::new(self.address.clone()),
@@ -31,14 +29,13 @@ impl User {
         (query, params)
     }
 
-    /// Generate a fake user 
-    ///
-    /// # Example 
+    /// # Example
     /// ```
     /// let user = User::generate_fake_user();
     /// ```
     pub fn generate_fake_user() -> Self {
         Self {
+            id: None,
             email: fake::faker::internet::en::FreeEmail().fake(),
             address: fake::faker::address::en::StreetName().fake(),
             first_name: fake::faker::name::en::FirstName().fake(),

@@ -2,9 +2,9 @@ mod config;
 mod db;
 mod models;
 mod test;
-use crate::models::{staff, team, users};
-use crate::test::{insert_fake_staff, insert_fake_teams, insert_fake_users};
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, Result};
+use models::{staff, team, users};
+use test::insert_fake_users;
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use config::get_config;
 use db::connect_to_db;
 use staff::Staff;
@@ -12,8 +12,7 @@ use team::Team;
 use tiberius;
 use users::User;
 
-use tiberius::{Client, Config};
-use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
+use tiberius::Config;
 
 #[post("/create_user")]
 async fn create_user(user: web::Json<User>) -> impl Responder {

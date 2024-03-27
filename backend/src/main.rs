@@ -20,23 +20,49 @@ async fn create_user(user: web::Json<User>) -> impl Responder {
     // make a query to the database to insert the user
     // return the user as a json response
     dbg!(&user);
-    let config:Config = get_config().await.unwrap();
-    let mut client = connect_to_db(config).await.unwrap();
+    let config = get_config().await;
+    let mut config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let client = connect_to_db(config).await;
+    let client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let mut client = client;
     let (query, params) = user.to_insert_query();
     let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
-    let result = client.execute(query, &params[..]).await.unwrap();
+    let result = client.execute(query, &params[..]).await;
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
 #[post("/create_team")]
 async fn create_team(team: web::Json<Team>) -> impl Responder {
     // make a query to the database to insert the user
-    // return the user as a json response
-    let config:Config = get_config().await.unwrap();
-    let mut client = connect_to_db(config).await.unwrap();
+
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
     let (query, params) = team.to_insert_query();
     let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
-    let result = client.execute(query, &params[..]).await.unwrap();
+    let result = client.execute(query, &params[..]).await;
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
@@ -44,12 +70,36 @@ async fn create_team(team: web::Json<Team>) -> impl Responder {
 async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
     // make a query to the database to get the user with the id
     // return the user as a json response
-    let config: Config = get_config().await.unwrap();
-    let mut client = connect_to_db(config).await.unwrap();
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
     let query = "SELECT * FROM users WHERE id = @P1";
     let id = id.into_inner();
-    let result = client.query(query, &[&id]).await.unwrap();
-    let row = result.into_first_result().await.unwrap();
+    let result = client.query(query, &[&id]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let row = result.into_first_result().await;
+    let row = match row {
+        Ok(row) => row,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
 
     let mut user_list: Vec<User> = Vec::new();
     for row in row {
@@ -70,11 +120,35 @@ async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
 async fn get_all_users() -> impl Responder {
     // make a query to the database to get all the users
     // return the users as a json response
-    let config: tiberius::Config = get_config().await.unwrap();
-    let mut client = connect_to_db(config).await.unwrap();
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
     let query = "SELECT * FROM users";
-    let result = client.query(query, &[]).await.unwrap();
-    let row = result.into_first_result().await.unwrap();
+    let result = client.query(query, &[]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let row = result.into_first_result().await;
+    let row = match row {
+        Ok(row) => row,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
 
     let mut user_list: Vec<User> = Vec::new();
     for row in row {
@@ -96,18 +170,47 @@ async fn get_all_users() -> impl Responder {
 async fn get_all_teams() -> impl Responder {
     // make a query to the database to get all the teams
     // return the teams as a json response
-    let config: tiberius::Config = get_config().await.unwrap();
-    let mut client = connect_to_db(config).await.unwrap();
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
     let query = "SELECT * FROM teams";
-    let result = client.query(query, &[]).await.unwrap();
-    let row = result.into_first_result().await.unwrap();
+    let result = client.query(query, &[]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let row = result.into_first_result().await;
+    let row = match row {
+        Ok(row) => row,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
 
     let mut team_list: Vec<Team> = Vec::new();
     for row in row {
-        let team = Team::new(
-            row.get(0),
-            row.get::<&str, usize>(1).unwrap().to_owned(),
-        );
+        let team_name = row.get::<&str, usize>(1);
+        let team_name = match team_name {
+            None => {
+                return HttpResponse::InternalServerError().body("Error getting name");
+            }
+            Some(name) => name.to_owned(),
+        };
+        let team = Team::new(row.get(0), team_name);
         team_list.push(team);
     }
     println!("This is the list of all teams");
@@ -137,7 +240,7 @@ async fn main() -> anyhow::Result<()> {
     insert_fake_users(&mut client).await?;
 
     println!("Successfully read the file");
-    HttpServer::new(|| {
+    let _run = HttpServer::new(|| {
         App::new()
             .service(hello)
             .service(echo)

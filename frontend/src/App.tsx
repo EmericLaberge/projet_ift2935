@@ -1,17 +1,23 @@
+// App.tsx
 import React from 'react';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import SignInSide from './SignInSide';
-import Dashboard from './templates/dashboard/Dashboard';
-import Button from '@mui/material/Button/Button';
+import NavBar from './Components/Navbar/NavBar';
+import { Card } from '@mui/material';
+import UserList from './UserList';
+import { Toaster} from 'react-hot-toast';
 
-
-
-function App() {
-  return (
-    <div className="App">
-    <Dashboard />
-    </div>
-  );
-}
+const App: React.FC = () => (
+<div>
+  <Router>
+    <NavBar />
+    <Routes>
+      <Route path="/" element={<Card />} />
+      <Route path="/Users" element={<UserList />} />
+    </Routes>
+  </Router>
+  <Toaster />
+</div>
+);
 
 export default App;

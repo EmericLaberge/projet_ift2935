@@ -2,39 +2,45 @@ mod config;
 mod db;
 mod models;
 mod test;
-use models::{staff, team, users};
-use test::insert_fake_users;
+
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use config::get_config;
 use db::connect_to_db;
+use models::{staff, team, users};
 use staff::Staff;
 use team::Team;
+use test::insert_fake_users;
 use tiberius;
+use tiberius::{Client, Config};
+use tokio::net::TcpStream;
+use tokio_util::compat::Compat;
 use users::User;
 
-use tiberius::Config;
+/// This prevent passing the config around like before
+/// This is a struct that holds the config and the client
+struct AppState {
+    config: Config,
+    client: Client<Compat<TcpStream>>,
+}
+
+impl AppState {
+    async fn new() -> Result<Self, anyhow::Error> {
+        let mut state = AppState {
+            config: get_config().await?,
+            client: connect_to_db(get_config().await?).await?,
+        };
+        Ok(state)
+    }
+}
 
 #[post("/create_user")]
 async fn create_user(user: web::Json<User>) -> impl Responder {
     // make a query to the database to insert the user
     // return the user as a json response
     dbg!(&user);
-    let config = get_config().await;
-    let mut config = match config {
-        Ok(config) => config,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
+    let config = get_config().await.unwrap();
+    let mut client = connect_to_db(config).await.unwrap();
 
-    let client = connect_to_db(config).await;
-    let client = match client {
-        Ok(client) => client,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let mut client = client;
     let (query, params) = user.to_insert_query();
     let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
     let result = client.execute(query, &params[..]).await;
@@ -222,33 +228,22 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
-}
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     // Try to connect to the database using db module (see db.rs)
     let config: Config = get_config().await?;
-    let mut client = connect_to_db(config).await?;
-    insert_fake_users(&mut client).await?;
-
+    let mut client = connect_to_db(config.clone()).await?;
+    let app_state = web::Data::new(AppState { config, client });
     println!("Successfully read the file");
-    let _run = HttpServer::new(|| {
+    let _run = HttpServer::new(move || {
         App::new()
-            .service(hello)
-            .service(echo)
+            .app_data(app_state.clone())
             .service(get_user_by_id)
             .service(get_all_users)
             .service(get_all_teams)
             .service(create_user)
             .service(create_team)
-            .route("/hey", web::get().to(manual_hello))
     })
     .bind(("127.0.0.1", 8080))?
     .run()

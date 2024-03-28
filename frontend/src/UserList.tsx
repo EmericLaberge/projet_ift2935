@@ -1,21 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, CardContent, TextField, Button, Typography } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import {toast} from 'react-hot-toast';
-
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { toast } from 'react-hot-toast';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  GridRowsProp,
+  GridRowModesModel,
+  GridRowModes,
+  GridColDef,
+  GridToolbarContainer,
+  GridEventListener,
+  GridRowId,
+  GridRowModel,
+  GridRowEditStopReasons,
+  GridSlots,
+} from '@mui/x-data-grid';
 
 type User = {
   id: number;
-  email: string; address: string;
+  email: string;
+  address: string;
   first_name: string;
   last_name: string;
 };
+
+
 
 function UserList() {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [newUser, setNewUser] = useState<Partial<User>>({ email: '', address: '', first_name: '', last_name: '' });
+  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 
+
+  const handleEditClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.Edit },
+      };
+    });
+  }
+
+  const handleSaveClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      };
+    });
+  }
+
+  const handleCancelClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      };
+    });
+  }
+
+  const handleDeleteClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      };
+    });
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
@@ -40,6 +95,39 @@ function UserList() {
       setError('Failed to create user');
     }
   };
+
+  const handleEdit = async (id: number) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8080/users/${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user');
+      }
+      const user: User = await response.json();
+      setNewUser(user);
+    } catch (error) {
+      setError('Failed to fetch user');
+    }
+  }
+
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8080/users/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+      const updatedUsers = users.filter((user) => user.id !== id);
+      setUsers(updatedUsers);
+      toast.success('User deleted successfully');
+    } catch (error) {
+      setError('Failed to delete user');
+    }
+  }
+
+
+
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -116,11 +204,61 @@ function UserList() {
           { field: 'address', headerName: 'Address', width: 200 },
           { field: 'first_name', headerName: 'First Name', width: 150 },
           { field: 'last_name', headerName: 'Last Name', width: 150 },
+          {
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
+            width: 100,
+            cellClassName: 'actions',
+            getActions: ({ id }) => {
+              const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+              if (isInEditMode) {
+                return [
+                  <GridActionsCellItem
+                    icon={<SaveIcon />}
+                    label="Save"
+                    sx={{
+                      color: 'primary.main',
+                    }}
+                    onClick={handleSaveClick(id.toString())}
+                  />,
+                  <GridActionsCellItem
+                    icon={<CancelIcon />}
+                    label="Cancel"
+                    className="textPrimary"
+                    onClick={handleCancelClick(id)}
+                    color="inherit"
+                  />,
+                ];
+              }
+
+              return [
+                <GridActionsCellItem
+                  icon={<EditIcon />}
+                  label="Edit"
+                  className="textPrimary"
+                  onClick={handleEditClick(id)}
+                  color="inherit"
+                />,
+                <GridActionsCellItem
+                  icon={<DeleteIcon />}
+                  label="Delete"
+                  onClick={handleDeleteClick(id)}
+                  color="inherit"
+                />,
+              ];
+            }
+          },
         ]}
+        checkboxSelection
       />
     </div>
   );
 }
 
+
 export default UserList;
+
+
 

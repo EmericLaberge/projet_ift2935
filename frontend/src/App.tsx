@@ -10,7 +10,6 @@ function App() {
   return (
     <div className="App">
     <Dashboard />
-    <Button variant="contained" color="primary" className="btn mt-2">Hello World</Button>
     </div>
   );
 }

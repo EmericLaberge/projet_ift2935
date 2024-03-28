@@ -3,13 +3,14 @@ mod db;
 mod models;
 mod test;
 
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder,middleware};
 use config::get_config;
 use db::connect_to_db;
 use models::{staff, team, users};
 use staff::Staff;
 use team::Team;
 use test::insert_fake_users;
+use actix_cors::Cors;
 use tiberius;
 use tiberius::{Client, Config};
 use tokio::net::TcpStream;
@@ -166,9 +167,10 @@ async fn get_all_users() -> impl Responder {
         );
         user_list.push(user);
     }
+    serde_json::to_string(&user_list).unwrap();
     println!("This is the list of all users");
 
-    HttpResponse::Ok().body(format!("{:?}", user_list))
+    HttpResponse::Ok().json(user_list)
 }
 
 #[get("/teams")]
@@ -237,7 +239,13 @@ async fn main() -> anyhow::Result<()> {
     let app_state = web::Data::new(AppState { config, client });
     println!("Successfully read the file");
     let _run = HttpServer::new(move || {
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header()
+            .max_age(3600);
         App::new()
+            .wrap(cors)
             .app_data(app_state.clone())
             .service(get_user_by_id)
             .service(get_all_users)

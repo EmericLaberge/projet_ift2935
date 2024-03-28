@@ -1,6 +1,7 @@
 // NavBar.tsx
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+
 import "./NavBar.css";
 
 
@@ -14,22 +15,30 @@ const NavBar: React.FC = () => {
 
   return (
     <div className={"navbar"}>
+
       <ul id="menu">
-        <li id="list-of-apps">
+        <li id="home">
           <NavLink to="/" style={getLinkStyle("/")}>
-            Apps
+            Home
           </NavLink>
         </li>
-        <li id="terminal">
-          <NavLink to="/Terminal" style={getLinkStyle("/Terminal")}>
-            Terminal
-          </NavLink>
-        </li>
-        <li id="setup">
+        <li id="users">
           <NavLink to="/users" style={getLinkStyle("/users")}>
-          Users
+            Users
           </NavLink>
         </li>
+        <li id="my events">
+          <NavLink to="/events" style={getLinkStyle("/events")}>
+            Events
+          </NavLink>
+        </li>
+        <li id="my profile">
+          <NavLink to="/profile" style={getLinkStyle("/profile")}>
+            Profile
+          </NavLink>
+        </li>
+
+
       </ul>
     </div>
   );

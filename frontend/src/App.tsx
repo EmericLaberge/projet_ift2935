@@ -21,10 +21,10 @@ function getToken() {
 
 
 function App() {
-  const token = getToken();
-  if (!token) {
-    return <Login setToken={setToken} />
-  }
+  // const token = getToken();
+  // if (!token) {
+  //   return <Login setToken={setToken} />
+  // }
   return (
     <div>
       <Router>

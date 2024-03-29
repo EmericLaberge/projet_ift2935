@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useAtom } from 'jotai';
+import { AuthAtom, UserIdAtom } from './atoms';
 
 type Credentials = {
   username: string;
@@ -14,26 +15,34 @@ async function loginUser(credentials: Credentials) {
     },
     body: JSON.stringify(credentials)
   })
-    .then(data => data.json());
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error('Network response was not ok.');
+  });
 }
 
-type LoginProps = {
-  setToken: (token: string) => void;
-};
-
-export default function Login({ setToken }: LoginProps) {
+export default function Login() {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
-    
+  const [, setIsAuth] = useAtom(AuthAtom);
+  const [, setUserId] = useAtom(UserIdAtom);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const token = await loginUser({
-      username,
-      password
-    });
-    setToken(token);
+    try {
+      const response = await loginUser({
+        username,
+        password
+      });
+      setUserId(response.id); // Assuming the ID is directly in the response
+      setIsAuth(true);
+    } catch (error) {
+      console.error('Login failed:', error);
+      // Handle login failure (e.g., incorrect credentials, network error, etc.)
+    }
   };
-
 
   return (
     <div className="login-wrapper">
@@ -54,8 +63,4 @@ export default function Login({ setToken }: LoginProps) {
     </div>
   );
 }
-
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired
-};
 

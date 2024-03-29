@@ -6,25 +6,18 @@ import NavBar from './Components/Navbar/NavBar';
 import { Card } from '@mui/material';
 import UserList from './UserList';
 import { Toaster } from 'react-hot-toast';
+import {AuthAtom, UserIdAtom}from './atoms';
+import { useAtom } from 'jotai';
 import Login from './Login';
 
 
-function setToken(userToken: string) {
-  sessionStorage.setItem('token', JSON.stringify(userToken));
-}
-
-function getToken() {
-  const tokenString = sessionStorage.getItem('token');
-  const userToken = JSON.parse(tokenString || '{}');
-  return userToken?.token;
-}
-
-
 function App() {
-  // const token = getToken();
-  // if (!token) {
-  //   return <Login setToken={setToken} />
-  // }
+  const [auth, setAuth] = useAtom(AuthAtom);
+  const [userId, setUserId] = useAtom(UserIdAtom);
+
+  if (!auth) {
+    return <Login/>;
+  }
   return (
     <div>
       <Router>

@@ -2,23 +2,22 @@ mod config;
 mod db;
 mod models;
 mod test;
-
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder,middleware};
+use actix_cors::Cors;
+use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
 use config::get_config;
 use db::connect_to_db;
+use jsonwebtoken::{encode, EncodingKey, Header};
 use models::{staff, team, users};
+use serde::Deserialize;
 use staff::Staff;
 use team::Team;
-use test::insert_fake_users;
-use actix_cors::Cors;
-use tiberius;
+use test::insert_fake_users; use tiberius;
 use tiberius::{Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::compat::Compat;
 use users::User;
 
-/// This prevent passing the config around like before
-/// This is a struct that holds the config and the client
+/// This prevent passing the config around like before This is a struct that holds the config and the client
 struct AppState {
     config: Config,
     client: Client<Compat<TcpStream>>,
@@ -33,6 +32,60 @@ impl AppState {
         Ok(state)
     }
 }
+
+#[derive(Deserialize)]
+struct LoginRequest {
+    username: String,
+    password: String,
+}
+
+#[post("/login")]
+async fn login(login: web::Json<LoginRequest>) -> impl Responder {
+    let config = get_config().await.unwrap();
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let query = "SELECT id from logins where username = @P1 and password = @P2";
+    let result = client.query(query, &[&login.username, &login.password]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let first_result = result.into_row().await;
+    let first_result = match first_result {
+        Ok(first_result) => first_result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    if first_result.is_none() {
+        return HttpResponse::Unauthorized().finish();
+    }
+    let first_result = first_result.unwrap();
+    let id: std::option::Option<i32> = first_result.get(0);
+    let id = match id {
+        Some(id) => id,
+        None => {
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+    // return {"id": id}
+    let id_serde = serde_json::json!({ "id": id });
+    HttpResponse::Ok().json(id_serde)
+}
+    
+    
+    
+
+
+
 
 #[post("/create_user")]
 async fn create_user(user: web::Json<User>) -> impl Responder {
@@ -230,7 +283,6 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
-
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     // Try to connect to the database using db module (see db.rs)
@@ -252,6 +304,7 @@ async fn main() -> anyhow::Result<()> {
             .service(get_all_teams)
             .service(create_user)
             .service(create_team)
+            .service(login)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAtom } from 'jotai';
 import { AuthAtom, UserIdAtom } from './atoms';
+import { TextField } from '@mui/material';
+import Button from '@mui/material/Button';
 
 type Credentials = {
   username: string;
@@ -29,7 +31,7 @@ export default function Login() {
   const [, setIsAuth] = useAtom(AuthAtom);
   const [, setUserId] = useAtom(UserIdAtom);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await loginUser({
@@ -45,22 +47,30 @@ export default function Login() {
   };
 
   return (
-    <div className="login-wrapper">
-      <h1>Please Log In</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          <p>Username</p>
-          <input type="text" onChange={e => setUserName(e.target.value)} />
-        </label>
-        <label>
-          <p>Password</p>
-          <input type="password" onChange={e => setPassword(e.target.value)} />
-        </label>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="max-w-md w-full bg-white p-8 border border-gray-300 rounded-lg">
+        <h1 className="text-xl font-semibold mb-4">Please Log In</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <input
+            type="text"
+            placeholder="Username"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={e => setUserName(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={e => setPassword(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
-  );
+  );   
 }
-

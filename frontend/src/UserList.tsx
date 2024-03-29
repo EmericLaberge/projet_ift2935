@@ -6,6 +6,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import './App.css';
 import {
   GridRowsProp,
   GridRowModesModel,
@@ -151,8 +152,9 @@ function UserList() {
   }
 
   return (
-    <div>
-      <h1>Users</h1>
+
+    <div className="App">
+      <h1 id="header-title">User Management</h1>
       <Box>
         <Card>
           <CardContent>

@@ -73,6 +73,15 @@ BEGIN
     );
 END 
 GO
+
+IF OBJECT_ID('logins') IS NULL 
+BEGIN
+    CREATE TABLE logins (
+        id INT PRIMARY KEY,
+        username NVARCHAR(50) NOT NULL,
+        password NVARCHAR(50) NOT NULL
+    );
+END
 -- DECLARE @ConstraintName nvarchar(256), @TableName nvarchar(256), @Sql nvarchar(1000);
 --
 -- -- Loop through the foreign key constraints that reference the 'Sport' table

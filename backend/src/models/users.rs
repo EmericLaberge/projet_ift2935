@@ -16,6 +16,8 @@ pub struct User {
     last_name: String,
 }
 
+
+
 impl User {
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
         let query =
@@ -49,5 +51,8 @@ impl User {
 
     pub fn change_address(&mut self, new_address: &str) {
         self.address = new_address.to_string();
+    }
+    pub fn get_email(&self) -> &str {
+        &self.email
     }
 }

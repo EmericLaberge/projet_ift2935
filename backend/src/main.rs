@@ -1,11 +1,9 @@
 mod config;
 mod db;
-mod models;
-mod test;
-use std::sync::Arc;
+mod models; mod test; use std::sync::Arc;
 
 use actix_cors::Cors;
-use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder, delete};
 use config::get_config;
 use db::connect_to_db;
 use jsonwebtoken::{encode, EncodingKey, Header};
@@ -15,8 +13,7 @@ use staff::Staff;
 use team::Team;
 use test::insert_fake_users; use tiberius::{self, ToSql};
 use tiberius::{Client, Config};
-use tokio::net::TcpStream;
-use tokio_util::compat::Compat;
+use tokio::net::TcpStream; use tokio_util::compat::Compat;
 use users::User;
 
 
@@ -219,7 +216,8 @@ async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
     let client = connect_to_db(config).await;
     let mut client = match client {
         Ok(client) => client,
-        Err(e) => { return HttpResponse::InternalServerError().body(format!("{:?}", e)); } }; let query = "SELECT * FROM users WHERE id = @P1";
+        Err(e) => { return HttpResponse::InternalServerError().body(format!("{:?}", e)); } };
+    let query = "SELECT * FROM users WHERE id = @P1";
     let id = id.into_inner();
     let result = client.query(query, &[&id]).await;
     let result = match result {
@@ -359,6 +357,43 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
+#[delete("/users/{id}")]
+async fn delete_user(id: web::Path<i32>) -> impl Responder {
+    // make a query to the database to get all the teams
+    // return the teams as a json response
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let query = "DELETE FROM Users WHERE ID=@P1";
+    let id = id.into_inner();
+    let result = client.query(query, &[&id]).await;
+    match result {
+        Ok(_) => {
+            return HttpResponse::Ok().body("User deleted");
+        }
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    }
+
+    HttpResponse::InternalServerError().body("Internal server error")
+
+}
+
+
+    
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     // Try to connect to the database using db module (see db.rs)
@@ -382,7 +417,7 @@ async fn main() -> anyhow::Result<()> {
             .service(create_team)
             .service(login)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 6516))?
     .run()
     .await;
 

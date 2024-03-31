@@ -1,10 +1,9 @@
 # Users 
-- [ ] Ajouter un utilisateur
+- [x] Ajouter un utilisateur
 - [ ] Supprimer un utilisateur
 - [ ] Modifier un utilisateur
-- [ ] Lister les utilisateurs
-- [ ] Afficher un utilisateur
-- [ ] Rechercher un utilisateur ?
+- [x] Lister les utilisateurs
+- [x] Afficher un utilisateur
 - [ ] Ajouter un utilisateur à une organisation 
 - [ ] Supprimer un utilisateur d'une organisation 
 - [ ] Lister les utilisateurs d'une organisation
@@ -17,7 +16,7 @@
 - [ ] Ajouter une équipe
 - [ ] Supprimer une équipe
 - [ ] Modifier une équipe
-- [ ] Lister les équipes
+- [x] Lister les équipes
 - [ ] Afficher une équipe
 - [ ] Rechercher une équipe ?
 - [ ] Ajouter un utilisateur à une équipe
@@ -50,7 +49,7 @@
 
 
 # Login 
-- [ ] Authentification
+- [x] Authentification
 - [ ] Déconnexion 
 - [ ] Mot de passe oublié ? 
 - [ ] Modifier le mot de passe ? 

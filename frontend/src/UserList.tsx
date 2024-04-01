@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardContent, TextField, Button, Typography } from '@mui/material';
+import { Box, Card, CardContent, TextField, Button, Typography, Chip } from '@mui/material';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { toast } from 'react-hot-toast';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Modal from '@mui/material/Modal';
+import EditUserModal from './Components/EditUserModal';
+import User from './Components/Entities/User';
+import AddIcon from '@mui/icons-material/Add';
 import './App.css';
 import {
   GridRowsProp,
@@ -19,25 +23,30 @@ import {
   GridRowEditStopReasons,
   GridSlots,
 } from '@mui/x-data-grid';
-
-type User = {
-  id: number;
-  email: string;
-  address: string;
-  first_name: string;
-  last_name: string;
-};
-
-
+import AddUserModal from './Components/AddUserModal';
 
 function UserList() {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [newUser, setNewUser] = useState<Partial<User>>({ email: '', address: '', first_name: '', last_name: '' });
+  const [editUser, setEditUser] = useState<User>({ id: -1, email: '', address: '', first_name: '', last_name: '' });
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+  const [newUser, setNewUser] = useState<Partial<User>>({ email: '', address: '', first_name: '', last_name: '' });
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+
+
 
 
   const handleEditClick = (id: GridRowId) => () => {
+    let user = users.find((user) => user.id === id);
+    if (user) {
+      setEditUser(user);
+      setOpenEdit(true);
+    }
     setRowModesModel((prev) => {
       return {
         ...prev,
@@ -65,8 +74,8 @@ function UserList() {
   }
 
   const handleDeleteClick = (id: GridRowId) => () => {
-      handleDeleteUserSubmit(id);
-      handleCancelClick(id);
+    handleDeleteUserSubmit(id);
+    handleCancelClick(id);
     setRowModesModel((prev) => {
       return {
         ...prev,
@@ -75,7 +84,10 @@ function UserList() {
     });
   }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewUser({ ...newUser, [e.target.name]: e.target.value });
+    setEditUser((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleDeleteUserSubmit = async (id: GridRowId) => {
@@ -113,18 +125,24 @@ function UserList() {
     }
   };
 
-  const handleEdit = async (id: number) => {
+  const EditUserSubmit = async (user: User) => {
+    const id = user.id;
     try {
-      const response = await fetch(`http://127.0.0.1:6516/users/${id}`);
+      const response = await fetch(`http://127.0.0.1:6516/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
       if (!response.ok) {
-        throw new Error('Failed to fetch user');
+        throw new Error('Failed to update user');
       }
-      const user: User = await response.json();
-      setNewUser(user);
+      toast.success('User updated successfully');
     } catch (error) {
-      setError('Failed to fetch user');
+      toast.error('Failed to update user');
     }
-  }
+  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -171,54 +189,32 @@ function UserList() {
 
     <div className="App">
       <h1 id="header-title">User Management</h1>
-      <Box>
-        <Card>
-          <CardContent>
-            <Typography variant="h5" component="div">
-              Add New User
-            </Typography>
-            <form onSubmit={handleNewUserSubmit}>
-              <TextField
-                name="email"
-                label="Email"
-                value={newUser.email}
-                onChange={handleInputChange}
-                margin="normal"
-              />
-              <TextField
-                name="address"
-                label="Address"
-                value={newUser.address}
-                onChange={handleInputChange}
-                margin="normal"
-              />
-              <TextField
-                name="first_name"
-                label="First Name"
-                value={newUser.first_name}
-                onChange={handleInputChange}
-                margin="normal"
-              />
-              <TextField
-                name="last_name"
-                label="Last Name"
-                value={newUser.last_name}
-                onChange={handleInputChange}
-                margin="normal"
-              />
-              <Button type="submit" variant="contained" color="primary">
-                Add User
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+<Box sx={{ display: 'flex', justifyContent: 'right', m: 2 }}>
+    <Chip label="Add User" icon={<AddIcon />} color="primary" onClick={handleOpen} sx={{p: 1}}/>
       </Box>
-      <h2>User List</h2>
+      <div>
+        <AddUserModal
+          open={open}
+          handleClose={handleClose}
+          handleInputChange={(e) => setNewUser({ ...newUser, [e.target.name]: e.target.value })}
+          handleNewUserSubmit={handleNewUserSubmit}
+          newUser={newUser}
+        />
+        <EditUserModal
+          open={openEdit}
+          handleClose={handleCloseEdit}
+          user={editUser}
+          handleInputChange={handleInputChange}
+          handleEditUserSubmit={EditUserSubmit}
+        />
+      </div>
+
+
       <DataGrid
         rows={users}
         columns={[
           { field: 'id', headerName: 'ID', width: 90 },
-          { field: 'email', headerName: 'Email', width: 200 },
+          { field: 'email', headerName: 'Email', width: 200, editable: true },
           { field: 'address', headerName: 'Address', width: 200 },
           { field: 'first_name', headerName: 'First Name', width: 150 },
           { field: 'last_name', headerName: 'Last Name', width: 150 },
@@ -226,7 +222,7 @@ function UserList() {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width: 100,
+            width:100,
             cellClassName: 'actions',
             getActions: ({ id }) => {
               const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;

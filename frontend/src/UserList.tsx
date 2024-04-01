@@ -65,6 +65,8 @@ function UserList() {
   }
 
   const handleDeleteClick = (id: GridRowId) => () => {
+      handleDeleteUserSubmit(id);
+      handleCancelClick(id);
     setRowModesModel((prev) => {
       return {
         ...prev,
@@ -76,10 +78,24 @@ function UserList() {
     setNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
 
+  const handleDeleteUserSubmit = async (id: GridRowId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:6516/delete_user/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+      toast.success('User deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete user');
+
+    }
+  };
   const handleNewUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:8080/create_user', {
+      const response = await fetch('http://127.0.0.1:6516/create_user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +115,7 @@ function UserList() {
 
   const handleEdit = async (id: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8080/users/${id}`);
+      const response = await fetch(`http://127.0.0.1:6516/users/${id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch user');
       }
@@ -112,7 +128,7 @@ function UserList() {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8080/users/${id}`, {
+      const response = await fetch(`http://127.0.0.1:6516/users/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -133,7 +149,7 @@ function UserList() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8080/users');
+        const response = await fetch('http://127.0.0.1:6516/users');
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }

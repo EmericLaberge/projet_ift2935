@@ -17,7 +17,7 @@ type NewUser = {
 };
 
 async function registerUser(newUser: NewUser) {
-  return fetch('http://localhost:8080/create_user', {
+  return fetch('http://localhost:6516/create_user', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

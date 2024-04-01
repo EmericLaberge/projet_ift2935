@@ -1,21 +1,26 @@
 mod config;
 mod db;
-mod models; mod test; use std::sync::Arc;
+mod models;
+mod test;
+use std::sync::Arc;
 
 use actix_cors::Cors;
-use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder, delete};
+use actix_web::{
+    delete, get, middleware, post, put, web, App, HttpResponse, HttpServer, Responder,
+};
 use config::get_config;
 use db::connect_to_db;
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use models::{staff, team, users};
 use serde::{Deserialize, Serialize};
 use staff::Staff;
 use team::Team;
-use test::insert_fake_users; use tiberius::{self, ToSql};
+use test::insert_fake_users;
+use tiberius::{self, ToSql};
 use tiberius::{Client, Config};
-use tokio::net::TcpStream; use tokio_util::compat::Compat;
+use tokio::net::TcpStream;
+use tokio_util::compat::Compat;
 use users::User;
-
 
 /// This prevent passing the config around like before This is a struct that holds the config and the client
 struct AppState {
@@ -33,6 +38,26 @@ impl AppState {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+struct Claims {
+    sub: String,
+}
+
+fn generate_jwt(user_id: &str, secret: &[u8]) -> String {
+    let claims = Claims {
+        sub: user_id.to_string(),
+    };
+    let header = Header::new(jsonwebtoken::Algorithm::HS256);
+    let encoding_key = EncodingKey::from_secret(secret);
+    encode(&header, &claims, &encoding_key).unwrap()
+}
+
+fn validate_jwt(token: &str, secret: &[u8]) -> Result<Claims, jsonwebtoken::errors::Error> {
+    let validation = Validation::new(jsonwebtoken::Algorithm::HS256);
+    let decoding_key = DecodingKey::from_secret(secret);
+    let token_data = jsonwebtoken::decode::<Claims>(token, &decoding_key, &validation)?;
+    Ok(token_data.claims)
+}
 #[derive(Deserialize)]
 struct LoginRequest {
     username: String,
@@ -51,7 +76,9 @@ async fn login(login: web::Json<LoginRequest>) -> impl Responder {
     };
 
     let query = "SELECT id from logins where username = @P1 and password = @P2";
-    let result = client.query(query, &[&login.username, &login.password]).await;
+    let result = client
+        .query(query, &[&login.username, &login.password])
+        .await;
     let result = match result {
         Ok(result) => result,
         Err(e) => {
@@ -80,9 +107,6 @@ async fn login(login: web::Json<LoginRequest>) -> impl Responder {
     let id_serde = serde_json::json!({ "id": id });
     HttpResponse::Ok().json(id_serde)
 }
-    
-    
-    
 
 #[derive(Debug, derive_new::new, Deserialize, Serialize)]
 pub struct NewUser {
@@ -98,7 +122,7 @@ impl NewUser {
     pub fn get_email(&self) -> &str {
         &self.email
     }
-    
+
     pub fn get_user_name(&self) -> &str {
         &self.username
     }
@@ -106,26 +130,23 @@ impl NewUser {
     pub fn get_password(&self) -> &str {
         &self.password
     }
-
 }
-
-
-
-
 
 #[post("/create_user")]
 async fn create_user(user: web::Json<NewUser>) -> impl Responder {
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config).await.unwrap();
-        
-    let query = "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4)";
+
+    let query =
+        "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4)";
     let params = vec![
         user.email.as_str(),
         user.address.as_str(),
         user.first_name.as_str(),
         user.last_name.as_str(),
     ];
-    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p as &dyn tiberius::ToSql).collect();
+    let params: Vec<&dyn tiberius::ToSql> =
+        params.iter().map(|p| p as &dyn tiberius::ToSql).collect();
     let result = client.execute(query, &params).await;
     let result = match result {
         Ok(result) => result,
@@ -134,12 +155,10 @@ async fn create_user(user: web::Json<NewUser>) -> impl Responder {
         }
     };
 
-
-    
-    // get the id of the new user 
+    // get the id of the new user
     //
     let query = "SELECT ID FROM Users WHERE Email = @P1";
-    let result = client.query(query, &[&user.email]).await; 
+    let result = client.query(query, &[&user.email]).await;
     let result = match result {
         Ok(result) => result,
         Err(e) => {
@@ -153,10 +172,9 @@ async fn create_user(user: web::Json<NewUser>) -> impl Responder {
         Err(e) => {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
-    }; 
+    };
     let row = row.unwrap();
     let id: i32 = row.get(0).unwrap();
-
 
     let config2 = get_config().await.unwrap();
     let mut client2 = connect_to_db(config2).await.unwrap();
@@ -174,10 +192,8 @@ async fn create_user(user: web::Json<NewUser>) -> impl Responder {
     };
 
     HttpResponse::Ok().body(format!("{:?}", result))
-
 }
 
-    
 #[post("/create_team")]
 async fn create_team(team: web::Json<Team>) -> impl Responder {
     // make a query to the database to insert the user
@@ -216,7 +232,10 @@ async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
     let client = connect_to_db(config).await;
     let mut client = match client {
         Ok(client) => client,
-        Err(e) => { return HttpResponse::InternalServerError().body(format!("{:?}", e)); } };
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
     let query = "SELECT * FROM users WHERE id = @P1";
     let id = id.into_inner();
     let result = client.query(query, &[&id]).await;
@@ -389,11 +408,26 @@ async fn delete_user(id: web::Path<i32>) -> impl Responder {
     }
 
     HttpResponse::InternalServerError().body("Internal server error")
-
 }
 
+#[put("/users/{id}")]
+async fn update_user(id: web::Path<i32>, user: web::Json<User>) -> impl Responder {
+    let id = id.into_inner();
+    let config = get_config().await.unwrap();
+    let mut client = connect_to_db(config.clone()).await.unwrap();
+    let (query, params) = user.to_alter_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    let result = client.execute(query, &params[..]).await;
+    match result {
+        Ok(_) => {
+            return HttpResponse::Ok().body("User updated");
+        }
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    }
+}
 
-    
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     // Try to connect to the database using db module (see db.rs)

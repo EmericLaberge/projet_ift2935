@@ -12,8 +12,14 @@ type Credentials = {
   password: string;
 };
 
+
+async function registerUser(credentials:Credentials){
+return 
+
+}
+
 async function loginUser(credentials: Credentials) {
-  return fetch('http://localhost:8080/login', {
+  return fetch('http://localhost:6516/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

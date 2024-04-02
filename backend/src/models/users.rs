@@ -30,7 +30,7 @@ impl User {
     }
     pub fn to_alter_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
         let query =
-            "Update Users SET Email=@P2,Address=@P3,FirstName=@P3,LastName=@P5 WHERE ID = @P1;";
+            "Update Users SET Email=@P2,Address=@P3,FirstName=@P4,LastName=@P5 WHERE ID = @P1;";
         let params = vec![
             Arc::new(self.id.clone()) as Arc<dyn ToSql>,
             Arc::new(self.email.clone()) as Arc<dyn ToSql>,

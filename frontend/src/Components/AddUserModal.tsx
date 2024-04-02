@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import User from './Entities/User';
 
 import { Modal, Box, Typography } from '@mui/material';
@@ -20,7 +20,7 @@ const AddUserModal: React.FC<Props> = ({ open, handleClose, handleInputChange, h
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-black p-4 rounded-md shadow-lg border border-gray-700 bg-gray-900">
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Add User
         </Typography>
@@ -30,8 +30,8 @@ const AddUserModal: React.FC<Props> = ({ open, handleClose, handleInputChange, h
           value={newUser.email}
           onChange={handleInputChange}
           margin="normal"
-          sx={{ width: '100%' }}
-          className="justify-content-center"
+          sx={{ width: '100%', color: 'white' }}
+          className="justify-content-center text-white  label-white"
         />
         <TextField
           name="address"
@@ -65,7 +65,7 @@ const AddUserModal: React.FC<Props> = ({ open, handleClose, handleInputChange, h
             Add User
           </Button>
         </Box>
-      </Box>
+      </div>
     </Modal>
   );
 };

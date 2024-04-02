@@ -21,7 +21,7 @@ const EditUserModal: React.FC<Props> = ({ open, handleClose, user, handleInputCh
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-black p-4 rounded-md shadow-lg border border-gray-700 bg-gray-900">
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Edit User
         </Typography>
@@ -31,13 +31,14 @@ const EditUserModal: React.FC<Props> = ({ open, handleClose, user, handleInputCh
           value={user.email}
           onChange={handleInputChange}
           margin="normal"
-          className="justify-content-center"
+          sx={{ width: '100%' }}
         />
         <TextField
           name="address"
           label="Address"
           value={user.address}
           onChange={handleInputChange}
+          sx={{ width: '100%' }}
           margin="normal"
         />
         <TextField
@@ -45,6 +46,7 @@ const EditUserModal: React.FC<Props> = ({ open, handleClose, user, handleInputCh
           label="First Name"
           value={user.first_name}
           onChange={handleInputChange}
+          sx={{ width: '100%' }}
           margin="normal"
         />
         <TextField
@@ -52,6 +54,7 @@ const EditUserModal: React.FC<Props> = ({ open, handleClose, user, handleInputCh
           label="Last Name"
           value={user.last_name}
           onChange={handleInputChange}
+          sx={{ width: '100%' }}
           margin="normal"
         />
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
@@ -62,10 +65,9 @@ const EditUserModal: React.FC<Props> = ({ open, handleClose, user, handleInputCh
             Save
           </Button>
         </Box>
-      </Box>
+      </div>
     </Modal>
   );
 };
 
 export default EditUserModal;
-

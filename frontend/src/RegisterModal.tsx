@@ -71,11 +71,11 @@ function RegisterModal() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="max-w-md w-full bg-white p-8 border border-gray-300 rounded-lg">
+    <div className="flex justify-center items-center h-screen">
+      <div className="max-w-md w-full bg-gray-900 p-8 border border-gray-700 rounded-md relative">
         <div className="flex justify-end">
-          <IconButton onClick={handleClose} className="absolute top-0 left-0 m-2 text-gray-600 hover:text-gray-800" aria-label="Close">
-            <CancelRoundedIcon />
+          <IconButton onClick={handleClose} className="absolute top-0 left-0 m-2">
+            <CancelRoundedIcon sx={{ color: 'error.main' }} />
           </IconButton>
         </div>
         <h1 className="text-xl font-semibold mb-4">Please Register</h1>

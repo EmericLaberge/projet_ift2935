@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, CardContent, TextField, Button, Typography, Chip } from '@mui/material';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@mui/material';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { toast } from 'react-hot-toast';
 import SaveIcon from '@mui/icons-material/Save';
@@ -189,9 +190,9 @@ function UserList() {
 
     <div className="App">
       <h1 id="header-title">User Management</h1>
-<Box sx={{ display: 'flex', justifyContent: 'right', m: 2 }}>
-    <Chip label="Add User" icon={<AddIcon />} color="primary" onClick={handleOpen} sx={{p: 1}}/>
-      </Box>
+      <div className="w-3/4 align-center justify-end m-auto flex mb-3">
+        <Chip label="Add User" icon={<AddIcon />} color="primary" onClick={handleOpen} className="mb-3 p-2 justify-end align-center font-bold" size="medium" />
+      </div>
       <div>
         <AddUserModal
           open={open}
@@ -211,7 +212,9 @@ function UserList() {
 
 
       <DataGrid
+        className="w-3/4 align-center justify-center m-auto"
         rows={users}
+
         columns={[
           { field: 'id', headerName: 'ID', width: 90 },
           { field: 'email', headerName: 'Email', width: 200, editable: true },
@@ -222,7 +225,7 @@ function UserList() {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width:100,
+            width: 100,
             cellClassName: 'actions',
             getActions: ({ id }) => {
               const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -251,12 +254,13 @@ function UserList() {
                 <GridActionsCellItem
                   icon={<EditIcon />}
                   label="Edit"
-                  className="textPrimary"
+                  sx={{ color: 'info.main' }}
                   onClick={handleEditClick(id)}
                   color="inherit"
                 />,
                 <GridActionsCellItem
                   icon={<DeleteIcon />}
+                  sx={{ color: 'error.main' }}
                   label="Delete"
                   onClick={handleDeleteClick(id)}
                   color="inherit"
@@ -267,12 +271,11 @@ function UserList() {
         ]}
         checkboxSelection
       />
-    </div>
+    </div >
   );
 }
-
-
 export default UserList;
+
 
 
 

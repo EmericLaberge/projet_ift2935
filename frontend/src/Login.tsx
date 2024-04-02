@@ -5,6 +5,7 @@ import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import { atom } from 'jotai';
 import RegisterModal from './RegisterModal';
+import Chip from '@mui/material/Chip';
 
 
 type Credentials = {
@@ -13,8 +14,8 @@ type Credentials = {
 };
 
 
-async function registerUser(credentials:Credentials){
-return 
+async function registerUser(credentials: Credentials) {
+  return
 
 }
 
@@ -59,30 +60,44 @@ export default function Login() {
     return <RegisterModal />;
   } else {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="max-w-md w-full bg-white p-8 border border-gray-300 rounded-lg">
-          <h1 className="text-xl font-semibold mb-4">Please Log In</h1>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <input
-              type="text"
-              placeholder="Username"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={e => setUserName(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={e => setPassword(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              Login
-            </button>
-          </form>
-          <Button onClick={() => setRegisterModalOpen(true)}>Register</Button>
+      <div>
+
+        <div className="flex flex-col justify-center items-center h-screen">
+          <h1 id="header-title" className="text-4xl font-semibold text-white mb-12">Welcome to the App</h1>
+      <div className="max-w-md w-full bg-gray-900   p-8 border border-gray-700 rounded-md relative">
+            <h1 className="text-xl font-semibold mb-4">Please Log In</h1>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <TextField
+                label="Username"
+                type="text"
+                variant="outlined"
+                color="primary"
+                className="w-full px-4 py-2 border  rounded-md"
+                onChange={e => setUserName(e.target.value)}
+              />
+              <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                color="primary"
+                className="w-full px-4 py-2 border  rounded-md"
+                onChange={e => setPassword(e.target.value)}
+              />
+              <Button
+                type="submit"
+                className="w-full py-2   rounded-md "
+                variant="contained"
+                color="primary"
+              >
+                Log In
+              </Button>
+
+
+            </form>
+            <div className="flex justify-left items-center mt-6">
+              <Button onClick={() => setRegisterModalOpen(true)} variant="outlined" color="primary">Create Account</Button>
+            </div>
+          </div>
         </div>
       </div>
     )

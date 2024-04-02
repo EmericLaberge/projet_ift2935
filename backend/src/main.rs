@@ -415,6 +415,8 @@ async fn update_user(id: web::Path<i32>, user: web::Json<User>) -> impl Responde
     let id = id.into_inner();
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config.clone()).await.unwrap();
+    println!("This is the id: {}", id);
+    println!("This is the user: {:?}", user);
     let (query, params) = user.to_alter_query();
     let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
     let result = client.execute(query, &params[..]).await;
@@ -450,6 +452,8 @@ async fn main() -> anyhow::Result<()> {
             .service(create_user)
             .service(create_team)
             .service(login)
+            .service(update_user)
+            .service(delete_user)
     })
     .bind(("127.0.0.1", 6516))?
     .run()

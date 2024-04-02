@@ -1,11 +1,11 @@
 use actix_web::FromRequest;
 use fake::Fake;
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use tiberius::ToSql;
 use tiberius::{Client, Config};
 use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
-use tiberius::ToSql;
-use serde::{Serialize, Deserialize};
 
 #[derive(Debug, derive_new::new, Deserialize, Serialize)]
 pub struct User {
@@ -15,8 +15,6 @@ pub struct User {
     first_name: String,
     last_name: String,
 }
-
-
 
 impl User {
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
@@ -40,9 +38,8 @@ impl User {
             Arc::new(self.first_name.clone()) as Arc<dyn ToSql>,
             Arc::new(self.last_name.clone()) as Arc<dyn ToSql>,
         ];
-         (query, params)
-     }
-
+        (query, params)
+    }
 
     /// # Example
     /// ```

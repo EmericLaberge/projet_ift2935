@@ -93,7 +93,7 @@ function UserList() {
 
   const handleDeleteUserSubmit = async (id: GridRowId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:6516/delete_user/${id}`, {
+      const response = await fetch(`http://127.0.0.1:6516/users/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

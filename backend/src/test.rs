@@ -10,7 +10,7 @@ use tokio_util::compat::Compat;
 
 
 pub async fn insert_fake_users(client: &mut Client<Compat<TcpStream>>) -> anyhow::Result<()> {
-    for _ in 0..10 {
+    for _ in 0..100 {
         let user = User::generate_fake_user();
         let (query, params) = user.to_insert_query();
         let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();

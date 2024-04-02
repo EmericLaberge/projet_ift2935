@@ -1,20 +1,22 @@
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'MyDatabase')
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'SqueeleIsGoated')
 BEGIN
-    CREATE DATABASE MyDatabase;
+    CREATE DATABASE SqueeleIsGoated;
 END
 GO
 
-USE MyDatabase;
+USE SqueeleIsGoated;
 GO
 
 IF OBJECT_ID('Users') IS NULL
 BEGIN
     CREATE TABLE Users (
         ID INT IDENTITY PRIMARY KEY,
-        Email NVARCHAR(50) NOT NULL,
+        Email NVARCHAR(50) UNIQUE NOT NULL,
         Address NVARCHAR(50) NOT NULL,
         FirstName NVARCHAR(50) NOT NULL,
-        LastName NVARCHAR(50) NOT NULL
+        LastName NVARCHAR(50) NOT NULL,
+        Username NVARCHAR(50) NOT NULL,
+        Password NVARCHAR(50) NOT NULL
     );
 END
 GO

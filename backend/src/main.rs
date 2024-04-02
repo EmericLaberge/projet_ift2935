@@ -38,6 +38,15 @@ impl AppState {
     }
 }
 
+#[derive(Serialize, Deserialize, derive_new::new, Debug)]
+struct userInfos {
+    id: Option<i32>,
+    email: String,
+    address: String,
+    first_name: String,
+    last_name: String,
+}
+
 #[derive(Serialize, Deserialize)]
 struct Claims {
     sub: String,
@@ -138,12 +147,14 @@ async fn create_user(user: web::Json<NewUser>) -> impl Responder {
     let mut client = connect_to_db(config).await.unwrap();
 
     let query =
-        "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4)";
+        "INSERT INTO Users (Email, Address, FirstName, LastName,Username, Password) VALUES (@P1, @P2, @P3, @P4, @P5, @P6)";
     let params = vec![
         user.email.as_str(),
         user.address.as_str(),
         user.first_name.as_str(),
         user.last_name.as_str(),
+        user.username.as_str(),
+        user.password.as_str(),
     ];
     let params: Vec<&dyn tiberius::ToSql> =
         params.iter().map(|p| p as &dyn tiberius::ToSql).collect();
@@ -253,9 +264,12 @@ async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
         }
     };
 
-    let mut user_list: Vec<User> = Vec::new();
+
+
+
+    let mut user_list: Vec<userInfos> = Vec::new();
     for row in row {
-        let user = User::new(
+        let user = userInfos::new(
             row.get(0),
             row.get::<&str, usize>(1).unwrap().to_owned(),
             row.get::<&str, usize>(2).unwrap().to_owned(),
@@ -302,9 +316,9 @@ async fn get_all_users() -> impl Responder {
         }
     };
 
-    let mut user_list: Vec<User> = Vec::new();
+    let mut user_list: Vec<userInfos> = Vec::new();
     for row in row {
-        let user = User::new(
+        let user = userInfos::new(
             row.get(0),
             row.get::<&str, usize>(1).unwrap().to_owned(),
             row.get::<&str, usize>(2).unwrap().to_owned(),
@@ -436,6 +450,11 @@ async fn main() -> anyhow::Result<()> {
     let config: Config = get_config().await?;
     let mut client = connect_to_db(config.clone()).await?;
     let app_state = web::Data::new(AppState { config, client });
+    // create 100 users 
+    // let config2: Config = get_config().await?;
+    // let mut client2 = connect_to_db(config2.clone()).await?;
+    // insert_fake_users(&mut client2).await?;
+
     println!("Successfully read the file");
     let _run = HttpServer::new(move || {
         let cors = Cors::default()

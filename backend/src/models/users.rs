@@ -14,29 +14,33 @@ pub struct User {
     address: String,
     first_name: String,
     last_name: String,
+    username: String,
+    password: String,
 }
 
 impl User {
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
         let query =
-            "INSERT INTO Users (Email, Address, FirstName, LastName) VALUES (@P1, @P2, @P3, @P4);";
+            "INSERT INTO Users (Email, Address, FirstName, LastName,Username, Password) VALUES (@P1, @P2, @P3, @P4, @P5, @P6);";
         let params = vec![
             Arc::new(self.email.clone()) as Arc<dyn ToSql>,
             Arc::new(self.address.clone()),
             Arc::new(self.first_name.clone()),
             Arc::new(self.last_name.clone()),
+            Arc::new(self.username.clone()),
+            Arc::new(self.password.clone()),
         ];
         (query, params)
     }
     pub fn to_alter_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
         let query =
-            "Update Users SET Email=@P2,Address=@P3,FirstName=@P4,LastName=@P5 WHERE ID = @P1;";
+            "Update Users SET Address=@P2,FirstName=@P3,LastName=@P4,Password=@P5 WHERE ID = @P1;";
         let params = vec![
             Arc::new(self.id.clone()) as Arc<dyn ToSql>,
-            Arc::new(self.email.clone()) as Arc<dyn ToSql>,
             Arc::new(self.address.clone()) as Arc<dyn ToSql>,
             Arc::new(self.first_name.clone()) as Arc<dyn ToSql>,
             Arc::new(self.last_name.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.password.clone()) as Arc<dyn ToSql>,
         ];
         (query, params)
     }
@@ -52,6 +56,8 @@ impl User {
             address: fake::faker::address::en::StreetName().fake(),
             first_name: fake::faker::name::en::FirstName().fake(),
             last_name: fake::faker::name::en::LastName().fake(),
+            username: fake::faker::internet::en::Username().fake(),
+            password: fake::faker::internet::en::Password(6..8).fake(),
         }
     }
 

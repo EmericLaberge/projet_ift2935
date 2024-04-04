@@ -1,3 +1,6 @@
+use master;
+GO
+
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'SqueeleIsGoated')
 BEGIN
     CREATE DATABASE SqueeleIsGoated;
@@ -117,32 +120,39 @@ END
 -- DROP TABLE IF EXISTS Sport; -- Repeat for 'Event' and 'users' as necessary
 --
 
- IF OBJECT_ID('users') IS NOT NULL 
+ IF OBJECT_ID('Users') IS NOT NULL 
  BEGIN
    SELECT * FROM users;
  END
+ GO
 
  IF OBJECT_ID('Staff') IS NOT NULL 
  BEGIN
    SELECT * FROM Staff;
  END
+ GO
 
- IF OBJECT_ID('Team') IS NOT NULL 
+ IF OBJECT_ID('Teams') IS NOT NULL 
  BEGIN
-   SELECT * FROM Team;
+   SELECT * FROM Teams;
  END 
+ GO
 
- IF OBJECT_ID('Sport') IS NOT NULL 
+ IF OBJECT_ID('Sports') IS NOT NULL 
  BEGIN
-   SELECT * FROM Sport;
+   SELECT * FROM Sports;
  END 
+ GO
 
- IF OBJECT_ID('Event') IS NOT NULL
+ IF OBJECT_ID('Events') IS NOT NULL
  BEGIN
-   SELECT * FROM Event;
+   SELECT * FROM Events;
  END
+ GO
 
- IF OBJECT_ID('Game') IS NOT NULL 
+ IF OBJECT_ID('Games') IS NOT NULL 
  BEGIN
-   SELECT * FROM Game;
+   SELECT * FROM Games;
  END
+ GO
+

@@ -104,6 +104,12 @@ function UserList() {
       toast.error('Failed to delete user');
 
     }
+        const response = await fetch('http://127.0.0.1:6516/users');
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        const data: User[] = await response.json();
+        setUsers(data);
   };
   const handleNewUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

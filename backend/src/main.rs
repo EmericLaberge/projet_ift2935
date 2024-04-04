@@ -22,6 +22,8 @@ use tokio::net::TcpStream;
 use tokio_util::compat::Compat;
 use users::User;
 
+use crate::models::partial_user;
+
 /// This prevent passing the config around like before This is a struct that holds the config and the client
 struct AppState {
     config: Config,
@@ -382,12 +384,11 @@ async fn delete_user(id: web::Path<i32>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     }
-
-    HttpResponse::InternalServerError().body("Internal server error")
 }
 
+
 #[put("/users/{id}")]
-async fn update_user(id: web::Path<i32>, user: web::Json<User>) -> impl Responder {
+async fn update_user(id: web::Path<i32>, user: web::Json<partial_user>) -> impl Responder {
     let id = id.into_inner();
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config.clone()).await.unwrap();

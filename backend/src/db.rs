@@ -23,7 +23,7 @@ pub async fn connect_to_db(
     println!("Successfully connected to the server");
 
     // Set the database to use (MyDatabase)
-    client.execute("USE SqueeleIsGoated", &[]).await?;
+    client.execute("USE Jasson", &[]).await?;
 
     // return the client
     Ok(client)

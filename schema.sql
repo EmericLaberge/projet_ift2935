@@ -160,14 +160,15 @@ WHERE
 @identifiant = Players.UserID)
 GO;
 
---CREATE OR ALTER FUNCTION getTeamsOfPlayer(@identifiant INT)
---RETURNS TABLE
---AS
---RETURN
---(SELECT * FROM Teams
---WHERE
---@identifiant = Players.UserID)
---GO;
+CREATE OR ALTER FUNCTION getTeamsOfUser(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT * FROM Teams
+Players.UserID = (
+dbo.getPlayersWithId(@identifint).ID
+)
+GO;
 
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
 IF OBJECT_ID('trDeleteUserCredentials') IS NULL

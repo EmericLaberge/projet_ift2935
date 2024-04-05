@@ -1,8 +1,9 @@
+use master;
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
     CREATE DATABASE Jasson;
 END
-GO
+GO;
 USE Jasson;
 GO
 

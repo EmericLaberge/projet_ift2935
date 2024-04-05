@@ -19,7 +19,7 @@ pub async fn insert_fake_users(client: &mut Client<Compat<TcpStream>>) -> anyhow
         println!("Successfully created a fake user");
     }
 
-    println!("Successfully created 10 fake users");
+    println!("Successfully created 100 fake users");
     Ok(())
 }
 

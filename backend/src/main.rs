@@ -8,6 +8,7 @@ use actix_cors::Cors;
 use actix_web::{
     delete, get, middleware, post, put, web, App, HttpResponse, HttpServer, Responder,
 };
+use async_std::stream::StreamExt;
 use config::get_config;
 use db::connect_to_db;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
@@ -413,10 +414,24 @@ async fn main() -> anyhow::Result<()> {
     let config: Config = get_config().await?;
     let mut client = connect_to_db(config.clone()).await?;
     let app_state = web::Data::new(AppState { config, client });
-    // create 100 users 
-    // let config2: Config = get_config().await?;
-    // let mut client2 = connect_to_db(config2.clone()).await?;
-    // insert_fake_users(&mut client2).await?;
+    
+    
+    let config3: Config = get_config().await?;
+    let mut client3 = connect_to_db(config3.clone()).await?;
+    let query = "SELECT COUNT(*) AS [count] FROM Users";
+    let result = client3.query(query, &[]).await?;
+    
+    let row = result.into_row().await;
+    
+    let row = row.unwrap();
+    let user_count= row.unwrap().get(0);
+
+    if user_count==Some(0) {
+        // create 100 users 
+        let config2: Config = get_config().await?;
+        let mut client2 = connect_to_db(config2.clone()).await?;
+        insert_fake_users(&mut client2).await?;
+    }
 
     println!("Successfully read the file");
     let _run = HttpServer::new(move || {

@@ -8,6 +8,7 @@ use actix_cors::Cors;
 use actix_web::{
     delete, get, middleware, post, put, web, App, HttpResponse, HttpServer, Responder,
 };
+use async_std::stream::StreamExt;
 use config::get_config;
 use db::connect_to_db;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
@@ -144,21 +145,12 @@ impl NewUser {
 }
 
 #[post("/create_user")]
-async fn create_user(user: web::Json<NewUser>) -> impl Responder {
+async fn create_user(user: web::Json<User>) -> impl Responder {
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config).await.unwrap();
-let query = "EXEC spRegisterUser @Email = @P1, @Address = @P2, @FirstName = @P3, @LastName = @P4, @Username = @P5, @Password = @P6";
-    let params = vec![
-        user.email.as_str(),
-        user.address.as_str(),
-        user.first_name.as_str(),
-        user.last_name.as_str(),
-        user.username.as_str(),
-        user.password.as_str(),
-    ];
-    let params: Vec<&dyn tiberius::ToSql> =
-        params.iter().map(|p| p as &dyn tiberius::ToSql).collect();
-    let result = client.execute(query, &params).await;
+    let (query, params) = user.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    let result = client.execute(query, &params[..]).await;
     let result = match result {
         Ok(result) => result,
         Err(e) => {
@@ -413,10 +405,24 @@ async fn main() -> anyhow::Result<()> {
     let config: Config = get_config().await?;
     let mut client = connect_to_db(config.clone()).await?;
     let app_state = web::Data::new(AppState { config, client });
-    // create 100 users 
-    // let config2: Config = get_config().await?;
-    // let mut client2 = connect_to_db(config2.clone()).await?;
-    // insert_fake_users(&mut client2).await?;
+    
+    
+    let config3: Config = get_config().await?;
+    let mut client3 = connect_to_db(config3.clone()).await?;
+    let query = "SELECT COUNT(*) AS [count] FROM Users";
+    let result = client3.query(query, &[]).await?;
+    
+    let row = result.into_row().await;
+    
+    let row = row.unwrap();
+    let user_count= row.unwrap().get(0);
+
+    if user_count==Some(0) {
+        // create 100 users 
+        let config2: Config = get_config().await?;
+        let mut client2 = connect_to_db(config2.clone()).await?;
+        insert_fake_users(&mut client2).await?;
+    }
 
     println!("Successfully read the file");
     let _run = HttpServer::new(move || {

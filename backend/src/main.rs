@@ -145,21 +145,12 @@ impl NewUser {
 }
 
 #[post("/create_user")]
-async fn create_user(user: web::Json<NewUser>) -> impl Responder {
+async fn create_user(user: web::Json<User>) -> impl Responder {
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config).await.unwrap();
-let query = "EXEC spRegisterUser @Email = @P1, @Address = @P2, @FirstName = @P3, @LastName = @P4, @Username = @P5, @Password = @P6";
-    let params = vec![
-        user.email.as_str(),
-        user.address.as_str(),
-        user.first_name.as_str(),
-        user.last_name.as_str(),
-        user.username.as_str(),
-        user.password.as_str(),
-    ];
-    let params: Vec<&dyn tiberius::ToSql> =
-        params.iter().map(|p| p as &dyn tiberius::ToSql).collect();
-    let result = client.execute(query, &params).await;
+    let (query, params) = user.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    let result = client.execute(query, &params[..]).await;
     let result = match result {
         Ok(result) => result,
         Err(e) => {

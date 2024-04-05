@@ -165,6 +165,7 @@ RETURNS TABLE
 AS
 RETURN
 (SELECT * FROM Teams
+WHERE
 Players.UserID = (
 dbo.getPlayersWithId(@identifint).ID
 )

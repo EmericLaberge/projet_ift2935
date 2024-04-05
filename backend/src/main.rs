@@ -2,22 +2,22 @@ mod config;
 mod db;
 mod models;
 mod test;
-use std::sync::Arc;
+
 
 use actix_cors::Cors;
 use actix_web::{
-    delete, get, middleware, post, put, web, App, HttpResponse, HttpServer, Responder,
+    delete, get, post, put, web, App, HttpResponse, HttpServer, Responder,
 };
 use async_std::stream::StreamExt;
 use config::get_config;
 use db::connect_to_db;
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{encode, DecodingKey, EncodingKey, Header, Validation};
 use models::{staff, team, users};
 use serde::{Deserialize, Serialize};
 use staff::Staff;
 use team::Team;
 use test::insert_fake_users;
-use tiberius::{self, ToSql};
+use tiberius::{self};
 use tiberius::{Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::compat::Compat;
@@ -399,7 +399,7 @@ async fn update_user(id: web::Path<i32>, user: web::Json<partial_user>) -> impl 
 async fn main() -> anyhow::Result<()> {
     // Try to connect to the database using db module (see db.rs)
     let config: Config = get_config().await?;
-    let mut client = connect_to_db(config.clone()).await?;
+    let client = connect_to_db(config.clone()).await?;
     let app_state = web::Data::new(AppState { config, client });
 
     let config3: Config = get_config().await?;

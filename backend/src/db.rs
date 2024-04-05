@@ -1,7 +1,7 @@
 use crate::models::{Event, Game, Sport, Staff, Team, User};
-use std::env;
-use std::sync::Arc;
-use tiberius::ToSql;
+
+
+
 use tiberius::{Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
@@ -23,7 +23,7 @@ pub async fn connect_to_db(
     let mut client = Client::connect(config, tcp.compat_write()).await?;
 
     // Get the path to the SQL file
-    let filepath = "./../schema.sql";
+    let _filepath = "./../schema.sql";
 
     // Set the database to use (MyDatabase)
     let response = client.execute("USE Jasson", &[]);

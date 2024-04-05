@@ -1,8 +1,8 @@
 use fake::Fake;
-use rand;
+
 use serde::{Deserialize, Serialize};
 use tiberius;
-use tiberius::ToSql;
+
 
 #[derive(Debug, derive_new::new, Deserialize, Serialize)]
 pub struct Team {

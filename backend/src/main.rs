@@ -33,7 +33,7 @@ struct AppState {
 
 impl AppState {
     async fn new() -> Result<Self, anyhow::Error> {
-        let mut state = AppState {
+        let state = AppState {
             config: get_config().await?,
             client: connect_to_db(get_config().await?).await?,
         };
@@ -157,7 +157,7 @@ async fn create_user(user: web::Json<User>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
-        
+
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
@@ -219,9 +219,6 @@ async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
-
-
-
 
     let mut user_list: Vec<userInfos> = Vec::new();
     for row in row {
@@ -378,7 +375,6 @@ async fn delete_user(id: web::Path<i32>) -> impl Responder {
     }
 }
 
-
 #[put("/users/{id}")]
 async fn update_user(id: web::Path<i32>, user: web::Json<partial_user>) -> impl Responder {
     let id = id.into_inner();
@@ -405,26 +401,24 @@ async fn main() -> anyhow::Result<()> {
     let config: Config = get_config().await?;
     let mut client = connect_to_db(config.clone()).await?;
     let app_state = web::Data::new(AppState { config, client });
-    
-    
+
     let config3: Config = get_config().await?;
     let mut client3 = connect_to_db(config3.clone()).await?;
     let query = "SELECT COUNT(*) AS [count] FROM Users";
     let result = client3.query(query, &[]).await?;
-    
-    let row = result.into_row().await;
-    
-    let row = row.unwrap();
-    let user_count= row.unwrap().get(0);
 
-    if user_count==Some(0) {
-        // create 100 users 
+    let row = result.into_row().await;
+
+    let row = row.unwrap();
+    let user_count = row.unwrap().get(0);
+
+    if user_count == Some(0) {
+        // create 100 users
         let config2: Config = get_config().await?;
         let mut client2 = connect_to_db(config2.clone()).await?;
         insert_fake_users(&mut client2).await?;
     }
 
-    println!("Successfully read the file");
     let _run = HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()

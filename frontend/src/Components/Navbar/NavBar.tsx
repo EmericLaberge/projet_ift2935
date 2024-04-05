@@ -28,10 +28,17 @@ const NavBar: React.FC = () => {
           </NavLink>
         </li>
         <li id="Teams">
-        <NavLink to="/teams" style={getLinkStyle("/teams")}>
-          Teams
-        </NavLink>
+          <NavLink to="/teams" style={getLinkStyle("/teams")}>
+            Teams
+          </NavLink>
         </li>
+
+        <li id="Events">
+          <NavLink to="/events" style={getLinkStyle("/events")}>
+            Events
+          </NavLink>
+          </li>
+
         <li id="my profile">
           <NavLink to="/profile" style={getLinkStyle("/profile")}>
             Profile

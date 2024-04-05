@@ -44,6 +44,21 @@ impl User {
         (query, params)
     }
 
+    pub fn get_user_teams_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
+        let query = "EXEC spGetUserTeams @UserID = @P1";
+        let params = vec![Arc::new(self.id.clone()) as Arc<dyn ToSql>];
+        (query, params)
+    }
+
+    pub fn get_users_events_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
+        let query = "EXEC spGetUserEvents @UserID = @P1";
+        let params = vec![Arc::new(self.id.clone()) as Arc<dyn ToSql>];
+        (query, params)
+    }
+
+
+    
+
     /// # Example
     /// ```
     /// let user = User::generate_fake_user();

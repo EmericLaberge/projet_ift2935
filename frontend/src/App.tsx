@@ -16,7 +16,13 @@ function App() {
   const [userId, setUserId] = useAtom(UserIdAtom);
 
   if (!auth) {
-    return <Login/>;
+    return (
+      <>
+      <Login />
+      <Toaster />
+      </>
+    )
+
   }
   return (
     <div>

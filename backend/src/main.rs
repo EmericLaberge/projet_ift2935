@@ -182,55 +182,6 @@ async fn create_team(team: web::Json<Team>) -> impl Responder {
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
-#[get("/users/{id}")]
-async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
-    // make a query to the database to get the user with the id
-    // return the user as a json response
-    let config = get_config().await;
-    let config = match config {
-        Ok(config) => config,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let client = connect_to_db(config).await;
-    let mut client = match client {
-        Ok(client) => client,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let query = "SELECT * FROM users WHERE id = @P1";
-    let id = id.into_inner();
-    let result = client.query(query, &[&id]).await;
-    let result = match result {
-        Ok(result) => result,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let row = result.into_first_result().await;
-    let row = match row {
-        Ok(row) => row,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-
-    let mut user_list: Vec<userInfos> = Vec::new();
-    for row in row {
-        let user = userInfos::new(
-            row.get(0),
-            row.get::<&str, usize>(1).unwrap().to_owned(),
-            row.get::<&str, usize>(2).unwrap().to_owned(),
-            row.get::<&str, usize>(3).unwrap().to_owned(),
-            row.get::<&str, usize>(4).unwrap().to_owned(),
-        );
-        user_list.push(user);
-    }
-
-    HttpResponse::Ok().body(format!("{:?}", user_list))
-}
 
 #[get("/users")]
 async fn get_all_users() -> impl Responder {
@@ -339,6 +290,52 @@ async fn get_all_teams() -> impl Responder {
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
+
+#[get("/users/{id}")]
+async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
+    // make a query to the database to get the user with the id
+    // return the user as a json response
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let query = "SELECT * FROM users WHERE id = @P1";
+    let id = id.into_inner();
+    let result = client.query(query, &[&id]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let row = result.into_row().await;
+    let row = match row {
+        Ok(row) => row,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let mut user: userInfos = userInfos::new(None, "".to_owned(), "".to_owned(), "".to_owned(), "".to_owned());
+    let row = row.unwrap();
+    user.id = row.get(0);
+    user.email = row.get::<&str, usize>(1).unwrap().to_owned();
+    user.address = row.get::<&str, usize>(2).unwrap().to_owned();
+    user.first_name = row.get::<&str, usize>(3).unwrap().to_owned();
+    user.last_name = row.get::<&str, usize>(4).unwrap().to_owned();
+    serde_json::to_string(&user).unwrap();
+    HttpResponse::Ok().json(user)
+    }
 
 #[delete("/users/{id}")]
 async fn delete_user(id: web::Path<i32>) -> impl Responder {
@@ -463,6 +460,14 @@ async fn create_player(player: web::Json<Player>) -> impl Responder {
     let result = client.execute(query, &params[..]).await;
     HttpResponse::Ok().body(format!("{:?}", result))
 }
+
+#[get("/playersTeams/{id}")]
+async fn get_teams_by_player_id(id: web::Path<i32>) -> impl Responder {
+// 2. Get get the team that the player is in
+// 3. Return the team as a json response
+    HttpResponse::Ok().body(format!("{:?}", "get_teams_by_player_id"))
+}
+
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {

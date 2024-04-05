@@ -167,7 +167,7 @@ RETURN
 (SELECT * FROM Teams
 WHERE
 Players.UserID = (
-dbo.getPlayersWithId(@identifint).ID
+dbo.getPlayersWithId(@identifiant).ID
 )
 GO;
 

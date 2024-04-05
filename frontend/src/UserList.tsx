@@ -130,10 +130,16 @@ function UserList() {
     } catch (error) {
       setError('Failed to create user');
     }
+
+        const response = await fetch('http://127.0.0.1:6516/users');
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        const data: User[] = await response.json();
+        setUsers(data);
   };
 
   const EditUserSubmit = async (user: User) => {
-    const id = user.id;
     try {
       const response = await fetch(`http://127.0.0.1:6516/users/${user.id}`, {
         method: 'PUT',
@@ -149,24 +155,15 @@ function UserList() {
     } catch (error) {
       toast.error('Failed to update user');
     }
+        const response = await fetch('http://127.0.0.1:6516/users');
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        const data: User[] = await response.json();
+        setUsers(data);
+        setOpenEdit(false);
+
   };
-
-  const handleDelete = async (id: number) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:6516/users/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete user');
-      }
-      const updatedUsers = users.filter((user) => user.id !== id);
-      setUsers(updatedUsers);
-      toast.success('User deleted successfully');
-    } catch (error) {
-      setError('Failed to delete user');
-    }
-  }
-
 
 
 
@@ -234,28 +231,6 @@ function UserList() {
             width: 100,
             cellClassName: 'actions',
             getActions: ({ id }) => {
-              const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-              if (isInEditMode) {
-                return [
-                  <GridActionsCellItem
-                    icon={<SaveIcon />}
-                    label="Save"
-                    sx={{
-                      color: 'primary.main',
-                    }}
-                    onClick={handleSaveClick(id.toString())}
-                  />,
-                  <GridActionsCellItem
-                    icon={<CancelIcon />}
-                    label="Cancel"
-                    className="textPrimary"
-                    onClick={handleCancelClick(id)}
-                    color="inherit"
-                  />,
-                ];
-              }
-
               return [
                 <GridActionsCellItem
                   icon={<EditIcon />}

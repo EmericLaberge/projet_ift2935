@@ -22,6 +22,8 @@ use tokio::net::TcpStream;
 use tokio_util::compat::Compat;
 use users::User;
 
+use crate::models::partial_user;
+
 /// This prevent passing the config around like before This is a struct that holds the config and the client
 struct AppState {
     config: Config,
@@ -84,7 +86,7 @@ async fn login(login: web::Json<LoginRequest>) -> impl Responder {
         }
     };
 
-    let query = "SELECT id from logins where username = @P1 and password = @P2";
+    let query = "SELECT id from Credentials where username = @P1 and password = @P2";
     let result = client
         .query(query, &[&login.username, &login.password])
         .await;
@@ -145,9 +147,7 @@ impl NewUser {
 async fn create_user(user: web::Json<NewUser>) -> impl Responder {
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config).await.unwrap();
-
-    let query =
-        "INSERT INTO Users (Email, Address, FirstName, LastName,Username, Password) VALUES (@P1, @P2, @P3, @P4, @P5, @P6)";
+let query = "EXEC spRegisterUser @Email = @P1, @Address = @P2, @FirstName = @P3, @LastName = @P4, @Username = @P5, @Password = @P6";
     let params = vec![
         user.email.as_str(),
         user.address.as_str(),
@@ -165,43 +165,7 @@ async fn create_user(user: web::Json<NewUser>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
-
-    // get the id of the new user
-    //
-    let query = "SELECT ID FROM Users WHERE Email = @P1";
-    let result = client.query(query, &[&user.email]).await;
-    let result = match result {
-        Ok(result) => result,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-
-    let row = result.into_row().await;
-    let row = match row {
-        Ok(row) => row,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let row = row.unwrap();
-    let id: i32 = row.get(0).unwrap();
-
-    let config2 = get_config().await.unwrap();
-    let mut client2 = connect_to_db(config2).await.unwrap();
-
-    // insert a row into the logins table
-    let query = "INSERT INTO logins (id, username, password) VALUES (@P1, @P2, @P3)";
-    let user_name = user.get_user_name();
-    let password = user.get_password();
-    let result = client2.execute(query, &[&id, &user_name, &password]).await;
-    let result = match result {
-        Ok(result) => result,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-
+        
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
@@ -420,12 +384,11 @@ async fn delete_user(id: web::Path<i32>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     }
-
-    HttpResponse::InternalServerError().body("Internal server error")
 }
 
+
 #[put("/users/{id}")]
-async fn update_user(id: web::Path<i32>, user: web::Json<User>) -> impl Responder {
+async fn update_user(id: web::Path<i32>, user: web::Json<partial_user>) -> impl Responder {
     let id = id.into_inner();
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config.clone()).await.unwrap();

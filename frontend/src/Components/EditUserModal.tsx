@@ -26,6 +26,7 @@ const EditUserModal: React.FC<Props> = ({ open, handleClose, user, handleInputCh
           Edit User
         </Typography>
         <TextField
+          disabled
           name="email"
           label="Email"
           value={user.email}

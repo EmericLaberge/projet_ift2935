@@ -20,8 +20,7 @@ pub struct User {
 
 impl User {
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
-        let query =
-            "INSERT INTO Users (Email, Address, FirstName, LastName,Username, Password) VALUES (@P1, @P2, @P3, @P4, @P5, @P6);";
+        let query = "EXEC spRegisterUser @Email = @P1, @Address = @P2, @FirstName = @P3, @LastName = @P4, @Username = @P5, @Password = @P6";
         let params = vec![
             Arc::new(self.email.clone()) as Arc<dyn ToSql>,
             Arc::new(self.address.clone()),

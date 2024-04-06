@@ -171,6 +171,17 @@ ON
 thePlayers = Teams.ID)
 GO 
 
+CREATE OR ALTER FUNCTION getGamesWithId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN(
+SELECT * from Games
+JOIN
+(SELECT TeamID from dob.getTeamsWithId(@identifiant)) as theGames
+ON
+(theGames = Games.FirstTeamID )OR theGames = Games.SecondTeamID)
+GO 
+
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
 IF OBJECT_ID('trDeleteUserCredentials') IS NULL
 BEGIN

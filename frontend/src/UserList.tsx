@@ -140,8 +140,7 @@ function UserList() {
 
     const EditUserSubmit = async (user: User) => {
       try {
-        const response = await fetch(`http://127.0.0.1:6516/users/${user.id}`, {
-          method: 'PUT',
+        const response = await fetch(`http://127.0.0.1:6516/users/${user.id}`, { method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },

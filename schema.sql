@@ -201,6 +201,16 @@ ON
 (theGames.EventID = Events.ID ))
 GO
 
+--Fonction pour obtenir la liste des utilisateurs participant à un évènement
+--retourne une table de Users
+CREATE OR ALTER FUNCTION getUsersByEventId(@EventID INT)
+RETURNS TABLE
+AS
+RETURN (
+    SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName FROM ((TeamInEvent t JOIN Players p ON p.TeamID = t.TeamID AND @EventID= EventID) JOIN Users u ON u.ID = p.UserID)
+)
+GO
+
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
 IF OBJECT_ID('trDeleteUserCredentials') IS NULL
 BEGIN

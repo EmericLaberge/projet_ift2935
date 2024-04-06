@@ -1,11 +1,11 @@
-use actix_web::FromRequest;
+
 use fake::Fake;
-use rand::Rng;
+
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tiberius::ToSql;
-use tiberius::{Client, Config};
-use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
+
+
 
 #[derive(Debug, derive_new::new, Deserialize, Serialize)]
 pub struct User {
@@ -43,6 +43,21 @@ impl User {
         ];
         (query, params)
     }
+
+    pub fn get_user_teams_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
+        let query = "EXEC spGetUserTeams @UserID = @P1";
+        let params = vec![Arc::new(self.id.clone()) as Arc<dyn ToSql>];
+        (query, params)
+    }
+
+    pub fn get_users_events_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
+        let query = "EXEC spGetUserEvents @UserID = @P1";
+        let params = vec![Arc::new(self.id.clone()) as Arc<dyn ToSql>];
+        (query, params)
+    }
+
+
+    
 
     /// # Example
     /// ```

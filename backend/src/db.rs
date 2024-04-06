@@ -1,6 +1,7 @@
-use crate::models::{User, Staff, Game, Team, Sport, Event};
-use std::sync::Arc;
-use tiberius::ToSql;
+use crate::models::{Event, Game, Sport, Staff, Team, User};
+
+
+
 use tiberius::{Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
@@ -20,10 +21,26 @@ pub async fn connect_to_db(
 
     // Connect to the MSSQL server
     let mut client = Client::connect(config, tcp.compat_write()).await?;
-    println!("Successfully connected to the server");
+
+    // Get the path to the SQL file
+    let _filepath = "./../schema.sql";
 
     // Set the database to use (MyDatabase)
-    client.execute("USE Jasson", &[]).await?;
+    let response = client.execute("USE Jasson", &[]);
+    match response.await {
+        Ok(_) => println!("Successfully set the database to use Jasson"),
+        Err(_e) => {
+            println!("Failed to set the database to use Jasson");
+            println!(" DID YOU RAN THE SQL FILE?"); 
+            println!("If not, run the SQL file by doing the following:");
+            println!("  1. Go to the root of the project");
+            println!("  2. Run the following command: sqlcmd -S localhost -U sa -P Rust4life -i schema.sql");
+            println!(" Your skill issues force me to exit the program");
+            println!(" Goodbye!");
+            // exit the program 
+            std::process::exit(1);
+        }
+    }
 
     // return the client
     Ok(client)
@@ -38,7 +55,6 @@ async fn create_user(
     client.execute(query, &params[..]).await?;
     Ok(())
 }
-
 
 async fn create_staff(
     client: &mut Client<Compat<TcpStream>>,
@@ -88,6 +104,3 @@ async fn create_game(
     client.execute(query, &params[..]).await?;
     Ok(())
 }
-
-
-

@@ -1,12 +1,9 @@
 
-use actix_web::FromRequest;
-use fake::Fake;
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tiberius::ToSql;
-use tiberius::{Client, Config};
-use tokio_util::{compat::Compat, compat::TokioAsyncWriteCompatExt};
+
+
 
 #[derive(Debug, derive_new::new, Deserialize, Serialize)]
 pub struct partial_user {

@@ -1,5 +1,5 @@
 use fake::Fake;
-use rand;
+
 use std::sync::Arc;
 use tiberius::ToSql;
 #[derive(Debug)]

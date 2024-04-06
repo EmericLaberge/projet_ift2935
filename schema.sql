@@ -34,8 +34,8 @@ IF OBJECT_ID('Sports') IS NULL
 BEGIN
     CREATE TABLE Sports (
         ID INT IDENTITY PRIMARY KEY,
-        Name NVARCHAR(50) NOT NULL,
-    INSERT INTO Sports (ID, level)
+        Name NVARCHAR(50) NOT NULL);
+    INSERT INTO Sports (ID, Name)
     VALUES
     (1, 'Soccer'),
     (2, 'Basketball'),
@@ -174,7 +174,7 @@ AS
 RETURN(
 SELECT * from Teams
 JOIN
-(SELECT TeamID from dob.getPlayersWithId(@identifiant)) as thePlayers
+(SELECT TeamID from dbo.getPlayersWithId(@identifiant)) as thePlayers
 ON
 thePlayers = Teams.ID)
 GO 
@@ -185,7 +185,7 @@ AS
 RETURN(
 SELECT * from Games
 JOIN
-(SELECT TeamID from dob.getTeamsWithId(@identifiant)) as theTeams
+(SELECT TeamID from dbo.getTeamsWithId(@identifiant)) as theTeams
 ON
 (theTeams = Games.FirstTeamID )OR theGames = Games.SecondTeamID)
 GO 
@@ -196,9 +196,9 @@ AS
 RETURN(
 SELECT * from Events
 JOIN
-(SELECT EventID from dob.getGamesWithId(@identifiant)) as theGames
+(SELECT EventID from dbo.getGamesWithId(@identifiant)) as theGames
 ON
-(theGames = Events.ID )
+(theGames = Events.ID ))
 GO
 
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
@@ -279,6 +279,6 @@ BEGIN
 END;
 GO
 
-Insert INTO Users(ID, Email, Address, FirstName, LastName) VALUES (1000, 'ticoune@gmail.com', 'Ticoune', 'Savard')
+Insert INTO Users(ID, Email, Address, FirstName, LastName) VALUES (1000, 'ticoune@gmail.com', '123 rue Tabaga', 'Ticoune', 'Savard')
 Insert INTO Teams(ID, Name, LevelID, TypeID, SportID) VALUES (1, 'LesZigotos', 1, 1, 1)
 Insert INTO Players(ID, UserID, TeamID) VALUES(1, 1000, 1)

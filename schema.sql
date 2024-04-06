@@ -234,6 +234,8 @@ BEGIN
 END;
 GO
 
+
+
 -- Procédure stockée pour enregistrer un utilisateur
 IF OBJECT_ID('spRegisterUser') IS NULL
 BEGIN
@@ -276,3 +278,7 @@ BEGIN
     ');
 END;
 GO
+
+Insert INTO Users(ID, Email, Address, FirstName, LastName) VALUES (1000, 'ticoune@gmail.com', 'Ticoune', 'Savard')
+Insert INTO Teams(ID, Name, LevelID, TypeID, SportID) VALUES (1, 'LesZigotos', 1, 1, 1)
+Insert INTO Players(ID, UserID, TeamID) VALUES(1, 1000, 1)

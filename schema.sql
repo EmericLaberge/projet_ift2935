@@ -1,9 +1,8 @@
-use master;
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
     CREATE DATABASE Jasson;
 END
-GO;
+GO
 USE Jasson;
 GO
 
@@ -30,14 +29,20 @@ BEGIN
     );
 END
 GO
-  
-IF OBJECT_ID('Sports') IS NULL 
+
+IF OBJECT_ID('Sports') IS NULL
 BEGIN
     CREATE TABLE Sports (
         ID INT IDENTITY PRIMARY KEY,
         Name NVARCHAR(50) NOT NULL,
-    );
-END 
+    INSERT INTO Sports (ID, level)
+    VALUES
+    (1, 'Soccer'),
+    (2, 'Basketball'),
+    (3, 'Volleyball'),
+    (4, 'Baseball'),
+    (5, 'Football');
+END
 GO
 
 IF OBJECT_ID('TeamLevel') IS NULL
@@ -47,25 +52,27 @@ BEGIN
         level varchar(50) NOT NULL
     );
     INSERT INTO TeamLevel (ID, level)
-    VALUES 
+    VALUES
+    (0, 'None'),
     (1, 'Junior'),
     (2, 'Recreational'),
     (3, 'Competitive');
 END
 GO
 
-IF OBJECT_ID('TeamType') IS NULL 
+IF OBJECT_ID('TeamType') IS NULL
 BEGIN
     CREATE TABLE TeamType (
         ID INT PRIMARY KEY,
         type varchar(50) NOT NULL
     );
     INSERT INTO TeamType (ID, type)
-    VALUES 
+    VALUES
+    (0, 'None'),
     (1, 'Masculine'),
     (2, 'Feminine'),
     (3, 'Mixed');
-END 
+END
 GO
 
 IF OBJECT_ID('Teams') IS NULL
@@ -95,15 +102,27 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('TeamInEvent') IS NULL
+BEGIN
+    CREATE TABLE TeamInEvent (
+        ID INT IDENTITY PRIMARY KEY,
+        EventID INT NOT NULL,
+        TeamID INT NOT NULL,
+        FOREIGN KEY (EventID) REFERENCES Events(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (TeamID) REFERENCES Teams(ID) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+END
+GO
 
-IF OBJECT_ID('Events') IS NULL 
+
+IF OBJECT_ID('Events') IS NULL
 BEGIN
     CREATE TABLE Events (
         ID INT IDENTITY PRIMARY KEY,
         StartDate DATE NOT NULL,
         EndDate DATE NOT NULL
     );
-END 
+END
 GO
 
 
@@ -140,8 +159,49 @@ END;
 GO
 
 
+CREATE OR ALTER FUNCTION getPlayersWithId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT * FROM Players
+WHERE
+@identifiant = Players.UserID)
+GO
 
--- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur 
+CREATE OR ALTER FUNCTION getTeamsWithId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN(
+SELECT * from Teams
+JOIN
+(SELECT TeamID from dob.getPlayersWithId(@identifiant)) as thePlayers
+ON
+thePlayers = Teams.ID)
+GO 
+
+CREATE OR ALTER FUNCTION getGamesWithId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN(
+SELECT * from Games
+JOIN
+(SELECT TeamID from dob.getTeamsWithId(@identifiant)) as theTeams
+ON
+(theTeams = Games.FirstTeamID )OR theGames = Games.SecondTeamID)
+GO 
+
+CREATE OR ALTER FUNCTION getEventsWithId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN(
+SELECT * from Events
+JOIN
+(SELECT EventID from dob.getGamesWithId(@identifiant)) as theGames
+ON
+(theGames = Events.ID )
+GO
+
+-- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
 IF OBJECT_ID('trDeleteUserCredentials') IS NULL
 BEGIN
     EXEC('
@@ -164,7 +224,7 @@ BEGIN
         CREATE PROCEDURE spAuthenticateUser
             @Username NVARCHAR(50),
             @Password NVARCHAR(50)
-        AS 
+        AS
         BEGIN
             SELECT id
             FROM Credentials
@@ -185,7 +245,7 @@ BEGIN
             @LastName NVARCHAR(50),
             @Username NVARCHAR(50),
             @Password NVARCHAR(50)
-        AS 
+        AS
         BEGIN
             INSERT INTO Users (Email, Address, FirstName, LastName)
             VALUES (@Email, @Address, @FirstName, @LastName);
@@ -204,9 +264,9 @@ GO
 IF OBJECT_ID('fnGetPlayers') IS NULL
 BEGIN
     EXEC('
-        CREATE FUNCTION fnGetPlayers (@TeamID INT) 
-        RETURNS TABLE 
-        AS 
+        CREATE FUNCTION fnGetPlayers (@TeamID INT)
+        RETURNS TABLE
+        AS
         RETURN (
             SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName
             FROM Players p
@@ -216,5 +276,3 @@ BEGIN
     ');
 END;
 GO
-
-

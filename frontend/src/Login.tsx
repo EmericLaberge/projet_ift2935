@@ -51,6 +51,7 @@ export default function Login() {
       });
       setUserId(response.id); // Assuming the ID is directly in the response
       setIsAuth(true);
+      localStorage.setItem('userId', response.id);
     } catch (error) {
       console.error('Login failed:', error);
       // Handle login failure (e.g., incorrect credentials, network error, etc.)

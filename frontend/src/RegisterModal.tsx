@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 import { AuthAtom, UserIdAtom, registerModalOpenAtom } from './atoms';
 import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import IconButton from '@mui/material/IconButton';
+import { toast } from 'react-hot-toast';
 
 
 type NewUser = {
@@ -15,23 +16,6 @@ type NewUser = {
   username: string;
   password: string;
 };
-
-async function registerUser(newUser: NewUser) {
-  return fetch('http://localhost:6516/create_user', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(newUser)
-  })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Network response was not ok.');
-    });
-
-}
 
 
 
@@ -46,6 +30,29 @@ function RegisterModal() {
   const [, setIsAuth] = useAtom(AuthAtom);
   const [, setUserId] = useAtom(UserIdAtom);
   const [registerModalOpen, setRegisterModalOpen] = useAtom(registerModalOpenAtom);
+  const [successState, setSuccessState] = useState(false);
+
+  async function registerUser(newUser: NewUser) {
+    return fetch('http://localhost:6516/create_user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newUser)
+    })
+      .then(response => {
+        if (response.ok) {
+          toast.success('Registration successful');
+          handleClose();
+          return response.json();
+        } else {
+          toast.error('Registration failed');
+          setSuccessState(false);
+          throw new Error('Network response was not ok.');
+        }
+      });
+  }
+
 
   function handleClose() {
     setRegisterModalOpen(false);
@@ -63,7 +70,6 @@ function RegisterModal() {
       });
       setUserId(response.id); // Assuming the ID is directly in the response
       setIsAuth(true);
-      setRegisterModalOpen(false);
     } catch (error) {
       console.error('Registration failed:', error);
       // Handle registration failure (e.g., incorrect credentials, network error, etc.)
@@ -121,6 +127,7 @@ function RegisterModal() {
             variant="contained"
             color="primary"
             className="w-full"
+            onClick={handleSubmit}
           >
 
             Register

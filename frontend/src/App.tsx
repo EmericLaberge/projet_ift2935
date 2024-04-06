@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import {AuthAtom, UserIdAtom}from './atoms';
 import { useAtom } from 'jotai';
 import Login from './Login';
+import TeamList from './TeamList';
 
 
 function App() {
@@ -16,7 +17,13 @@ function App() {
   const [userId, setUserId] = useAtom(UserIdAtom);
 
   if (!auth) {
-    return <Login/>;
+    return (
+      <>
+      <Login />
+      <Toaster />
+      </>
+    )
+
   }
   return (
     <div>
@@ -25,6 +32,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Card />} />
           <Route path="/Users" element={<UserList />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/Teams" element={<TeamList />} />
         </Routes>
       </Router>
       <Toaster />

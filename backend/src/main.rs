@@ -2,28 +2,25 @@ mod config;
 mod db;
 mod models;
 mod test;
-use std::sync::Arc;
 
 use actix_cors::Cors;
-use actix_web::{
-    delete, get, middleware, post, put, web, App, HttpResponse, HttpServer, Responder,
-};
+use actix_web::{delete, get, post, put, web, App, HttpResponse, HttpServer, Responder};
 use async_std::stream::StreamExt;
 use config::get_config;
 use db::connect_to_db;
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{encode, DecodingKey, EncodingKey, Header, Validation};
 use models::{staff, team, users};
 use serde::{Deserialize, Serialize};
 use staff::Staff;
 use team::Team;
 use test::insert_fake_users;
-use tiberius::{self, ToSql};
+use tiberius::{self};
 use tiberius::{Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::compat::Compat;
 use users::User;
 
-use crate::models::partial_user;
+use crate::models::{partial_user, Player};
 
 /// This prevent passing the config around like before This is a struct that holds the config and the client
 struct AppState {
@@ -33,7 +30,7 @@ struct AppState {
 
 impl AppState {
     async fn new() -> Result<Self, anyhow::Error> {
-        let mut state = AppState {
+        let state = AppState {
             config: get_config().await?,
             client: connect_to_db(get_config().await?).await?,
         };
@@ -157,7 +154,7 @@ async fn create_user(user: web::Json<User>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
-        
+
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
@@ -185,58 +182,6 @@ async fn create_team(team: web::Json<Team>) -> impl Responder {
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
-#[get("/users/{id}")]
-async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
-    // make a query to the database to get the user with the id
-    // return the user as a json response
-    let config = get_config().await;
-    let config = match config {
-        Ok(config) => config,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let client = connect_to_db(config).await;
-    let mut client = match client {
-        Ok(client) => client,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let query = "SELECT * FROM users WHERE id = @P1";
-    let id = id.into_inner();
-    let result = client.query(query, &[&id]).await;
-    let result = match result {
-        Ok(result) => result,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-    let row = result.into_first_result().await;
-    let row = match row {
-        Ok(row) => row,
-        Err(e) => {
-            return HttpResponse::InternalServerError().body(format!("{:?}", e));
-        }
-    };
-
-
-
-
-    let mut user_list: Vec<userInfos> = Vec::new();
-    for row in row {
-        let user = userInfos::new(
-            row.get(0),
-            row.get::<&str, usize>(1).unwrap().to_owned(),
-            row.get::<&str, usize>(2).unwrap().to_owned(),
-            row.get::<&str, usize>(3).unwrap().to_owned(),
-            row.get::<&str, usize>(4).unwrap().to_owned(),
-        );
-        user_list.push(user);
-    }
-
-    HttpResponse::Ok().body(format!("{:?}", user_list))
-}
 
 #[get("/users")]
 async fn get_all_users() -> impl Responder {
@@ -346,6 +291,52 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
+#[get("/users/{id}")]
+async fn get_user_by_id(id: web::Path<i32>) -> impl Responder {
+    // make a query to the database to get the user with the id
+    // return the user as a json response
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let query = "SELECT * FROM users WHERE id = @P1";
+    let id = id.into_inner();
+    let result = client.query(query, &[&id]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let row = result.into_row().await;
+    let row = match row {
+        Ok(row) => row,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let mut user: userInfos = userInfos::new(None, "".to_owned(), "".to_owned(), "".to_owned(), "".to_owned());
+    let row = row.unwrap();
+    user.id = row.get(0);
+    user.email = row.get::<&str, usize>(1).unwrap().to_owned();
+    user.address = row.get::<&str, usize>(2).unwrap().to_owned();
+    user.first_name = row.get::<&str, usize>(3).unwrap().to_owned();
+    user.last_name = row.get::<&str, usize>(4).unwrap().to_owned();
+    serde_json::to_string(&user).unwrap();
+    HttpResponse::Ok().json(user)
+    }
+
 #[delete("/users/{id}")]
 async fn delete_user(id: web::Path<i32>) -> impl Responder {
     // make a query to the database to get all the teams
@@ -378,7 +369,6 @@ async fn delete_user(id: web::Path<i32>) -> impl Responder {
     }
 }
 
-
 #[put("/users/{id}")]
 async fn update_user(id: web::Path<i32>, user: web::Json<partial_user>) -> impl Responder {
     let id = id.into_inner();
@@ -399,32 +389,110 @@ async fn update_user(id: web::Path<i32>, user: web::Json<partial_user>) -> impl 
     }
 }
 
+// Players routes
+#[get("/players")]
+async fn get_all_players() -> impl Responder {
+    // make a query to the database to get all the players
+    // return the players as a json response
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let query = "SELECT * FROM Players";
+    let result = client.query(query, &[]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let row = result.into_first_result().await;
+    let row = match row {
+        Ok(row) => row,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let mut player_list: Vec<Player> = Vec::new();
+    for row in row {
+        let player = Player::new(
+            row.get(0),
+            row.get(1).unwrap(),
+            row.get(2).unwrap(),
+        );
+        player_list.push(player);
+    }
+    serde_json::to_string(&player_list).unwrap();
+    return HttpResponse::Ok().json(player_list);
+}
+
+#[post("/players")]
+async fn create_player(player: web::Json<Player>) -> impl Responder {
+    // make a query to the database to insert the player
+    let config = get_config().await;
+    let config = match config {
+        Ok(config) => config,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let client = connect_to_db(config).await;
+    let mut client = match client {
+        Ok(client) => client,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let (query, params) = player.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    let result = client.execute(query, &params[..]).await;
+    HttpResponse::Ok().body(format!("{:?}", result))
+}
+
+#[get("/playersTeams/{id}")]
+async fn get_teams_by_player_id(id: web::Path<i32>) -> impl Responder {
+// 2. Get get the team that the player is in
+// 3. Return the team as a json response
+    HttpResponse::Ok().body(format!("{:?}", "get_teams_by_player_id"))
+}
+
+
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     // Try to connect to the database using db module (see db.rs)
     let config: Config = get_config().await?;
-    let mut client = connect_to_db(config.clone()).await?;
+    let client = connect_to_db(config.clone()).await?;
     let app_state = web::Data::new(AppState { config, client });
-    
-    
+
     let config3: Config = get_config().await?;
     let mut client3 = connect_to_db(config3.clone()).await?;
     let query = "SELECT COUNT(*) AS [count] FROM Users";
     let result = client3.query(query, &[]).await?;
-    
-    let row = result.into_row().await;
-    
-    let row = row.unwrap();
-    let user_count= row.unwrap().get(0);
 
-    if user_count==Some(0) {
-        // create 100 users 
+    let row = result.into_row().await;
+
+    let row = row.unwrap();
+    let user_count = row.unwrap().get(0);
+
+    if user_count == Some(0) {
+        // create 100 users
         let config2: Config = get_config().await?;
         let mut client2 = connect_to_db(config2.clone()).await?;
         insert_fake_users(&mut client2).await?;
     }
 
-    println!("Successfully read the file");
     let _run = HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()
@@ -442,6 +510,8 @@ async fn main() -> anyhow::Result<()> {
             .service(login)
             .service(update_user)
             .service(delete_user)
+            .service(get_all_players)
+            .service(create_player)
     })
     .bind(("127.0.0.1", 6516))?
     .run()

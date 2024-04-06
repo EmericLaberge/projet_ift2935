@@ -35,15 +35,17 @@ BEGIN
     CREATE TABLE Sports (
         ID INT IDENTITY PRIMARY KEY,
         Name NVARCHAR(50) NOT NULL);
-    INSERT INTO Sports (ID, Name)
+    INSERT INTO Sports (Name)
     VALUES
-    (1, 'Soccer'),
-    (2, 'Basketball'),
-    (3, 'Volleyball'),
-    (4, 'Baseball'),
-    (5, 'Football');
+    ('None'),
+    ('Soccer'),
+    ('Basketball'),
+    ('Volleyball'),
+    ('Baseball'),
+    ('Football');
 END
 GO
+
 
 IF OBJECT_ID('TeamLevel') IS NULL
 BEGIN
@@ -125,8 +127,17 @@ BEGIN
 END
 GO
 
-
-
+IF OBJECT_ID('TeamInEvent') IS NULL
+BEGIN
+    CREATE TABLE TeamInEvent (
+        ID INT IDENTITY PRIMARY KEY,
+        EventID INT NOT NULL,
+        TeamID INT NOT NULL,
+        FOREIGN KEY (EventID) REFERENCES Events(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (TeamID) REFERENCES Teams(ID) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+END
+GO
 IF OBJECT_ID('Games') IS NULL
 BEGIN
     CREATE TABLE Games (
@@ -144,8 +155,6 @@ BEGIN
     );
 END;
 GO
-
-
 
 IF OBJECT_ID('Credentials') IS NULL
 BEGIN
@@ -167,38 +176,164 @@ RETURN
 WHERE
 @identifiant = Players.UserID)
 GO
-
-CREATE OR ALTER FUNCTION getTeamsWithId(@identifiant INT)
+CREATE OR ALTER FUNCTION getPlayersByUserId(@identifiant INT)
 RETURNS TABLE
 AS
-RETURN(
-SELECT * from Teams
-JOIN
-(SELECT TeamID from dbo.getPlayersWithId(@identifiant)) as thePlayers
-ON
-thePlayers.TeamID = Teams.ID)
-GO 
+RETURN
+(SELECT Players.ID AS PlayerID, Players.UserID, Players.TeamID
+FROM Players
+WHERE
+UserID = @identifiant)
+GO
 
-CREATE OR ALTER FUNCTION getGamesWithId(@identifiant INT)
+CREATE OR ALTER FUNCTION getPlayersByTeamId(@identifiant INT)
 RETURNS TABLE
 AS
-RETURN(
-SELECT * from Games
-JOIN
-(SELECT TeamID from dbo.getTeamsWithId(@identifiant)) as theTeams
-ON
-(theTeams.TeamID = Games.FirstTeamID )OR theTeams.TeamID = Games.SecondTeamID)
-GO 
-
-CREATE OR ALTER FUNCTION getEventsWithId(@identifiant INT)
+RETURN
+(SELECT Players.ID AS PlayerID, Players.UserID, Players.TeamID
+FROM Players
+WHERE
+TeamID = @identifiant)
+GO
+CREATE OR ALTER FUNCTION getEventsByTeamId(@identifiant INT)
 RETURNS TABLE
 AS
-RETURN(
-SELECT * from Events
-JOIN
-(SELECT EventID from dbo.getGamesWithId(@identifiant)) as theGames
-ON
-(theGames.EventID = Events.ID ))
+RETURN
+(SELECT TeamInEvent.ID AS EventInTeamID, TeamInEvent.EventID AS EventID, TeamInEvent.TeamID
+FROM TeamInEvent
+WHERE
+TeamID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getEventsByEventId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT TeamInEvent.ID AS EventInTeamID, TeamInEvent.EventID AS EventID, TeamInEvent.TeamID
+FROM TeamInEvent
+WHERE
+EventID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getGamesByTeamId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Games.ID AS GameID, Games.SportID, Games.EventID, Games.FirstTeamID, Games.SecondTeamID, Games.GameDate, Games.FinalScore
+FROM Games
+WHERE
+FirstTeamID = @identifiant OR SecondTeamID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getGamesByEventId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Games.ID AS GameID, Games.SportID, Games.EventID, Games.FirstTeamID, Games.SecondTeamID, Games.GameDate, Games.FinalScore
+FROM Games
+WHERE
+EventID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getGamesBySportId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Games.ID AS GameID, Games.SportID, Games.EventID, Games.FirstTeamID, Games.SecondTeamID, Games.GameDate, Games.FinalScore
+FROM Games
+WHERE
+SportID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getPlayersBySportId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Players.ID AS PlayerID, Players.UserID, Players.TeamID, Teams.SportID
+FROM Players
+JOIN Teams ON Players.TeamID = Teams.ID
+WHERE
+Teams.SportID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getPlayersByLevelId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Players.ID AS PlayerID, Players.UserID, Players.TeamID, Teams.LevelID
+FROM Players
+JOIN Teams ON Players.TeamID = Teams.ID
+WHERE
+Teams.LevelID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getPlayersByTypeId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Players.ID AS PlayerID, Players.UserID, Players.TeamID, Teams.TypeID
+FROM Players
+JOIN Teams ON Players.TeamID = Teams.ID
+WHERE
+Teams.TypeID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getPlayersByEventId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Players.ID AS PlayerID, Players.UserID, Players.TeamID
+FROM Players
+JOIN TeamInEvent ON Players.TeamID = TeamInEvent.TeamID
+WHERE
+TeamInEvent.EventID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getPlayersByGameId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Players.ID AS PlayerID, Players.UserID, Players.TeamID
+FROM Players
+JOIN Games ON Players.TeamID = Games.FirstTeamID OR Players.TeamID = Games.SecondTeamID
+WHERE
+Games.ID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getTeamsByUserId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Teams.ID AS TeamID, Teams.Name, Teams.LevelID, Teams.TypeID, Teams.SportID
+FROM Teams
+JOIN Players ON Teams.ID = Players.TeamID
+WHERE
+Players.UserID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getEventsByUserId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Events.ID AS EventID, Events.StartDate, Events.EndDate
+FROM Events
+JOIN TeamInEvent ON Events.ID = TeamInEvent.EventID
+JOIN Teams ON TeamInEvent.TeamID = Teams.ID
+JOIN Players ON Teams.ID = Players.TeamID
+WHERE
+Players.UserID = @identifiant)
+GO
+
+CREATE OR ALTER FUNCTION getGamesByUserId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT Games.ID AS GameID, Games.SportID, Games.EventID, Games.FirstTeamID, Games.SecondTeamID, Games.GameDate, Games.FinalScore
+FROM Games
+JOIN Teams ON Games.FirstTeamID = Teams.ID OR Games.SecondTeamID = Teams.ID
+JOIN Players ON Teams.ID = Players.TeamID
+WHERE
+Players.UserID = @identifiant)
 GO
 
 --Fonction pour obtenir la liste des utilisateurs participant à un évènement
@@ -289,6 +424,16 @@ BEGIN
 END;
 GO
 
-Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('ticoune@gmail.com', '123 rue Tabaga', 'Ticoune', 'Savard')
-Insert INTO Teams(Name, LevelID, TypeID, SportID) VALUES ('LesZigotos', 1, 1, 1)
-Insert INTO Players(UserID, TeamID) VALUES(1000, 1)
+-- Insert with a coherent data using the identity values
+SET IDENTITY_INSERT Users ON; 
+Insert INTO Users( ID, Email, Address, FirstName, LastName) VALUES (2, 'sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh');
+SET IDENTITY_INSERT Users OFF; 
+GO
+SET IDENTITY_INSERT Teams ON;
+Insert INTO Teams(ID, Name, LevelID, TypeID, SportID) VALUES (1, 'Les Tigres', 1, 1, 2); 
+SET IDENTITY_INSERT Teams OFF; 
+GO
+SET IDENTITY_INSERT Players ON; 
+Insert INTO Players(ID, UserID, TeamID) VALUES (1, 2, 1);
+SET IDENTITY_INSERT Players OFF;
+GO

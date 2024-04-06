@@ -176,7 +176,7 @@ SELECT * from Teams
 JOIN
 (SELECT TeamID from dbo.getPlayersWithId(@identifiant)) as thePlayers
 ON
-thePlayers = Teams.ID)
+thePlayers.TeamID = Teams.ID)
 GO 
 
 CREATE OR ALTER FUNCTION getGamesWithId(@identifiant INT)
@@ -187,7 +187,7 @@ SELECT * from Games
 JOIN
 (SELECT TeamID from dbo.getTeamsWithId(@identifiant)) as theTeams
 ON
-(theTeams = Games.FirstTeamID )OR theGames = Games.SecondTeamID)
+(theTeams.TeamID = Games.FirstTeamID )OR theTeams.TeamID = Games.SecondTeamID)
 GO 
 
 CREATE OR ALTER FUNCTION getEventsWithId(@identifiant INT)
@@ -198,7 +198,7 @@ SELECT * from Events
 JOIN
 (SELECT EventID from dbo.getGamesWithId(@identifiant)) as theGames
 ON
-(theGames = Events.ID ))
+(theGames.EventID = Events.ID ))
 GO
 
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
@@ -279,6 +279,6 @@ BEGIN
 END;
 GO
 
-Insert INTO Users(ID, Email, Address, FirstName, LastName) VALUES (1000, 'ticoune@gmail.com', '123 rue Tabaga', 'Ticoune', 'Savard')
-Insert INTO Teams(ID, Name, LevelID, TypeID, SportID) VALUES (1, 'LesZigotos', 1, 1, 1)
-Insert INTO Players(ID, UserID, TeamID) VALUES(1, 1000, 1)
+Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('ticoune@gmail.com', '123 rue Tabaga', 'Ticoune', 'Savard')
+Insert INTO Teams(Name, LevelID, TypeID, SportID) VALUES ('LesZigotos', 1, 1, 1)
+Insert INTO Players(UserID, TeamID) VALUES(1000, 1)

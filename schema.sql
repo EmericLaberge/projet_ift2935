@@ -35,7 +35,13 @@ BEGIN
     CREATE TABLE Sports (
         ID INT IDENTITY PRIMARY KEY,
         Name NVARCHAR(50) NOT NULL,
-    );
+    INSERT INTO Sports (ID, level)
+    VALUES
+    (1, 'Soccer'),
+    (2, 'Basketball'),
+    (3, 'Volleyball'),
+    (4, 'Baseball'),
+    (5, 'Football');
 END
 GO
 
@@ -47,6 +53,7 @@ BEGIN
     );
     INSERT INTO TeamLevel (ID, level)
     VALUES
+    (0, 'None'),
     (1, 'Junior'),
     (2, 'Recreational'),
     (3, 'Competitive');
@@ -61,6 +68,7 @@ BEGIN
     );
     INSERT INTO TeamType (ID, type)
     VALUES
+    (0, 'None'),
     (1, 'Masculine'),
     (2, 'Feminine'),
     (3, 'Mixed');
@@ -177,9 +185,9 @@ AS
 RETURN(
 SELECT * from Games
 JOIN
-(SELECT TeamID from dob.getTeamsWithId(@identifiant)) as theGames
+(SELECT TeamID from dob.getTeamsWithId(@identifiant)) as theTeams
 ON
-(theGames = Games.FirstTeamID )OR theGames = Games.SecondTeamID)
+(theTeams = Games.FirstTeamID )OR theGames = Games.SecondTeamID)
 GO 
 
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur

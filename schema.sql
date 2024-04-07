@@ -1,3 +1,8 @@
+/*USE master
+GO
+DROP DATABASE Jasson
+GO*/
+
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
     CREATE DATABASE Jasson;
@@ -32,8 +37,8 @@ GO
 IF OBJECT_ID('Sports') IS NULL
 BEGIN
     CREATE TABLE Sports (
-        ID INT IDENTITY PRIMARY KEY,
-        Name NVARCHAR(50) NOT NULL);
+        Name NVARCHAR(50) PRIMARY KEY
+    );
     INSERT INTO Sports (Name)
     VALUES
     ('None'),
@@ -49,10 +54,9 @@ GO
 IF OBJECT_ID('TeamLevel') IS NULL
 BEGIN
     CREATE TABLE TeamLevel (
-        ID INT IDENTITY PRIMARY KEY,
-        level varchar(50) NOT NULL
+        Level NVARCHAR(50) PRIMARY KEY
     );
-    INSERT INTO TeamLevel (level)
+    INSERT INTO TeamLevel (Level)
     VALUES
     ('None'),
     ('Junior'),
@@ -64,10 +68,9 @@ GO
 IF OBJECT_ID('TeamType') IS NULL
 BEGIN
     CREATE TABLE TeamType (
-        ID INT IDENTITY PRIMARY KEY,
-        type varchar(50) NOT NULL
+        Type NVARCHAR(50) PRIMARY KEY
     );
-    INSERT INTO TeamType (type)
+    INSERT INTO TeamType (Type)
     VALUES
     ('None'),
     ('Masculine'),
@@ -81,12 +84,12 @@ BEGIN
     CREATE TABLE Teams (
         ID INT IDENTITY PRIMARY KEY,
         Name NVARCHAR(50) NOT NULL,
-        LevelID INT NOT NULL,
-        TypeID INT NOT NULL,
-        SportID INT NOT NULL,
-        FOREIGN KEY (LevelID) REFERENCES TeamLevel(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (TypeID) REFERENCES TeamType(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (SportID) REFERENCES Sports(ID) ON DELETE CASCADE ON UPDATE CASCADE
+        Level NVARCHAR(50) NOT NULL,
+        TeamType NVARCHAR(50) NOT NULL,
+        SportName NVARCHAR(50) NOT NULL,
+        FOREIGN KEY (Level) REFERENCES TeamLevel(Level) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (TeamType) REFERENCES TeamType(Type) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (SportName) REFERENCES Sports(Name) ON DELETE CASCADE ON UPDATE CASCADE
     );
 END
 GO
@@ -125,17 +128,29 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('StaffInEvent') IS NULL
+BEGIN
+    CREATE TABLE StaffInEvent (
+        UserID INT,
+        EventID INT,
+        PRIMARY KEY (UserID, EventID),
+        FOREIGN KEY (UserID) REFERENCES Users(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (EventID) REFERENCES Events(ID) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+END
+GO
+
 IF OBJECT_ID('Games') IS NULL
 BEGIN
     CREATE TABLE Games (
         ID INT IDENTITY PRIMARY KEY,
-        SportID INT NOT NULL,
+        SportName NVARCHAR(50) NOT NULL,
         EventID INT NOT NULL,
         FirstTeamID INT NOT NULL,
         SecondTeamID INT NOT NULL,
         GameDate DATE NOT NULL,
         FinalScore NVARCHAR(50) NOT NULL,
-        FOREIGN KEY (SportID) REFERENCES Sports(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (SportName) REFERENCES Sports(Name) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (EventID) REFERENCES Events(ID) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (FirstTeamID) REFERENCES Teams(ID),
         FOREIGN KEY (SecondTeamID) REFERENCES Teams(ID)
@@ -198,7 +213,7 @@ CREATE OR ALTER FUNCTION getGamesByTeamId(@identifiant INT)
 RETURNS TABLE
 AS
 RETURN
-(SELECT ID AS GameID, SportID, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore
+(SELECT ID AS GameID, SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore
 FROM Games
 WHERE
 FirstTeamID = @identifiant OR SecondTeamID = @identifiant);
@@ -208,23 +223,23 @@ CREATE OR ALTER FUNCTION getGamesByEventId(@identifiant INT)
 RETURNS TABLE
 AS
 RETURN
-(SELECT ID AS GameID, SportID, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore
+(SELECT ID AS GameID, SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore
 FROM Games
 WHERE
 EventID = @identifiant);
 GO
 
-CREATE OR ALTER FUNCTION getGamesBySportId(@identifiant INT)
+CREATE OR ALTER FUNCTION getGamesBySportName(@identifiant NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN
-(SELECT ID AS GameID, SportID, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore
+(SELECT ID AS GameID, SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore
 FROM Games
 WHERE
-SportID = @identifiant);
+SportName = @identifiant);
 GO
 
-CREATE OR ALTER FUNCTION getPlayersBySportId(@identifiant INT)
+CREATE OR ALTER FUNCTION getPlayersBySportName(@identifiant NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN
@@ -232,10 +247,10 @@ RETURN
 FROM Players
 JOIN Teams ON Players.TeamID = Teams.ID
 WHERE
-Teams.SportID = @identifiant);
+Teams.SportName = @identifiant);
 GO
 
-CREATE OR ALTER FUNCTION getPlayersByLevelId(@identifiant INT)
+CREATE OR ALTER FUNCTION getPlayersByLevel(@identifiant NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN
@@ -243,10 +258,10 @@ RETURN
 FROM Players
 JOIN Teams ON Players.TeamID = Teams.ID
 WHERE
-Teams.LevelID = @identifiant);
+Teams.Level = @identifiant);
 GO
 
-CREATE OR ALTER FUNCTION getPlayersByTypeId(@identifiant INT)
+CREATE OR ALTER FUNCTION getPlayersByTeamType(@identifiant NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN
@@ -254,7 +269,7 @@ RETURN
 FROM Players
 JOIN Teams ON Players.TeamID = Teams.ID
 WHERE
-Teams.TypeID = @identifiant);
+Teams.TeamType = @identifiant);
 GO
 
 CREATE OR ALTER FUNCTION getPlayersByEventId(@identifiant INT)
@@ -283,7 +298,7 @@ CREATE OR ALTER FUNCTION getTeamsByUserId(@identifiant INT)
 RETURNS TABLE
 AS
 RETURN
-(SELECT Teams.ID AS TeamID, Teams.Name, Teams.LevelID, Teams.TypeID, Teams.SportID
+(SELECT Teams.ID AS TeamID, Teams.Name, Teams.Level, Teams.TeamType, Teams.SportName
 FROM Teams
 JOIN Players ON Teams.ID = Players.TeamID
 WHERE
@@ -306,14 +321,15 @@ CREATE OR ALTER FUNCTION getGamesByPlayerId(@identifiant INT)
 RETURNS TABLE
 AS
 RETURN
-(SELECT Games.ID AS GameID, Games.SportID, Games.EventID, Games.FirstTeamID, Games.SecondTeamID, Games.GameDate, Games.FinalScore
+(SELECT Games.ID AS GameID, Games.SportName, Games.EventID, Games.FirstTeamID, Games.SecondTeamID, Games.GameDate, Games.FinalScore
 FROM Games
 JOIN Players ON Games.FirstTeamID = Players.TeamID OR Games.SecondTeamID = Players.TeamID
 WHERE
 Players.UserID = @identifiant);
 GO
 
---Fonction pour obtenir la liste des utilisateurs participant à un évènement
+--FONCTION COMPLEXE 1
+--Fonction pour obtenir la liste complète des utilisateurs participant à un évènement
 --retourne une table de Users
 CREATE OR ALTER FUNCTION getUsersByEventId(@EventID INT)
 RETURNS TABLE
@@ -321,8 +337,21 @@ AS
 RETURN (
     SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName 
     FROM ((TeamInEvent t JOIN Players p ON p.TeamID = t.TeamID AND @EventID= t.EventID)
-    JOIN Users u ON u.ID = p.UserID)
+    JOIN Users u ON u.ID = p.UserID) 
+    UNION 
+    SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName 
+    FROM (StaffInEvent st JOIN Users u ON @EventID = st.EventID AND u.ID = st.UserID)
 )
+GO
+
+--FONCTION COMPLEXE 2
+CREATE OR ALTER FUNCTION getPlayersByEventAndLevel(@EventID INT, @Level NVARCHAR(50))
+RETURNS TABLE
+AS
+RETURN (
+    SELECT UserID AS PlayerID, p.TeamID
+    FROM (TeamInEvent te JOIN Teams t ON t.[level]= @Level) JOIN Players p ON te.TeamID = p.TeamID 
+);
 GO
 
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
@@ -387,7 +416,7 @@ IF (SELECT COUNT(*) FROM Users)=0
     Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh')
 GO
 IF (SELECT COUNT(*) FROM Teams)=0
-    Insert INTO Teams(Name, LevelID, TypeID, SportID) VALUES ('Les Tigres', 1, 1, 2); 
+    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Tigres', 'Junior', 'Mixed', 'Soccer'); 
 GO
 IF (SELECT COUNT(*) FROM Players)=0
     Insert INTO Players(UserID, TeamID) VALUES (1, 1);

@@ -1,7 +1,8 @@
-/*USE master
+USE master
 GO
+
 DROP DATABASE Jasson
-GO*/
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
@@ -34,19 +35,24 @@ BEGIN
 END
 GO
 
+--("####0-####0")
 IF OBJECT_ID('Sports') IS NULL
 BEGIN
     CREATE TABLE Sports (
-        Name NVARCHAR(50) PRIMARY KEY
+        Name VARCHAR(50) PRIMARY KEY,
+        minJoueurs INT NOT NULL,
+        maxJoueurs INT NOT NULL,
+        scoreFormat NVARCHAR(50) NOT NULL,
+        CHECK (scoreFormat LIKE '("%[0]-[0]%")')
     );
-    INSERT INTO Sports (Name)
+    INSERT INTO Sports
     VALUES
-    ('None'),
-    ('Soccer'),
-    ('Basketball'),
-    ('Volleyball'),
-    ('Baseball'),
-    ('Football');
+    ('None',0,0,'("0-0")'),
+    ('Soccer',12,20,'("0-0")'),
+    ('Basketball',12,20,'("00-00")'),
+    ('Volleyball',12, 12, '("00-00")'),
+    ('Baseball', 14, 20, '("00-00")'),
+    ('Football', 16, 20, '("00-00")');
 END
 GO
 
@@ -54,7 +60,7 @@ GO
 IF OBJECT_ID('TeamLevel') IS NULL
 BEGIN
     CREATE TABLE TeamLevel (
-        Level NVARCHAR(50) PRIMARY KEY
+        Level VARCHAR(50) PRIMARY KEY
     );
     INSERT INTO TeamLevel (Level)
     VALUES
@@ -68,7 +74,7 @@ GO
 IF OBJECT_ID('TeamType') IS NULL
 BEGIN
     CREATE TABLE TeamType (
-        Type NVARCHAR(50) PRIMARY KEY
+        Type VARCHAR(50) PRIMARY KEY
     );
     INSERT INTO TeamType (Type)
     VALUES
@@ -84,9 +90,9 @@ BEGIN
     CREATE TABLE Teams (
         ID INT IDENTITY PRIMARY KEY,
         Name NVARCHAR(50) NOT NULL,
-        Level NVARCHAR(50) NOT NULL,
-        TeamType NVARCHAR(50) NOT NULL,
-        SportName NVARCHAR(50) NOT NULL,
+        Level VARCHAR(50) NOT NULL,
+        TeamType VARCHAR(50) NOT NULL,
+        SportName VARCHAR(50) NOT NULL,
         FOREIGN KEY (Level) REFERENCES TeamLevel(Level) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (TeamType) REFERENCES TeamType(Type) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (SportName) REFERENCES Sports(Name) ON DELETE CASCADE ON UPDATE CASCADE
@@ -110,6 +116,7 @@ IF OBJECT_ID('Events') IS NULL
 BEGIN
     CREATE TABLE Events (
         ID INT IDENTITY PRIMARY KEY,
+        Name NVARCHAR(64) NOT NULL,
         StartDate DATE NOT NULL,
         EndDate DATE NOT NULL
     );
@@ -144,12 +151,12 @@ IF OBJECT_ID('Games') IS NULL
 BEGIN
     CREATE TABLE Games (
         ID INT IDENTITY PRIMARY KEY,
-        SportName NVARCHAR(50) NOT NULL,
+        SportName VARCHAR(50) NOT NULL,
         EventID INT NOT NULL,
         FirstTeamID INT NOT NULL,
         SecondTeamID INT NOT NULL,
         GameDate DATE NOT NULL,
-        FinalScore NVARCHAR(50) NOT NULL,
+        FinalScore NVARCHAR(50),
         FOREIGN KEY (SportName) REFERENCES Sports(Name) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (EventID) REFERENCES Events(ID) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (FirstTeamID) REFERENCES Teams(ID),
@@ -328,7 +335,7 @@ WHERE
 Players.UserID = @identifiant);
 GO
 
---FONCTION COMPLEXE 1
+--REQUÊTE COMPLEXE 1
 --Fonction pour obtenir la liste complète des utilisateurs participant à un évènement
 --retourne une table de Users
 CREATE OR ALTER FUNCTION getUsersByEventId(@EventID INT)
@@ -341,17 +348,82 @@ RETURN (
     UNION 
     SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName 
     FROM (StaffInEvent st JOIN Users u ON @EventID = st.EventID AND u.ID = st.UserID)
-)
+);
 GO
 
---FONCTION COMPLEXE 2
-CREATE OR ALTER FUNCTION getPlayersByEventAndLevel(@EventID INT, @Level NVARCHAR(50))
+--REQUÊTE COMPLEXE 2
+CREATE OR ALTER FUNCTION getPlayersByEventAndLevel(@EventID INT, @Level VARCHAR(50))
 RETURNS TABLE
 AS
 RETURN (
     SELECT UserID AS PlayerID, p.TeamID
-    FROM (TeamInEvent te JOIN Teams t ON t.[level]= @Level) JOIN Players p ON te.TeamID = p.TeamID 
+    FROM (TeamInEvent te JOIN Teams t ON t.[level]= @Level) 
+    JOIN Players p ON te.TeamID = p.TeamID 
 );
+GO
+
+--REQUÊTE COMPLEXE 3
+CREATE OR ALTER FUNCTION getPlayersBySportAndLevel(@SportName NVARCHAR(50), @Level VARCHAR(50))
+RETURNS TABLE
+AS
+RETURN (
+    SELECT UserID AS PlayerID, p.TeamID
+    FROM Players p JOIN Teams t ON p.TeamID = t.ID AND @SportName = t.SportName AND @Level = t.[Level] 
+);
+GO
+
+
+CREATE OR ALTER FUNCTION getScoreFormat(@SportName VARCHAR(50))
+RETURNS NVARCHAR(50)
+AS
+BEGIN
+    RETURN (
+        SELECT ScoreFormat FROM Sports WHERE @SportName = Name
+    )
+END;
+GO
+
+--Vue pour voir le top 5 des équipes ayant joué le plus de parties
+CREATE OR ALTER VIEW [Top 5 Teams with most games played] AS
+SELECT TOP 5 Teams.Name, Teams.SportName AS [Sport], COUNT(Games.ID) AS [Games]
+FROM Teams JOIN Games ON Teams.ID = Games.FirstTeamID OR Teams.ID = Games.SecondTeamID
+GROUP BY Teams.ID, Name, Teams.SportName
+ORDER BY COUNT(Games.ID)
+GO
+
+--Vue pour voir les 5 évènements les plus populaires présentement en cours
+CREATE OR ALTER VIEW [Most popular ongoing events] AS
+SELECT TOP 5 e.Name, e.StartDate, e.EndDate
+FROM ((Events e JOIN TeamInEvent te ON TeamID = ID) JOIN Players p ON p.TeamID=te.TeamID)
+WHERE e.StartDate<GETDATE() AND e.EndDate>GETDATE()
+GROUP BY EventID, e.Name, e.StartDate, e.EndDate
+ORDER BY COUNT(p.UserID)
+GO
+
+--Procédure pour ajouter le score final à une partie
+CREATE OR ALTER PROCEDURE addFinalScore(@GameID INT, @scoreTeam1 INT, @scoreTeam2 INT)
+AS
+BEGIN 
+    UPDATE Games 
+    SET FinalScore = FORMAT(CAST(CONCAT(@scoreTeam1,@scoreTeam2) AS INT),
+        (SELECT ScoreFormat 
+        FROM Sports s 
+        JOIN Games g 
+        ON @GameID=g.ID AND g.SportName = s.Name))
+        
+END;
+GO
+
+--Déclencheur pour signaler une erreur de formattage dans le résultat de la partie
+CREATE OR ALTER TRIGGER trScoreFormatCheck
+ON Games
+AFTER UPDATE, INSERT
+AS
+    IF (COLUMNS_UPDATED() & 64)>0 AND (SELECT inserted.FinalScore FROM inserted) NOT LIKE '%-%'
+        BEGIN
+            RAISERROR ('A formatting problem occured. Operation has been rolled back',16,1)
+            ROLLBACK TRANSACTION
+        END;
 GO
 
 -- Déclencheur pour supprimer les informations de connexion lors de la suppression d'un utilisateur
@@ -410,6 +482,21 @@ RETURN (
     WHERE p.TeamID = @TeamID
 );
 GO
+
+--must take precaution so only the rust can call this
+CREATE OR ALTER PROCEDURE makeCursor(@topNum INT, @tableName VARCHAR(50))
+AS
+BEGIN
+    DECLARE @query AS NVARCHAR(500)
+    SET @query = 'DECLARE '+'@tableName'+'Cursor CURSOR GLOBAL SCROLL 
+    FOR SELECT TOP ('+'@topNum'+') *
+    FROM '+'@tableName'+' 
+    FOR READ_ONLY'
+
+    EXEC(@query)
+END;
+GO
+
 
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 

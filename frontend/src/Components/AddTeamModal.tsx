@@ -25,7 +25,7 @@ const AddTeamModal: React.FC<Props> = ({ open, handleClose, handleInputChange, h
       <TextField
         name="name"
         label="Name"
-        value={newTeam.name}
+        value={newTeam.team_name}
         onChange={handleInputChange}
         margin="normal"
         sx={{ width: '100%' }}

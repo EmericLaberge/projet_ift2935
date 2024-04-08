@@ -31,7 +31,7 @@ pub async fn connect_to_db(
         Ok(_) => println!("Successfully set the database to use Jasson"),
         Err(_e) => {
             println!("Failed to set the database to use Jasson");
-            println!(" DID YOU RAN THE SQL FILE?"); 
+            println!(" DID YOU RUN THE SQL FILE?"); 
             println!("If not, run the SQL file by doing the following:");
             println!("  1. Go to the root of the project");
             println!("  2. Run the following command: sqlcmd -S localhost -U sa -P Rust4life -i schema.sql");

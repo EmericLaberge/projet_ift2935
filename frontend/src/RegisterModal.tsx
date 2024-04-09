@@ -33,7 +33,7 @@ function RegisterModal() {
   const [successState, setSuccessState] = useState(false);
 
   async function registerUser(newUser: NewUser) {
-    return fetch('http://localhost:42069/create_user', {
+    return fetch('http://localhost:6516/create_user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

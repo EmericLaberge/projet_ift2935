@@ -24,13 +24,13 @@ function TeamList() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [isAllTeams, setIsAllTeams] = useState<boolean>(true);
-  const apiEndpoint = 'http://127.0.0.1:42069';
+  const apiEndpoint = 'http://127.0.0.1:6516';
 
 
 
   const handleEditClick = (id: GridRowId) => async () => {
     // query the user by id 
-    const response = await fetch(`http://127.0.0.1:42069/teams/${id}`);
+    const response = await fetch(`http://127.0.0.1:6516/teams/${id}`);
     const data: Team = await response.json();
     setEditTeam(data);
     setOpenEdit(true);
@@ -42,7 +42,7 @@ function TeamList() {
     if (isAllTeams) {
       // refetch all usersTeams
       setIsAllTeams(false);
-      const response = await fetch(`http://127.0.0.1:42069/user_teams/${userId}`);
+      const response = await fetch(`http://127.0.0.1:6516/user_teams/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your teams');
       }
@@ -52,7 +52,7 @@ function TeamList() {
     else {
       setIsAllTeams(true);
       // refetch all teams
-      const response = await fetch(`http://127.0.0.1:42069/teams`);
+      const response = await fetch(`http://127.0.0.1:6516/teams`);
       if (!response.ok) {
         throw new Error('Failed to fetch teams');
       }
@@ -66,7 +66,7 @@ function TeamList() {
 
   const handleEditOpen = async (id: GridRowId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:42069/teams/${id}`)
+      const response = await fetch(`http://127.0.0.1:6516/teams/${id}`)
       const data: Team = await response.json();
       if (!response.ok) {
         return toast.error('Failed to retrieve team');
@@ -78,7 +78,7 @@ function TeamList() {
     }
     {
       // refetch teams
-      const response = await fetch('http://127.0.0.1:42069/teams');
+      const response = await fetch('http://127.0.0.1:6516/teams');
       if (!response.ok) {
         throw new Error('Failed to fetch teams');
       }
@@ -89,7 +89,7 @@ function TeamList() {
     {
       // refetch user teams 
       const userId = localStorage.getItem('userId');
-      const response = await fetch(`http://127.0.0.1:42069/user_teams/${userId}`);
+      const response = await fetch(`http://127.0.0.1:6516/user_teams/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your teams');
       }
@@ -107,7 +107,7 @@ function TeamList() {
   const handleNewTeamSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:42069/create_team', {
+      const response = await fetch('http://127.0.0.1:6516/create_team', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ function TeamList() {
     }
     if (isAllTeams) {
       // refetch all teams
-      const response = await fetch('http://127.0.0.1:42069/teams');
+      const response = await fetch('http://127.0.0.1:6516/teams');
       if (!response.ok) {
         throw new Error('Failed to fetch teams');
       }
@@ -135,7 +135,7 @@ function TeamList() {
 
       // refetch user teams
       const userId = localStorage.getItem('userId');
-      const response = await fetch(`http://127.0.0.1:42069/user_teams/${userId}`);
+      const response = await fetch(`http://127.0.0.1:6516/user_teams/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your teams');
       }
@@ -147,7 +147,7 @@ function TeamList() {
 
   const handleDeleteClick = (id: GridRowId) => async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:42069/teams/${id}`, {
+      const response = await fetch(`http://127.0.0.1:6516/teams/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -159,7 +159,7 @@ function TeamList() {
     }
     {
       // refetch teams
-      const response = await fetch('http://127.0.0.1:42069/teams');
+      const response = await fetch('http://127.0.0.1:6516/teams');
       if (!response.ok) {
         throw new Error('Failed to fetch teams');
       }
@@ -170,7 +170,7 @@ function TeamList() {
     {
       // refetch user teams
       const userId = localStorage.getItem('userId');
-      const response = await fetch(`http://127.0.0.1:42069/user_teams/${userId}`);
+      const response = await fetch(`http://127.0.0.1:6516/user_teams/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your teams');
       }
@@ -184,7 +184,7 @@ function TeamList() {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:42069/teams');
+        const response = await fetch('http://127.0.0.1:6516/teams');
         if (!response.ok) {
           throw new Error('Failed to fetch teams');
         }
@@ -198,7 +198,7 @@ function TeamList() {
     }
     // const fetchUserTeams = async () => {
     //   try {
-    //     const response = await fetch('http://127.0.0.1:42069/user_teams');
+    //     const response = await fetch('http://127.0.0.1:6516/user_teams');
     //     if (!response.ok) {
     //       throw new Error('Failed to fetch user teams');
     //     }

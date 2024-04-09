@@ -504,7 +504,13 @@ IF (SELECT COUNT(*) FROM Users)=0
 GO
 IF (SELECT COUNT(*) FROM Teams)=0
     Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Tigres', 'Junior', 'Mixed', 'Soccer'); 
+    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'); 
+    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'); 
+GO
 GO
 IF (SELECT COUNT(*) FROM Players)=0
     Insert INTO Players(UserID, TeamID) VALUES (1, 1);
+GO
+IF (SELECT COUNT(*) FROM Events)=0 
+    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02')
 GO

@@ -40,12 +40,21 @@ const AddEventModal: React.FC<Props> = ({
         />
         <TextField
           name="date"
-          label="Date"
+          label="Start Date"
           type="date"
-          value={newEvent.date}
+          value={newEvent.start_date}
           onChange={handleInputChange}
           margin="normal"
           sx={{ width: '100%' }}
+        />
+        <TextField 
+          name="date"
+          label="End Date"
+          type="date"
+          value={newEvent.end_date}
+          onChange={handleInputChange}
+          margin="normal"
+          sx={{ width: '100%' }} 
         />
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
           <Button onClick={handleClose} variant="contained" color="error">

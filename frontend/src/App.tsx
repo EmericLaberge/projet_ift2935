@@ -11,6 +11,7 @@ import { useAtom } from 'jotai';
 import Login from './Login';
 import TeamList from './TeamList';
 import GameList from './GameList';
+import EventList from './EventList';
 
 
 function App() {
@@ -36,7 +37,7 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/Teams" element={<TeamList />} />
           <Route path="/Profile" element={<Card />} />
-          <Route path="/Events" element={<Card />} />
+          <Route path="/Events" element={<EventList />} />
           <Route path="/Games" element={<GameList />} />
         </Routes>
       </Router>

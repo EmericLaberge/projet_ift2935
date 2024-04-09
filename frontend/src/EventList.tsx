@@ -1,82 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import { DataGrid, GridActionsCellItem, GridRowId } from '@mui/x-data-grid';
-import { Button, Chip, Switch, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+
+import React, { useEffect, useState } from 'react';
+import { Box, Card, CardContent, TextField, Button, Typography, Chip, Switch, Stack } from '@mui/material';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@mui/material';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { toast } from 'react-hot-toast';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { toast } from 'react-hot-toast';
-import Event from './Components/Entities/Event';
+import Modal from '@mui/material/Modal';
+import AddIcon from '@mui/icons-material/Add';
+import './App.css';
+import {
+  GridRowsProp,
+  GridRowModesModel,
+  GridRowModes,
+  GridColDef,
+  GridToolbarContainer,
+  GridEventListener,
+  GridRowId,
+  GridRowModel,
+  GridRowEditStopReasons,
+  GridSlots,
+} from '@mui/x-data-grid';
 import AddEventModal from './Components/AddEventModal';
-import EditEventModal from './Components/EditEventModal';
-import { Status } from './Components/Entities/Event';
+import Event from './Components/Entities/Event';
 
 function EventList() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [userEvents, setUserEvents] = useState<Event[]>([]);
-  const [fakeEvents, setFakeEvents] = useState<Event[]>([{ id: 1, name: 'Event 1', status: Status.NotStarted }]);
-
   const [error, setError] = useState<string | null>(null);
-  const [editEvent, setEditEvent] = useState<Event>({ id: -1, name: '', status: Status.None });
-  const [newEvent, setNewEvent] = useState<Event>({ id: -1, name: '', status: Status.None });
+  const [editEvent, setEditEvent] = useState<Event>({id:-1, name: '', start_date: '', end_date: '' })
+  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+  const [newEvent, setNewEvent] = useState<Partial<Event>>({ name: '', start_date: '', end_date: '' });
   const [open, setOpen] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [isAllEvents, setIsAllEvents] = useState<boolean>(true);
-  const apiEndpoint = 'http://127.0.0.1:6516';
+  const [openEdit, setOpenEdit] = useState(false);
+  const [isAllEvents, setIsAllEvents] = useState(true);
 
-  const handleEditClick = (id: GridRowId) => async () => {
-    const response = await fetch(`${apiEndpoint}/events/${id}`);
-    const data: Event = await response.json();
-    setEditEvent(data);
-    setOpenEdit(true);
-  };
 
   async function handleViewClick() {
-    setIsAllEvents(!isAllEvents);
-  }
-
-  const handleEditOpen = async (id: GridRowId) => {
-    try {
-      const response = await fetch(`${apiEndpoint}/events/${id}`);
-      const data: Event = await response.json();
-      if (!response.ok) {
-        return toast.error('Failed to retrieve event');
-      }
-      setEditEvent(data);
-      setOpenEdit(true);
-    } catch (error) {
-      setError('Failed to retrieve event');
-    }
-    {
-      const response = await fetch(`${apiEndpoint}/events`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch events');
-      }
-      const data: Event[] = await response.json();
-      setEvents(data);
-    }
-
-    {
-      const userId = localStorage.getItem('userId');
-      const response = await fetch(`${apiEndpoint}/user_events/${userId}`);
+    const userId = localStorage.getItem('userId');
+    if (isAllEvents) {
+      // refetch all usersTeams
+      setIsAllEvents(false);
+      const response = await fetch(`http://127.0.0.1:6516/user_events/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your events');
       }
       const data: Event[] = await response.json();
-      setUserEvents(data);
+      setEvents(data);
     }
-  };
-  const handleEditClose = () => setOpenEdit(false);
+    else {
+      setIsAllEvents(true);
+      // refetch all teams
+      const response = await fetch(`http://127.0.0.1:6516/events`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch all events');
+      }
+      const data: Event[] = await response.json();
+      setEvents(data);
+    }
+  }
 
+
+
+
+  const handleEditClick = (id: GridRowId) => async () => {
+    // query the user by id 
+    const response = await fetch(`http://127.0.0.1:6516/events/${id}`);
+    const data: Event = await response.json();
+    setEditEvent(data);
+    setOpenEdit(true);
+
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.Edit },
+      };
+    });
+  }
+
+  const handleSaveClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      };
+    });
+  }
+
+  const handleCancelClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      };
+    });
+  }
+
+  const handleDeleteClick = (id: GridRowId) => () => {
+    handleDeleteEventSubmit(id);
+    handleCancelClick(id);
+    setRowModesModel((prev) => {
+      return {
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      };
+    });
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewEvent({ ...newEvent, [e.target.name]: e.target.value });
+    setEditEvent((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
+  const handleDeleteEventSubmit = async (id: GridRowId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:6516/events/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete event');
+      }
+      toast.success('Event deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete event');
+
+    }
+    const response = await fetch('http://127.0.0.1:6516/events');
+    if (!response.ok) {
+      throw new Error('Failed to fetch events');
+    }
+    const data: Event[] = await response.json();
+    setEvents(data);
+  };
   const handleNewEventSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${apiEndpoint}/create_event`, {
+      const response = await fetch('http://127.0.0.1:6516/create_event', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,63 +149,61 @@ function EventList() {
       if (!response.ok) {
         throw new Error('Failed to create event');
       }
-      setNewEvent({ id: -1, name: '', status: Status.None });
+      setNewEvent({ name: '', start_date: '', end_date: '' });
       toast.success('Event created successfully');
+
     } catch (error) {
-      setError('Failed to create event');
+      toast.error('Failed to create event');
     }
-    const userId = localStorage.getItem('userId');
-    const response = await fetch(`${apiEndpoint}/user_events/${userId}`);
+
+    const response = await fetch('http://127.0.0.1:6516/events');
     if (!response.ok) {
-      throw new Error('Failed to fetch your events');
+      throw new Error('Failed to fetch events');
     }
+
     const data: Event[] = await response.json();
-    setUserEvents(data);
+    setEvents(data);
   };
 
-  const handleDeleteClick = (id: GridRowId) => async () => {
+  const EditEventSubmit = async (event: Event) => {
     try {
-      const response = await fetch(`${apiEndpoint}/events/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`http://127.0.0.1:6516/events/${event.id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(event),
       });
       if (!response.ok) {
-        throw new Error('Failed to delete event');
+        throw new Error('Failed to update event');
       }
-      toast.success('Event deleted successfully');
+      toast.success('Event updated successfully');
     } catch (error) {
-      setError('Failed to delete event');
+      toast.error('Failed to update event');
     }
-    {
-      const response = await fetch(`${apiEndpoint}/events`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch events');
-      }
-      const data: Event[] = await response.json();
-      setEvents(data);
+    const response = await fetch('http://127.0.0.1:6516/events');
+    if (!response.ok) {
+      throw new Error('Failed to fetch events');
     }
+    const data: Event[] = await response.json();
+    setEvents(data);
+    setOpenEdit(false);
 
-    {
-      const userId = localStorage.getItem('userId');
-      const response = await fetch(`${apiEndpoint}/user_events/${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch your events');
-      }
-      const data: Event[] = await response.json();
-      setUserEvents(data);
-    }
   };
+
+
+
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`${apiEndpoint}/events`);
+        const response = await fetch('http://127.0.0.1:6516/events');
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }
         const data: Event[] = await response.json();
         setEvents(data);
       } catch (error) {
-        setError('Failed to fetch events');
+        toast.error('Failed to fetch events');
       }
     };
     fetchEvents();
@@ -153,45 +214,69 @@ function EventList() {
   }
 
   return (
+
     <div className="App">
       <div className="w-3/4 justify-items-start m-auto flex mt-3">
-        <Typography> All Events</Typography>
-        <Switch checked={!isAllEvents} onChange={() => handleViewClick()} inputProps={{ 'aria-label': 'controlled' }} />
-        <Typography> My Events</Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="h6" component="h2">
+            View My Events
+          </Typography>
+          <Switch
+            checked={isAllEvents}
+            onChange={() => handleViewClick()}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+          <Typography variant="h6" component="h2">
+            View All Events
+          </Typography>
+        </Stack>
       </div>
       <h1 id="header-title">Event Management</h1>
       <div className="w-3/4 align-center justify-end m-auto flex mb-3">
         <Chip label="Add Event" icon={<AddIcon />} color="primary" onClick={handleOpen} className="mb-3 p-2 justify-end align-center font-bold" size="medium" />
       </div>
       <div>
-        <AddEventModal open={open} handleClose={handleClose} handleInputChange={handleInputChange} handleNewEventSubmit={handleNewEventSubmit} newEvent={newEvent} />
-        <EditEventModal open={openEdit} handleClose={handleEditClose} event={editEvent} handleInputChange={handleInputChange} handleEditEventSubmit={(event: Event) => {
-          // Add your API call to update the event here
-          // Example: const response = await fetch(`http://your-api-endpoint/events/${event.id}`, { method: 'PUT', body: JSON.stringify(event) });
-          // Handle response and update state accordingly
-          toast.success('Event updated successfully');
-          handleEditClose();
-        }} />
+        <AddEventModal
+          open={open}
+          handleClose={handleClose}
+          handleInputChange={(e) => setNewEvent({ ...newEvent, [e.target.name]: e.target.value })}
+          handleNewEventSubmit={handleNewEventSubmit}
+          newEvent={newEvent}
+        />
       </div>
-      <DataGrid className="w-3/4 align-center justify-center m-auto" rows={fakeEvents} columns={[
-        { field: 'id', headerName: 'ID', width: 90 },
-        { field: 'name', headerName: 'Name', width: 200 },
-        { field: 'status', headerName: 'Status', width: 150 },
-        {
-          field: 'actions',
-          type: 'actions',
-          headerName: 'Actions',
-          width: 100,
-          cellClassName: 'actions',
-          getActions: ({ id }) => [
-            <GridActionsCellItem icon={<EditIcon />} label="Edit" sx={{ color: 'info.main' }} onClick={() => handleEditOpen(id)} color="inherit" />,
-            <GridActionsCellItem icon={<DeleteIcon />} label="Delete" sx={{ color: 'error.main' }} color="inherit" onClick={handleDeleteClick(id)} />,
-          ],
-        },
-      ]} checkboxSelection />
-    </div>
+
+
+      <DataGrid
+        className="w-3/4 align-center justify-center m-auto"
+        rows={events}
+
+        columns={[
+          { field: 'id', headerName: 'ID', width: 70 },
+          { field: 'name', headerName: 'Name', width: 130 },
+          { field: 'start_date', headerName: 'Start Date', width: 130 },
+          { field: 'end_date', headerName: 'End Date', width: 130 },
+          {
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
+            width: 100,
+            cellClassName: 'actions',
+            getActions: ({ id }) => {
+              return [
+                <GridActionsCellItem
+                  icon={<DeleteIcon />}
+                  sx={{ color: 'error.main' }}
+                  label="Delete"
+                  onClick={handleDeleteClick(id)}
+                  color="inherit"
+                />,
+              ];
+            }
+          },
+        ]}
+        checkboxSelection
+      />
+    </div >
   );
 }
-
 export default EventList;
-

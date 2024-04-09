@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridActionsCellItem, GridRowId, GridRowModes } from '@mui/x-data-grid';
-import { Button, Chip, Modal, Switch, TextField, Typography } from '@mui/material';
+import { Button, Chip, Modal, Stack, Switch, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -143,155 +143,160 @@ function TeamList() {
       setUserTeams(data);
     }
   }
-      
 
-      const handleDeleteClick = (id: GridRowId) => async () => {
-        try {
-          const response = await fetch(`http://127.0.0.1:6516/teams/${id}`, {
-            method: 'DELETE',
-          });
-          if (!response.ok) {
-            throw new Error('Failed to delete team');
-          }
-          toast.success('Team deleted successfully');
-        } catch (error) {
-          setError('Failed to delete team');
-        }
-        {
-          // refetch teams
-          const response = await fetch('http://127.0.0.1:6516/teams');
-          if (!response.ok) {
-            throw new Error('Failed to fetch teams');
-          }
-          const data: Team[] = await response.json();
-          setTeams(data);
-        }
 
-        {
-          // refetch user teams
-          const userId = localStorage.getItem('userId');
-          const response = await fetch(`http://127.0.0.1:6516/user_teams/${userId}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch your teams');
-          }
-          const data: Team[] = await response.json();
-          setUserTeams(data);
-        }
+  const handleDeleteClick = (id: GridRowId) => async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:6516/teams/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete team');
       }
-
-
-
-      useEffect(() => {
-        const fetchTeams = async () => {
-          try {
-            const response = await fetch('http://127.0.0.1:6516/teams');
-            if (!response.ok) {
-              throw new Error('Failed to fetch teams');
-            }
-            const data: Team[] = await response.json();
-            console.log(data);
-
-            setTeams(data);
-          } catch (error) {
-            setError('Failed to fetch teams');
-          }
-        }
-        // const fetchUserTeams = async () => {
-        //   try {
-        //     const response = await fetch('http://127.0.0.1:6516/user_teams');
-        //     if (!response.ok) {
-        //       throw new Error('Failed to fetch user teams');
-        //     }
-        //     const data: Team[] = await response.json();
-        //     setUserTeams(data);
-        //   } catch (error) {
-        //     setError('Failed to fetch user teams');
-        //   }
-        // }
-        fetchTeams();
-        // fetchUserTeams();
-      }, []);
-
-
-
-
-      if (error) {
-        return <div>Error: {error}</div>;
-      }
-
-
-      return (
-        <div className="App">
-          <div className="w-3/4 justify-items-start m-auto flex mt-3">
-            <Switch
-              checked={isAllTeams}
-              onChange={() => handleViewClick()}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
-            <Typography variant="h6" component="h2">
-              {isAllTeams ? 'View All Teams' : 'View My Teams'}
-            </Typography>
-          </div>
-          <h1 id="header-title">Team Management</h1>
-          <div className="w-3/4 align-center justify-end m-auto flex mb-3">
-            <Chip label="Add Team" icon={<AddIcon />} color="primary" onClick={handleOpen} className="mb-3 p-2 justify-end align-center font-bold" size="medium" />
-          </div>
-          <div>
-            <AddTeamModal
-              open={open}
-              handleClose={handleClose}
-              handleInputChange={handleInputChange}
-              handleNewTeamSubmit={handleNewTeamSubmit} newTeam={newTeam}
-            />
-            <EditTeamModal
-              open={openEdit} handleClose={handleEditClose}
-              team={editTeam}
-              handleInputChange={handleInputChange}
-              handleEditTeamSubmit={(team: Team) => {
-                // Add your API call to update the team here
-                // Example: const response = await fetch(`http://your-api-endpoint/teams/${team.id}`, { method: 'PUT', body: JSON.stringify(team) });
-                // Handle response and update state accordingly
-                toast.success('Team updated successfully');
-                handleEditClose();
-              }}
-            />
-          </div>
-          <DataGrid
-            className="w-3/4 align-center justify-center m-auto"
-            rows={teams}
-            columns={[
-              { field: 'id', headerName: 'ID', width: 90 },
-              { field: 'team_name', headerName: 'Team Name', width: 150 },
-              { field: 'level', headerName: 'Level', width: 150 },
-              { field: 'type', headerName: 'Type', width: 150 },
-              { field: 'sport', headerName: 'Sport', width: 150 },
-              {
-                field: 'actions',
-                type: 'actions',
-                headerName: 'Actions',
-                width: 100,
-                cellClassName: 'actions',
-                getActions: ({ id }) => [
-                  <GridActionsCellItem
-                    icon={<EditIcon />}
-                    label="Edit"
-                    sx={{ color: 'info.main' }}
-                    onClick={() => handleEditOpen(id)}
-                    color="inherit"
-                  />,
-                  <GridActionsCellItem
-                    icon={<DeleteIcon />}
-                    label="Delete"
-                    sx={{ color: 'error.main' }}
-                    color="inherit"
-                    onClick={handleDeleteClick(id)}
-                  />,
-                ],
-              },
-            ]}
-            checkboxSelection
-          />
-        </div>
-      );
+      toast.success('Team deleted successfully');
+    } catch (error) {
+      setError('Failed to delete team');
     }
-    export default TeamList;
+    {
+      // refetch teams
+      const response = await fetch('http://127.0.0.1:6516/teams');
+      if (!response.ok) {
+        throw new Error('Failed to fetch teams');
+      }
+      const data: Team[] = await response.json();
+      setTeams(data);
+    }
+
+    {
+      // refetch user teams
+      const userId = localStorage.getItem('userId');
+      const response = await fetch(`http://127.0.0.1:6516/user_teams/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch your teams');
+      }
+      const data: Team[] = await response.json();
+      setUserTeams(data);
+    }
+  }
+
+
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:6516/teams');
+        if (!response.ok) {
+          throw new Error('Failed to fetch teams');
+        }
+        const data: Team[] = await response.json();
+        console.log(data);
+
+        setTeams(data);
+      } catch (error) {
+        setError('Failed to fetch teams');
+      }
+    }
+    // const fetchUserTeams = async () => {
+    //   try {
+    //     const response = await fetch('http://127.0.0.1:6516/user_teams');
+    //     if (!response.ok) {
+    //       throw new Error('Failed to fetch user teams');
+    //     }
+    //     const data: Team[] = await response.json();
+    //     setUserTeams(data);
+    //   } catch (error) {
+    //     setError('Failed to fetch user teams');
+    //   }
+    // }
+    fetchTeams();
+    // fetchUserTeams();
+  }, []);
+
+
+
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+
+  return (
+    <div className="App">
+      <div className="w-3/4 justify-items-start m-auto flex mt-3">
+<Stack direction="row" spacing={1} alignItems="center">
+    <Typography variant="h6" component="h2"> 
+      View My Teams 
+    </Typography>
+        <Switch
+          checked={isAllTeams}
+          onChange={() => handleViewClick()}
+          inputProps={{ 'aria-label': 'controlled' }}
+        />
+        <Typography variant="h6" component="h2">
+          View All Teams
+        </Typography>
+      </Stack>
+      </div>
+      <h1 id="header-title">Team Management</h1>
+      <div className="w-3/4 align-center justify-end m-auto flex mb-3">
+        <Chip label="Add Team" icon={<AddIcon />} color="primary" onClick={handleOpen} className="mb-3 p-2 justify-end align-center font-bold" size="medium" />
+      </div>
+      <div>
+        <AddTeamModal
+          open={open}
+          handleClose={handleClose}
+          handleInputChange={handleInputChange}
+          handleNewTeamSubmit={handleNewTeamSubmit} newTeam={newTeam}
+        />
+        <EditTeamModal
+          open={openEdit} handleClose={handleEditClose}
+          team={editTeam}
+          handleInputChange={handleInputChange}
+          handleEditTeamSubmit={(team: Team) => {
+            // Add your API call to update the team here
+            // Example: const response = await fetch(`http://your-api-endpoint/teams/${team.id}`, { method: 'PUT', body: JSON.stringify(team) });
+            // Handle response and update state accordingly
+            toast.success('Team updated successfully');
+            handleEditClose();
+          }}
+        />
+      </div>
+      <DataGrid
+        className="w-3/4 align-center justify-center m-auto"
+        rows={teams}
+        columns={[
+          { field: 'id', headerName: 'ID', width: 90 },
+          { field: 'team_name', headerName: 'Team Name', width: 150 },
+          { field: 'level', headerName: 'Level', width: 150 },
+          { field: 'type', headerName: 'Type', width: 150 },
+          { field: 'sport', headerName: 'Sport', width: 150 },
+          {
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
+            width: 100,
+            cellClassName: 'actions',
+            getActions: ({ id }) => [
+              <GridActionsCellItem
+                icon={<EditIcon />}
+                label="Edit"
+                sx={{ color: 'info.main' }}
+                onClick={() => handleEditOpen(id)}
+                color="inherit"
+              />,
+              <GridActionsCellItem
+                icon={<DeleteIcon />}
+                label="Delete"
+                sx={{ color: 'error.main' }}
+                color="inherit"
+                onClick={handleDeleteClick(id)}
+              />,
+            ],
+          },
+        ]}
+        checkboxSelection
+      />
+    </div>
+  );
+}
+export default TeamList;

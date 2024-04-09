@@ -18,7 +18,7 @@ const EditTeamModal: React.FC<Props> = ({ open, handleClose, handleInputChange, 
         <TextField
           name="name"
           label="Name"
-          value={team.name}
+          value={team.team_name}
           onChange={handleInputChange}
           margin="normal"
           fullWidth

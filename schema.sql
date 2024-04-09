@@ -1,13 +1,11 @@
 USE master
 GO
 
-DROP DATABASE Jasson
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
-    CREATE DATABASE Jasson;
+    DROP DATABASE Jasson;
 END
+CREATE DATABASE Jasson
 GO
 USE Jasson;
 GO
@@ -35,7 +33,6 @@ BEGIN
 END
 GO
 
---("####0-####0")
 IF OBJECT_ID('Sports') IS NULL
 BEGIN
     CREATE TABLE Sports (
@@ -316,7 +313,7 @@ CREATE OR ALTER FUNCTION getEventsByPlayerId(@identifiant INT)
 RETURNS TABLE
 AS
 RETURN
-(SELECT Events.ID AS EventID, Events.StartDate, Events.EndDate
+(SELECT Events.ID AS EventID, Events.Name, Events.StartDate, Events.EndDate
 FROM Events
 JOIN TeamInEvent ON Events.ID = TeamInEvent.EventID
 JOIN Players ON TeamInEvent.TeamID = Players.TeamID

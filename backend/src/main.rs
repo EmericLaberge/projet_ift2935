@@ -10,9 +10,10 @@ use async_std::stream::StreamExt;
 use config::get_config;
 use db::connect_to_db;
 use jsonwebtoken::{encode, DecodingKey, EncodingKey, Header, Validation};
-use models::{staff, team, users};
+use models::{staff, team, users, event, game};
 use routes::team_routes::create_team;
-use routes::{create_player, create_user, delete_user, get_all_players, get_all_teams, get_all_users, get_user_by_id, login, update_user};
+use routes::game_routes::{create_game, delete_game, get_user_games, update_game};
+use routes::{create_event, create_player, create_user, delete_event, delete_user, get_all_events, get_all_players, get_all_teams, get_all_users, get_event_by_id, get_games, get_user_by_id, get_user_events, get_user_teams, login, update_user};
 use serde::{Deserialize, Serialize};
 use staff::Staff;
 use team::Team;
@@ -86,6 +87,7 @@ async fn main() -> anyhow::Result<()> {
             .service(get_user_by_id)
             .service(get_all_users)
             .service(get_all_teams)
+            .service(get_user_teams)
             .service(create_user)
             .service(create_team)
             .service(login)
@@ -93,10 +95,23 @@ async fn main() -> anyhow::Result<()> {
             .service(delete_user)
             .service(get_all_players)
             .service(create_player)
+            .service(get_user_events)
+            .service(create_team) 
+            .service(get_all_events)
+            .service(get_event_by_id)
+            .service(delete_event)
+            .service(create_event)
+            .service(get_games)
+            .service(create_game)
+            .service(update_game)
+            .service(delete_game)
+            .service(get_user_games)
+
     })
     .bind(("127.0.0.1", 6516))?
     .run()
     .await;
 
     Ok(())
-}
+} 
+

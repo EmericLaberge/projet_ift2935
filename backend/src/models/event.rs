@@ -1,7 +1,8 @@
 use std::sync::Arc;
+use serde::{Deserialize, Serialize};
 use tiberius::ToSql;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Event {
     event_id: i32,
     date_start: String,

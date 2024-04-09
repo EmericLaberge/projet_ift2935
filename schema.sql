@@ -525,8 +525,9 @@ BEGIN
     set @field = (SELECT top 1 COLUMN_NAME 
     FROM INFORMATION_SCHEMA.Columns 
     WHERE TABLE_NAME = @tableName)
-    
+
     SET @query = 'DELETE FROM '+@tableName+' WHERE '+@field+'= CAST(@PK) AS '+@type
+    EXEC(@query)
 END;
 GO
 

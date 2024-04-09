@@ -103,7 +103,7 @@ async fn get_user_events(id: web::Path<i32>) -> impl Responder {
         }
     };
     // utiliser la fonction getEventsByPlayerId presente dans le sql 
-    let query = "SELECT * FROM Events WHERE id = @P1"; 
+    let query = "SELECT * FROM getEventsByPlayerId(@P1)";
     let id = id.into_inner();
     let result = client.query(query, &[&id]).await;
     let result = match result {

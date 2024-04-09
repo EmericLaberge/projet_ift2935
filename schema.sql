@@ -581,8 +581,9 @@ IF (SELECT COUNT(*) FROM Events)=0
     INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02')
 GO
 IF (SELECT COUNT(*) FROM TeamInEvent)=0 
-    INSERT INTO TeamInEvent(EventID, TeamID) VALUES (1, 2)
-    INSERT INTO TeamInEvent(EventID, TeamID) VALUES (1, 3)
+    INSERT INTO TeamInEvent(EventID, TeamID) VALUES 
+    (1, 2),
+    (1, 3);
 GO
 IF (SELECT COUNT(*) FROM StaffInEvent)=0 
     INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)

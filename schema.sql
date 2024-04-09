@@ -570,7 +570,8 @@ GO
 
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh'),
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES
+    ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh'),
     ('FelipeAlou@gmail.com', '123 Rue Saint-Jacques', 'Felipe', 'Alou'),
     ('RustyStaub@Hotmail.com', '456 Rue Sainte-Catherine', 'Rusty', 'Staub'),
     ('GaryCarter@yahoo.ca', '789 Avenue du Parc', 'Gary', 'Carter'),
@@ -596,7 +597,38 @@ IF (SELECT COUNT(*) FROM Users)=0
     ('VladimirGuerrero@Hotmail.com', '4344 Rue de la Gauchetiere', 'Vladimir', 'Guerrero'),
     ('OrlandoCabrera@yahoo.ca', '4546 Rue de Bleury', 'Orlando', 'Cabrera'),
     ('JavierVazquez@gmail.com', '4748 Avenue du Parc', 'Javier', 'Vazquez'),
-    ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon');
+    ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon'),
+
+
+    ('SarahSmith@gmail.com', '123 Main St', 'Sarah', 'Smith'),
+    ('EmmaJohnson@gmail.com', '456 Elm St', 'Emma', 'Johnson'),
+    ('AvaWilliams@gmail.com', '789 Pine St', 'Ava', 'Williams'),
+    ('OliviaBrown@gmail.com', '321 Oak St', 'Olivia', 'Brown'),
+    ('SophiaDavis@gmail.com', '654 Maple St', 'Sophia', 'Davis'),
+    ('IsabellaMiller@gmail.com', '987 Birch St', 'Isabella', 'Miller'),
+    ('MiaWilson@gmail.com', '135 Cedar St', 'Mia', 'Wilson'),
+    ('CharlotteMoore@gmail.com', '246 Cherry St', 'Charlotte', 'Moore'),
+    ('AmeliaTaylor@gmail.com', '357 Walnut St', 'Amelia', 'Taylor'),
+    ('HarperAnderson@gmail.com', '468 Hickory St', 'Harper', 'Anderson'),
+    ('EvelynThomas@gmail.com', '579 Magnolia St', 'Evelyn', 'Thomas'),
+    ('AbigailWhite@gmail.com', '690 Spruce St', 'Abigail', 'White'),
+    ('EmilyHarris@gmail.com', '701 Willow St', 'Emily', 'Harris'),
+    ('HannahClark@gmail.com', '812 Chestnut St', 'Hannah', 'Clark'),
+    ('MadisonLewis@gmail.com', '923 Ash St', 'Madison', 'Lewis'),
+    ('AveryMartin@gmail.com', '1034 Beech St', 'Avery', 'Martin'),
+    ('SophiaGarcia@gmail.com', '1145 Dogwood St', 'Sophia', 'Garcia'),
+    ('IsabellaRodriguez@gmail.com', '1256 Elmwood St', 'Isabella', 'Rodriguez'),
+    ('MiaMartinez@gmail.com', '1367 Fern St', 'Mia', 'Martinez'),
+    ('EmilyHernandez@gmail.com', '1478 Hazel St', 'Emily', 'Hernandez'),
+    ('HannahLopez@gmail.com', '1589 Juniper St', 'Hannah', 'Lopez'),
+    ('MadisonGonzalez@gmail.com', '1601 Locust St', 'Madison', 'Gonzalez'),
+    ('AveryWright@gmail.com', '1712 Maplewood St', 'Avery', 'Wright'),
+    ('SophiaScott@gmail.com', '1823 Oakwood St', 'Sophia', 'Scott'),
+    ('IsabellaJones@gmail.com', '1934 Pinewood St', 'Isabella', 'Jones'),
+    ('MiaTorres@gmail.com', '2045 Redwood St', 'Mia', 'Torres'),
+    ('EmilyRamirez@gmail.com', '2156 Sprucewood St', 'Emily', 'Ramirez'),
+    ('HannahReyes@gmail.com', '2267 Willowwood St', 'Hannah', 'Reyes'),
+    ('MadisonFlores@gmail.com', '2378 Birchwood St', 'Madison', 'Flores');
 
 
 GO
@@ -605,7 +637,9 @@ IF (SELECT COUNT(*) FROM Teams)=0
     ('Les Tigres', 'Junior', 'Mixed', 'Soccer'),
     ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'),
     ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'),
-    ('The Kicks', 'Junior', 'Mixed', 'Soccer');
+    ('The Kicks', 'Junior', 'Mixed', 'Soccer'),
+    ('The Beach Girls', 'Recreational', 'Feminine', 'Volleyball'),
+    ('The Beach Girls', 'Recreational', 'Feminine', 'Volleyball');
 GO
 
 
@@ -640,19 +674,40 @@ IF (SELECT COUNT(*) FROM Players)=0
     (20, 1), (21, 4),
     (22, 1), (23, 4),
     (24, 1), (25, 4),
-    (26, 1), (27, 4);
+    (26, 1), (27, 4),
+
+    --team de VolleyBall
+    (28, 5),  (29, 6),
+    (30, 5),  (31, 6),
+    (32, 5),  (33, 6),
+    (34, 5),  (35, 6),
+    (36, 5),  (37, 6),
+    (38, 5),  (39, 6),
+    (40, 5),  (41, 6),
+    (42, 5),  (43, 6),
+    (44, 5),  (45, 6),
+    (46, 5),  (47, 6),
+    (48, 5),  (49, 6),
+    (50, 5),  (51, 6),
+    (52, 5),  (53, 6),
+    (54, 5),  (55, 6);
+
 
 GO
 IF (SELECT COUNT(*) FROM Events)=0 
-    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
-    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');
+    INSERT INTO Events(Name, StartDate, EndDate) VALUES
+    ('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
+    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04'),
+    ('Beach Volleyball feminin', '2024-07-20', '2024-07-22');
 GO
 IF (SELECT COUNT(*) FROM TeamInEvent)=0 
     INSERT INTO TeamInEvent(EventID, TeamID) VALUES 
     (1, 2),
     (1, 3),
     (2, 1),
-    (2, 4);
+    (2, 4),
+    (3, 5),
+    (3, 6);
 GO
 IF (SELECT COUNT(*) FROM StaffInEvent)=0 
     INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
@@ -660,7 +715,8 @@ GO
 IF (SELECT COUNT(*) FROM Games)=0 
     INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
     VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##');
-           --('Soccer', 2, 1, 4, '2024-06-03','##1-0##'); cette ligne fait bugger 
+           --('Soccer', 2, 1, 4, '2024-06-03','##1-0##'); cette ligne fait bugger
+           --('Volleyball', 3, 5, 6, '2024-07-21', '##0-0##');
 GO
 
 

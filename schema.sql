@@ -510,6 +510,10 @@ GO
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 
     Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh')
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('VladGuerrero@gmail.com', '2105 de la Savane', 'Vladimir', 'Guerrero')
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('GaryCarter@Hotmail.com', '123 Rue Laurier', 'Gary', 'Carter')
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('SteveRogers@yahoo.ca', '1324 Rue Rivard', 'Steve', 'Rogers')
+
 GO
 IF (SELECT COUNT(*) FROM Teams)=0
     Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Tigres', 'Junior', 'Mixed', 'Soccer'); 
@@ -519,7 +523,17 @@ GO
 GO
 IF (SELECT COUNT(*) FROM Players)=0
     Insert INTO Players(UserID, TeamID) VALUES (1, 1);
+    Insert INTO Players(UserID, TeamID) VALUES (2, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (3, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (4, 3);
 GO
 IF (SELECT COUNT(*) FROM Events)=0 
     INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02')
+GO
+IF (SELECT COUNT(*) FROM TeamInEvent)=0 
+    INSERT INTO TeamInEvent(EventID, TeamID) VALUES (1, 2)
+    INSERT INTO TeamInEvent(EventID, TeamID) VALUES (1, 3)
+GO
+IF (SELECT COUNT(*) FROM StaffInEvent)=0 
+    INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
 GO

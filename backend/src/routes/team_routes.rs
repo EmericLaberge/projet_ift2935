@@ -72,7 +72,15 @@ async fn get_all_teams() -> impl Responder {
             }
             Some(name) => name.to_owned(),
         };
-        let team = Team::new(row.get(0), team_name);
+        let team = Team::new(
+            row.get::<i32, usize>(0),
+            team_name,
+            row.get::<&str, usize>(2).unwrap().to_owned(),
+            row.get::<&str, usize>(3).unwrap().to_owned(),
+            row.get::<&str, usize>(4).unwrap().to_owned(),
+
+                
+        );
         team_list.push(team);
     }
     println!("This is the list of all teams");

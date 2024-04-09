@@ -29,9 +29,6 @@ impl Game {
         (query, params)
     }
 
-    pub(crate) fn new(get_1: _, to_owned_1: _, get_2: _, get_3: _, get_4: _, to_owned_2: _, to_owned_3: _) -> _ {
-        todo!()
-    }
 
 
 }

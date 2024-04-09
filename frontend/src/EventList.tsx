@@ -44,7 +44,7 @@ function EventList() {
     if (isAllEvents) {
       // refetch all usersTeams
       setIsAllEvents(false);
-      const response = await fetch(`http://127.0.0.1:6516/user_events/${userId}`);
+      const response = await fetch(`http://127.0.0.1:42069/user_events/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your events');
       }
@@ -54,7 +54,7 @@ function EventList() {
     else {
       setIsAllEvents(true);
       // refetch all teams
-      const response = await fetch(`http://127.0.0.1:6516/events`);
+      const response = await fetch(`http://127.0.0.1:42069/events`);
       if (!response.ok) {
         throw new Error('Failed to fetch all events');
       }
@@ -68,7 +68,7 @@ function EventList() {
 
   const handleEditClick = (id: GridRowId) => async () => {
     // query the user by id 
-    const response = await fetch(`http://127.0.0.1:6516/events/${id}`);
+    const response = await fetch(`http://127.0.0.1:42069/events/${id}`);
     const data: Event = await response.json();
     setEditEvent(data);
     setOpenEdit(true);
@@ -118,7 +118,7 @@ function EventList() {
 
   const handleDeleteEventSubmit = async (id: GridRowId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:6516/events/${id}`, {
+      const response = await fetch(`http://127.0.0.1:42069/events/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -129,7 +129,7 @@ function EventList() {
       toast.error('Failed to delete event');
 
     }
-    const response = await fetch('http://127.0.0.1:6516/events');
+    const response = await fetch('http://127.0.0.1:42069/events');
     if (!response.ok) {
       throw new Error('Failed to fetch events');
     }
@@ -139,7 +139,7 @@ function EventList() {
   const handleNewEventSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:6516/create_event', {
+      const response = await fetch('http://127.0.0.1:42069/create_event', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ function EventList() {
       toast.error('Failed to create event');
     }
 
-    const response = await fetch('http://127.0.0.1:6516/events');
+    const response = await fetch('http://127.0.0.1:42069/events');
     if (!response.ok) {
       throw new Error('Failed to fetch events');
     }
@@ -167,7 +167,7 @@ function EventList() {
 
   const EditEventSubmit = async (event: Event) => {
     try {
-      const response = await fetch(`http://127.0.0.1:6516/events/${event.id}`, {
+      const response = await fetch(`http://127.0.0.1:42069/events/${event.id}`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -180,7 +180,7 @@ function EventList() {
     } catch (error) {
       toast.error('Failed to update event');
     }
-    const response = await fetch('http://127.0.0.1:6516/events');
+    const response = await fetch('http://127.0.0.1:42069/events');
     if (!response.ok) {
       throw new Error('Failed to fetch events');
     }
@@ -196,7 +196,7 @@ function EventList() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:6516/events');
+        const response = await fetch('http://127.0.0.1:42069/events');
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }

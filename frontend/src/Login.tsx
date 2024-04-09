@@ -20,7 +20,7 @@ async function registerUser(credentials: Credentials) {
 }
 
 async function loginUser(credentials: Credentials) {
-  return fetch('http://localhost:6516/login', {
+  return fetch('http://localhost:6969/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

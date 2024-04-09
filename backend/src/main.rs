@@ -108,7 +108,7 @@ async fn main() -> anyhow::Result<()> {
             .service(get_user_games)
 
     })
-    .bind(("127.0.0.1", 6516))?
+    .bind(("127.0.0.1", 6969))?
     .run()
     .await;
 

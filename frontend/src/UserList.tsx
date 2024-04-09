@@ -42,7 +42,7 @@ function UserList() {
 
   const handleEditClick = (id: GridRowId) => async () => {
     // query the user by id 
-        const response = await fetch(`http://127.0.0.1:6516/users/${id}`);
+        const response = await fetch(`http://127.0.0.1:6969/users/${id}`);
         const data: User = await response.json();
         setEditUser(data);
         setOpenEdit(true);
@@ -92,7 +92,7 @@ function UserList() {
 
     const handleDeleteUserSubmit = async (id: GridRowId) => {
       try {
-        const response = await fetch(`http://127.0.0.1:6516/users/${id}`, {
+        const response = await fetch(`http://127.0.0.1:6969/users/${id}`, {
           method: 'DELETE',
         });
         if (!response.ok) {
@@ -103,7 +103,7 @@ function UserList() {
         toast.error('Failed to delete user');
 
       }
-      const response = await fetch('http://127.0.0.1:6516/users');
+      const response = await fetch('http://127.0.0.1:6969/users');
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
@@ -113,7 +113,7 @@ function UserList() {
     const handleNewUserSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       try {
-        const response = await fetch('http://127.0.0.1:6516/create_user', {
+        const response = await fetch('http://127.0.0.1:6969/create_user', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ function UserList() {
         setError('Failed to create user');
       }
 
-      const response = await fetch('http://127.0.0.1:6516/users');
+      const response = await fetch('http://127.0.0.1:6969/users');
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
@@ -140,7 +140,7 @@ function UserList() {
 
     const EditUserSubmit = async (user: User) => {
       try {
-        const response = await fetch(`http://127.0.0.1:6516/users/${user.id}`, { method: 'PUT',
+        const response = await fetch(`http://127.0.0.1:6969/users/${user.id}`, { method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -153,7 +153,7 @@ function UserList() {
       } catch (error) {
         toast.error('Failed to update user');
       }
-      const response = await fetch('http://127.0.0.1:6516/users');
+      const response = await fetch('http://127.0.0.1:6969/users');
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
@@ -169,7 +169,7 @@ function UserList() {
     useEffect(() => {
       const fetchUsers = async () => {
         try {
-          const response = await fetch('http://127.0.0.1:6516/users');
+          const response = await fetch('http://127.0.0.1:6969/users');
           if (!response.ok) {
             throw new Error('Failed to fetch users');
           }

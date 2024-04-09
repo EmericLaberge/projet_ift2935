@@ -570,11 +570,97 @@ GO
 
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh')
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh'),
+    ('FelipeAlou@gmail.com', '123 Rue Saint-Jacques', 'Felipe', 'Alou'),
+    ('RustyStaub@Hotmail.com', '456 Rue Sainte-Catherine', 'Rusty', 'Staub'),
+    ('GaryCarter@yahoo.ca', '789 Avenue du Parc', 'Gary', 'Carter'),
+    ('TimRaines@gmail.com', '132 Avenue des Pins', 'Tim', 'Raines'),
+    ('AndreDawson@Hotmail.com', '567 Rue Sherbrooke', 'Andre', 'Dawson'),
+    ('TimWallach@yahoo.ca', '910 Boulevard Saint-Laurent', 'Tim', 'Wallach'),
+    ('DennisMartinez@gmail.com', '1112 Rue Saint-Denis', 'Dennis', 'Martinez'),
+    ('PascualPerez@Hotmail.com', '1314 Avenue McGill College', 'Pascual', 'Perez'),
+    ('BillLee@yahoo.ca', '1516 Rue Peel', 'Bill', 'Lee'),
+    ('SteveRogers@gmail.com', '1718 Rue de la Montagne', 'Steve', 'Rogers'),
+    ('JohnDooley@Hotmail.com', '1920 Rue de Bleury', 'John', 'Dooley'),
+    ('WarrenCromartie@yahoo.ca', '2122 Avenue du Docteur-Penfield', 'Warren', 'Cromartie'),
+    ('ElliottMaddox@gmail.com', '2324 Rue Guy', 'Elliott', 'Maddox'),
+    ('LarryParish@Hotmail.com', '2526 Rue de la Gauchetiere', 'Larry', 'Parish'),
+    ('RowlandOffice@yahoo.ca', '2728 Rue Crescent', 'Rowland', 'Office'),
+    ('PedroMartinez@gmail.com', '2930 Avenue Atwater', 'Pedro', 'Martinez'),
+    ('KenSingleton@Hotmail.com', '3132 Rue Sainte-Famille', 'Ken', 'Singleton'),
+    ('DarrinFletcher@yahoo.ca', '3334 Rue de Bullion', 'Darrin', 'Fletcher'),
+    ('MarquisGrissom@gmail.com', '3536 Rue de la Commune', 'Marquis', 'Grissom'),
+    ('MoisesAlou@Hotmail.com', '3738 Rue Notre-Dame', 'Moises', 'Alou'),
+    ('MelRojas@yahoo.ca', '3940 Rue Saint-Paul', 'Mel', 'Rojas'),
+    ('UguethUrbina@gmail.com', '4142 Rue Saint-Antoine', 'Ugueth', 'Urbina'),
+    ('VladimirGuerrero@Hotmail.com', '4344 Rue de la Gauchetiere', 'Vladimir', 'Guerrero'),
+    ('OrlandoCabrera@yahoo.ca', '4546 Rue de Bleury', 'Orlando', 'Cabrera'),
+    ('JavierVazquez@gmail.com', '4748 Avenue du Parc', 'Javier', 'Vazquez'),
+    ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon');
+
+
 GO
 IF (SELECT COUNT(*) FROM Teams)=0
-    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Tigres', 'Junior', 'Mixed', 'Soccer'); 
+    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES
+    ('Les Tigres', 'Junior', 'Mixed', 'Soccer'),
+    ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'),
+    ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'),
+    ('The Kicks', 'Junior', 'Mixed', 'Soccer');
 GO
+
+
 IF (SELECT COUNT(*) FROM Players)=0
-    Insert INTO Players(UserID, TeamID) VALUES (1, 1);
+    Insert INTO Players(UserID, TeamID) VALUES 
+    -- Team de Baseball
+    (1, 1),
+    (2, 2),  (3, 3),
+    (4, 2),  (5, 3),
+    (6, 2),  (7, 3),
+    (8, 2),  (9, 3),
+    (10, 2), (11, 3),
+    (12, 2), (13, 3),
+    (14, 2), (15, 3),
+    (16, 2), (17, 3),
+    (18, 2), (19, 3),
+    (20, 2), (21, 3),
+    (22, 2), (23, 3),
+    (24, 2), (25, 3),
+    (26, 2), (27, 3),
+
+    --Team de Soccer
+    (2, 1),  (3, 4),
+    (4, 1),  (5, 4),
+    (6, 1),  (7, 4),
+    (8, 1),  (9, 4),
+    (10, 1), (11, 4),
+    (12, 1), (13, 4),
+    (14, 1), (15, 4),
+    (16, 1), (17, 4),
+    (18, 1), (19, 4),
+    (20, 1), (21, 4),
+    (22, 1), (23, 4),
+    (24, 1), (25, 4),
+    (26, 1), (27, 4);
+
 GO
+IF (SELECT COUNT(*) FROM Events)=0 
+    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
+    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');
+GO
+IF (SELECT COUNT(*) FROM TeamInEvent)=0 
+    INSERT INTO TeamInEvent(EventID, TeamID) VALUES 
+    (1, 2),
+    (1, 3),
+    (2, 1),
+    (2, 4);
+GO
+IF (SELECT COUNT(*) FROM StaffInEvent)=0 
+    INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
+GO
+IF (SELECT COUNT(*) FROM Games)=0 
+    INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
+    VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##');
+           --('Soccer', 2, 1, 4, '2024-06-03','##1-0##'); cette ligne fait bugger 
+GO
+
+

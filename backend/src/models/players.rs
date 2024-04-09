@@ -26,5 +26,4 @@ impl Player {
         let params = vec![Arc::new(self.id.clone()) as Arc<dyn ToSql>];
         (query, params)
     }
-
 }

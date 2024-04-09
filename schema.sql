@@ -509,40 +509,41 @@ GO
 
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh')
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('FelipeAlou@gmail.com', '123 Rue Saint-Jacques', 'Felipe', 'Alou');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('RustyStaub@Hotmail.com', '456 Rue Sainte-Catherine', 'Rusty', 'Staub');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('GaryCarter@yahoo.ca', '789 Avenue du Parc', 'Gary', 'Carter');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('TimRaines@gmail.com', '132 Avenue des Pins', 'Tim', 'Raines');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('AndreDawson@Hotmail.com', '567 Rue Sherbrooke', 'Andre', 'Dawson');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('TimWallach@yahoo.ca', '910 Boulevard Saint-Laurent', 'Tim', 'Wallach');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('DennisMartinez@gmail.com', '1112 Rue Saint-Denis', 'Dennis', 'Martinez');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('PascualPerez@Hotmail.com', '1314 Avenue McGill College', 'Pascual', 'Perez');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('BillLee@yahoo.ca', '1516 Rue Peel', 'Bill', 'Lee');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('SteveRogers@gmail.com', '1718 Rue de la Montagne', 'Steve', 'Rogers');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('JohnDooley@Hotmail.com', '1920 Rue de Bleury', 'John', 'Dooley');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('WarrenCromartie@yahoo.ca', '2122 Avenue du Docteur-Penfield', 'Warren', 'Cromartie');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('ElliottMaddox@gmail.com', '2324 Rue Guy', 'Elliott', 'Maddox');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('LarryParish@Hotmail.com', '2526 Rue de la Gauchetiere', 'Larry', 'Parish');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('RowlandOffice@yahoo.ca', '2728 Rue Crescent', 'Rowland', 'Office');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('PedroMartinez@gmail.com', '2930 Avenue Atwater', 'Pedro', 'Martinez');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('KenSingleton@Hotmail.com', '3132 Rue Sainte-Famille', 'Ken', 'Singleton');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('DarrinFletcher@yahoo.ca', '3334 Rue de Bullion', 'Darrin', 'Fletcher');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('MarquisGrissom@gmail.com', '3536 Rue de la Commune', 'Marquis', 'Grissom');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('MoisesAlou@Hotmail.com', '3738 Rue Notre-Dame', 'Moises', 'Alou');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('MelRojas@yahoo.ca', '3940 Rue Saint-Paul', 'Mel', 'Rojas');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('UguethUrbina@gmail.com', '4142 Rue Saint-Antoine', 'Ugueth', 'Urbina');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('VladimirGuerrero@Hotmail.com', '4344 Rue de la Gauchetiere', 'Vladimir', 'Guerrero');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('OrlandoCabrera@yahoo.ca', '4546 Rue de Bleury', 'Orlando', 'Cabrera');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('JavierVazquez@gmail.com', '4748 Avenue du Parc', 'Javier', 'Vazquez');
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh'),
+    ('FelipeAlou@gmail.com', '123 Rue Saint-Jacques', 'Felipe', 'Alou'),
+    ('RustyStaub@Hotmail.com', '456 Rue Sainte-Catherine', 'Rusty', 'Staub'),
+    ('GaryCarter@yahoo.ca', '789 Avenue du Parc', 'Gary', 'Carter'),
+    ('TimRaines@gmail.com', '132 Avenue des Pins', 'Tim', 'Raines'),
+    ('AndreDawson@Hotmail.com', '567 Rue Sherbrooke', 'Andre', 'Dawson'),
+    ('TimWallach@yahoo.ca', '910 Boulevard Saint-Laurent', 'Tim', 'Wallach'),
+    ('DennisMartinez@gmail.com', '1112 Rue Saint-Denis', 'Dennis', 'Martinez'),
+    ('PascualPerez@Hotmail.com', '1314 Avenue McGill College', 'Pascual', 'Perez'),
+    ('BillLee@yahoo.ca', '1516 Rue Peel', 'Bill', 'Lee'),
+    ('SteveRogers@gmail.com', '1718 Rue de la Montagne', 'Steve', 'Rogers'),
+    ('JohnDooley@Hotmail.com', '1920 Rue de Bleury', 'John', 'Dooley'),
+    ('WarrenCromartie@yahoo.ca', '2122 Avenue du Docteur-Penfield', 'Warren', 'Cromartie'),
+    ('ElliottMaddox@gmail.com', '2324 Rue Guy', 'Elliott', 'Maddox'),
+    ('LarryParish@Hotmail.com', '2526 Rue de la Gauchetiere', 'Larry', 'Parish'),
+    ('RowlandOffice@yahoo.ca', '2728 Rue Crescent', 'Rowland', 'Office'),
+    ('PedroMartinez@gmail.com', '2930 Avenue Atwater', 'Pedro', 'Martinez'),
+    ('KenSingleton@Hotmail.com', '3132 Rue Sainte-Famille', 'Ken', 'Singleton'),
+    ('DarrinFletcher@yahoo.ca', '3334 Rue de Bullion', 'Darrin', 'Fletcher'),
+    ('MarquisGrissom@gmail.com', '3536 Rue de la Commune', 'Marquis', 'Grissom'),
+    ('MoisesAlou@Hotmail.com', '3738 Rue Notre-Dame', 'Moises', 'Alou'),
+    ('MelRojas@yahoo.ca', '3940 Rue Saint-Paul', 'Mel', 'Rojas'),
+    ('UguethUrbina@gmail.com', '4142 Rue Saint-Antoine', 'Ugueth', 'Urbina'),
+    ('VladimirGuerrero@Hotmail.com', '4344 Rue de la Gauchetiere', 'Vladimir', 'Guerrero'),
+    ('OrlandoCabrera@yahoo.ca', '4546 Rue de Bleury', 'Orlando', 'Cabrera'),
+    ('JavierVazquez@gmail.com', '4748 Avenue du Parc', 'Javier', 'Vazquez'),
+    ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon');
 
 
 GO
 IF (SELECT COUNT(*) FROM Teams)=0
-    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Tigres', 'Junior', 'Mixed', 'Soccer'); 
-    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'); 
-    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'); 
+    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES
+    ('Les Tigres', 'Junior', 'Mixed', 'Soccer'),
+    ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'),
+    ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball');
 GO
 
 

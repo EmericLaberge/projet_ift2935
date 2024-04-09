@@ -32,50 +32,46 @@ const AddGameModal: React.FC<Props> = ({ open, handleClose, handleInputChange, h
           className="justify-content-center text-white  label-white"
         />
         <TextField
-          name="event_name"
-          label="Event Name"
-          value={newGame.event_name}
+          name="event_id"
+          label="Event ID"
+          value={newGame.event_id}
           onChange={handleInputChange}
           margin="normal"
           sx={{ width: '100%', color: 'white' }}
           className="justify-content-center text-white  label-white"
         />
         <TextField
-          name="event_date"
-          label="Event Date"
-          value={newGame.event_date}
+          name="first_team_id"
+          label="First Team ID"
+          value={newGame.first_team_id}
           onChange={handleInputChange}
           margin="normal"
           sx={{ width: '100%', color: 'white' }}
-          className="justify-content-center text-white  label-white"
-        />
+          className="justify-content-center text-white  label-white"      />
         <TextField
-          name="team1_name"
-          label="Team 1 Name"
-          value={newGame.team1_name}
+          name="second_team_id"
+          label="Second Team ID"
+          value={newGame.second_team_id}
           onChange={handleInputChange}
           margin="normal"
           sx={{ width: '100%', color: 'white' }}
-          className="justify-content-center text-white  label-white"
-        />
+          className="justify-content-center text-white  label-white"      />
         <TextField
-          name="team2_name"
-          label="Team 2 Name"
-          value={newGame.team2_name}
+          name="game_date"
+          label="Game Date"
+          value={newGame.game_date}
           onChange={handleInputChange}
           margin="normal"
           sx={{ width: '100%', color: 'white' }}
-          className="justify-content-center text-white  label-white"
-        />
-        <TextField
+          className="justify-content-center text-white  label-white"      />
+        <TextField 
           name="final_score"
           label="Final Score"
           value={newGame.final_score}
           onChange={handleInputChange}
           margin="normal"
           sx={{ width: '100%', color: 'white' }}
-          className="justify-content-center text-white  label-white"
-        />
+          className="justify-content-center text-white  label-white"      />
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
           <Button onClick={handleClose} variant="contained" color="error">
             Cancel

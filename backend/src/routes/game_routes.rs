@@ -7,22 +7,37 @@ use tiberius::ToSql;
 
 #[derive(Serialize, Deserialize, derive_new::new, Debug)]
 struct gameInfos {
-    //TODO: add the fields of the game
+    id: Option<i32>,
+    sport_name: String,
+    event_id: i32,
+    first_team_id: i32,
+    second_team_id: i32,
+    game_date: String,
+    final_score: String,
 }
 
 #[post("/games")]
-async fn create_game(game: web::Json<gameInfos>) -> impl Responder {
+async fn create_game(game: web::Json<Game>) -> impl Responder {
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config).await.unwrap();
-    // TODO: Complete this function
-    HttpResponse::Ok().body("Game created")
+    let (query, params) = game.to_insert_query();
+    let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+    let result = client.execute(query, &params[..]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    HttpResponse::Ok().body(format!("{:?}", result))
 }
 
 #[get("/games")]
 async fn get_games() -> impl Responder {
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config).await.unwrap();
-    const query: &str = "SELECT * FROM games";
+    let query = "SELECT * FROM GamesView";
     let result = client.query(query, &[]).await;
     let result = match result {
         Ok(result) => result,
@@ -38,9 +53,9 @@ async fn get_games() -> impl Responder {
         }
     };
 
-    let mut game_list: Vec<Game> = Vec::new();
+    let mut game_list: Vec<gameInfos> = Vec::new();
     for row in row {
-        let game = Game::new(
+        let game = gameInfos::new(
             row.get(0),
             row.get::<&str, usize>(1).unwrap().to_owned(),
             row.get(2).unwrap(),
@@ -48,10 +63,12 @@ async fn get_games() -> impl Responder {
             row.get(4).unwrap(),
             row.get::<&str, usize>(5).unwrap().to_owned(),
             row.get::<&str, usize>(6).unwrap().to_owned(),
-
         );
         game_list.push(game);
     }
+
+    println!("This is the list of events: {:?}", game_list);
+
     HttpResponse::Ok().json(game_list)
 }
 
@@ -59,17 +76,41 @@ async fn get_games() -> impl Responder {
 async fn get_game_by_id(id: web::Path<i32>) -> impl Responder {
     let config = get_config().await.unwrap();
     let mut client = connect_to_db(config).await.unwrap();
-    // TODO: Complete this function
-    HttpResponse::Ok().body("Game by id")
+    let query = "SELECT * FROM Games WHERE ID=@P1";
+    let id = id.into_inner();
+    let result = client.query(query, &[&id]).await;
+    let result = match result {
+        Ok(result) => result,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+    let row = result.into_row().await;
+    let row = match row {
+        Ok(row) => row,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!("{:?}", e));
+        }
+    };
+
+    let mut game: gameInfos =
+        gameInfos::new(None, "".to_owned(), 0, 0, 0, "".to_owned(), "".to_owned());
+
+    if let Some(row) = row {
+        game = gameInfos::new(
+            row.get(0),
+            row.get::<&str, usize>(1).unwrap().to_owned(),
+            row.get(2).unwrap(),
+            row.get(3).unwrap(),
+            row.get(4).unwrap(),
+            row.get::<&str, usize>(5).unwrap().to_owned(),
+            row.get::<&str, usize>(6).unwrap().to_owned(),
+        );
+    }
+
+    HttpResponse::Ok().json(game)
 }
 
-#[put("/games/{id}")]
-async fn update_game(id: web::Path<i32>, game: web::Json<gameInfos>) -> impl Responder {
-    let config = get_config().await.unwrap();
-    let mut client = connect_to_db(config).await.unwrap();
-    // TODO: Complete this function
-    HttpResponse::Ok().body("Game updated")
-}
 
 #[delete("/games/{id}")]
 async fn delete_game(id: web::Path<i32>) -> impl Responder {
@@ -101,7 +142,7 @@ async fn delete_game(id: web::Path<i32>) -> impl Responder {
     }
 }
 
-// get the users events 
+// get the users events
 #[get("/user_games/{id}")]
 async fn get_user_games(id: web::Path<i32>) -> impl Responder {
     // make a query to the database to get the user with the id
@@ -120,7 +161,7 @@ async fn get_user_games(id: web::Path<i32>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
-    // utiliser la fonction getEventsByPlayerId presente dans le sql 
+    // utiliser la fonction getEventsByPlayerId presente dans le sql
     let query = "SELECT * FROM getGamesByPlayerId(@P1)";
     let id = id.into_inner();
     let result = client.query(query, &[&id]).await;

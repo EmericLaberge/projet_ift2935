@@ -13,8 +13,6 @@ pub struct Game {
 }
 
 impl Game {
-
-
             
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
         let query = "INSERT INTO Games (SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore) VALUES (@P1, @P2, @P3, @P4, @P5, @P6)";

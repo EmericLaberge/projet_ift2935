@@ -1,21 +1,18 @@
-
+use crate::config::get_config;
+use crate::db::connect_to_db;
+use crate::models::Event;
 use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 use chrono::{Date, NaiveDate};
 use serde::{Deserialize, Serialize};
 use tiberius::ToSql;
-use crate::db::connect_to_db;
-use crate::config::get_config;
-use crate::models::Event;
 
-
-#[derive(Serialize, Deserialize, derive_new::new, Debug)]
-struct eventInfos {
-    id: Option<i32>,
+#[derive(Serialize, Deserialize, Debug, derive_new::new)]
+pub struct EventInfo {
+    event_id: i32,
     name: String,
-    start_date: String,
-    end_date: String,
+    date_start: String,
+    date_end: String,
 }
-
 
 #[post("/events")]
 async fn create_event(event: web::Json<Event>) -> impl Responder {
@@ -25,7 +22,8 @@ async fn create_event(event: web::Json<Event>) -> impl Responder {
     let params: Vec<&dyn tiberius::ToSql> = params.iter().map(|p| p.as_ref()).collect();
     let result = client.execute(query, &params[..]).await;
     let result = match result {
-        Ok(result) => result, Err(e) => {
+        Ok(result) => result,
+        Err(e) => {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
@@ -33,8 +31,7 @@ async fn create_event(event: web::Json<Event>) -> impl Responder {
     HttpResponse::Ok().body(format!("{:?}", result))
 }
 
-
-// get all events 
+// get all events
 #[get("/events")]
 async fn get_all_events() -> impl Responder {
     // make a query to the database to get all the users
@@ -53,7 +50,7 @@ async fn get_all_events() -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
-    let query = "SELECT * FROM events";
+    let query = "SELECT * FROM EventsView";
     let result = client.query(query, &[]).await;
     let result = match result {
         Ok(result) => result,
@@ -69,10 +66,10 @@ async fn get_all_events() -> impl Responder {
         }
     };
 
-    let mut event_list: Vec<eventInfos> = Vec::new();
+    let mut event_list: Vec<Event> = Vec::new();
     for row in row {
-        let event = eventInfos::new(
-            row.get(0),
+        let event = Event::new(
+            row.get(0).unwrap(),
             row.get::<&str, usize>(1).unwrap().to_owned(),
             row.get::<&str, usize>(2).unwrap().to_owned(),
             row.get::<&str, usize>(3).unwrap().to_owned(),
@@ -85,7 +82,7 @@ async fn get_all_events() -> impl Responder {
     HttpResponse::Ok().json(event_list)
 }
 
-// get the users events 
+// get the users events
 #[get("/user_events/{id}")]
 async fn get_user_events(id: web::Path<i32>) -> impl Responder {
     // make a query to the database to get the user with the id
@@ -104,7 +101,7 @@ async fn get_user_events(id: web::Path<i32>) -> impl Responder {
             return HttpResponse::InternalServerError().body(format!("{:?}", e));
         }
     };
-    // utiliser la fonction getEventsByPlayerId presente dans le sql 
+    // utiliser la fonction getEventsByPlayerId presente dans le sql
     let query = "SELECT * FROM getEventsByPlayerId(@P1)";
     let id = id.into_inner();
     let result = client.query(query, &[&id]).await;
@@ -122,13 +119,10 @@ async fn get_user_events(id: web::Path<i32>) -> impl Responder {
         }
     };
 
-    let event_list: Vec<eventInfos> = Vec::new();
-
+    let event_list: Vec<Event> = Vec::new();
 
     HttpResponse::Ok().json(event_list)
 }
-
-
 
 #[get("/events/{id}")]
 async fn get_event_by_id(id: web::Path<i32>) -> impl Responder {
@@ -165,15 +159,18 @@ async fn get_event_by_id(id: web::Path<i32>) -> impl Responder {
         }
     };
 
-    let mut event: eventInfos = eventInfos::new(None, "".to_owned(), "".to_owned(), "".to_owned());
-    let row = row.unwrap();
-    event.id = row.get(0);
-    event.name = row.get::<&str, usize>(1).unwrap().to_owned();
-    event.start_date = row.get::<&str, usize>(2).unwrap().to_owned();
-    event.end_date = row.get::<&str, usize>(3).unwrap().to_owned();
-    HttpResponse::Ok().json(event)
+    let mut event = EventInfo::new(0, "".to_owned(), "".to_owned(), "".to_owned());
+    for row in row {
+        event = EventInfo::new(
+            row.get(0).unwrap(),
+            row.get::<&str, usize>(1).unwrap().to_owned(),
+            row.get::<&str, usize>(2).unwrap().to_owned(),
+            row.get::<&str, usize>(3).unwrap().to_owned(),
+        );
     }
 
+    HttpResponse::Ok().json(event)
+}
 #[delete("/events/{id}")]
 async fn delete_event(id: web::Path<i32>) -> impl Responder {
     // make a query to the database to get all the teams
@@ -205,4 +202,3 @@ async fn delete_event(id: web::Path<i32>) -> impl Responder {
         }
     }
 }
-

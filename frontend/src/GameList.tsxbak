@@ -28,9 +28,9 @@ import Game from './Components/Entities/Game';
 function GameList() {
   const [games, setGames] = useState<Game[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [editGame, setEditGame] = useState<Game>({ id:-1, sport_name: '', event_id: -1, first_team_id: -1, second_team_id: -1, game_date: '', final_score: '' });
+  const [editGame, setEditGame] = useState<Game>({ id: -1, sport_name: '', event_name: '', event_date: '', team1_name: '', team2_name: '', final_score: '' });
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
-  const [newGame, setNewGame] = useState<Partial<Game>>({ sport_name: '', event_id: -1, first_team_id: -1, second_team_id: -1, game_date: '', final_score: '' });
+  const [newGame, setNewGame] = useState<Partial<Game>>({ sport_name: '', event_name: '', event_date: '', team1_name: '', team2_name: '', final_score: '' });
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -43,7 +43,7 @@ function GameList() {
     if (isAllGames) {
       // refetch all usersTeams
       setIsAllGames(false);
-      const response = await fetch(`http://127.0.0.1:42069/user_games/${userId}`);
+      const response = await fetch(`http://127.0.0.1:6969/user_games/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your games');
       }
@@ -53,7 +53,7 @@ function GameList() {
     else {
       setIsAllGames(true);
       // refetch all teams
-      const response = await fetch(`http://127.0.0.1:42069/games`);
+      const response = await fetch(`http://127.0.0.1:6969/games`);
       if (!response.ok) {
         throw new Error('Failed to fetch all games');
       }
@@ -67,7 +67,7 @@ function GameList() {
 
   const handleEditClick = (id: GridRowId) => async () => {
     // query the user by id 
-    const response = await fetch(`http://127.0.0.1:42069/games/${id}`);
+    const response = await fetch(`http://127.0.0.1:6969/games/${id}`);
     const data: Game = await response.json();
     setEditGame(data);
     setOpenEdit(true);
@@ -117,7 +117,7 @@ function GameList() {
 
   const handleDeleteGameSubmit = async (id: GridRowId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:42069/games/${id}`, {
+      const response = await fetch(`http://127.0.0.1:6969/games/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -128,7 +128,7 @@ function GameList() {
       toast.error('Failed to delete game');
 
     }
-    const response = await fetch('http://127.0.0.1:42069/games');
+    const response = await fetch('http://127.0.0.1:6969/games');
     if (!response.ok) {
       throw new Error('Failed to fetch games');
     }
@@ -138,7 +138,7 @@ function GameList() {
   const handleNewGameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:42069/create_game', {
+      const response = await fetch('http://127.0.0.1:6969/create_game', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,14 +148,14 @@ function GameList() {
       if (!response.ok) {
         throw new Error('Failed to create game');
       }
-      setNewGame({ sport_name: '', event_id: -1, first_team_id: -1, second_team_id: -1, game_date: '', final_score: '' });
+      setNewGame({ sport_name: '', event_name: '', event_date: '', team1_name: '', team2_name: '', final_score: '' });
       toast.success('Game created successfully');
 
     } catch (error) {
       toast.error('Failed to create game');
     }
 
-    const response = await fetch('http://127.0.0.1:42069/games');
+    const response = await fetch('http://127.0.0.1:6969/games');
     if (!response.ok) {
       throw new Error('Failed to fetch games');
     }
@@ -166,7 +166,7 @@ function GameList() {
 
   const EditGameSubmit = async (game: Game) => {
     try {
-      const response = await fetch(`http://127.0.0.1:42069/games/${game.id}`, {
+      const response = await fetch(`http://127.0.0.1:6969/games/${game.id}`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -179,7 +179,7 @@ function GameList() {
     } catch (error) {
       toast.error('Failed to update game');
     }
-    const response = await fetch('http://127.0.0.1:42069/games');
+    const response = await fetch('http://127.0.0.1:6969/games');
     if (!response.ok) {
       throw new Error('Failed to fetch games');
     }
@@ -195,7 +195,7 @@ function GameList() {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:42069/games');
+        const response = await fetch('http://127.0.0.1:6969/games');
         if (!response.ok) {
           throw new Error('Failed to fetch games');
         }
@@ -250,13 +250,13 @@ function GameList() {
         rows={games}
 
         columns={[
-          { field: 'id', headerName: 'ID', width:50},
-          { field: 'sport_name', headerName: 'Sport Name', width:100},
-          { field: 'event_id', headerName: 'Event ID', width:100},
-          { field: 'first_team_id', headerName: 'First Team ID', width:100},
-          { field: 'second_team_id', headerName: 'Second Team ID', width:100},
-          { field: 'game_date', headerName: 'Game Date', width:100},
-          { field: 'final_score', headerName: 'Final Score', width:100},
+          { field: 'id', headerName: 'ID', width: 70 },
+          { field: 'sport_name', headerName: 'Sport Name', width: 130 },
+          { field: 'event_name', headerName: 'Event Name', width: 250 },
+          { field: 'event_date', headerName: 'Event Date', width: 130 },
+          { field: 'team1_name', headerName: 'Team 1 Name', width: 130 },
+          { field: 'team2_name', headerName: 'Team 2 Name', width: 130 },
+          { field: 'final_score', headerName: 'Final Score', width: 130 },
           {
             field: 'actions',
             type: 'actions',
@@ -265,6 +265,13 @@ function GameList() {
             cellClassName: 'actions',
             getActions: ({ id }) => {
               return [
+                <GridActionsCellItem
+                  icon={<EditIcon />}
+                  label="Edit"
+                  sx={{ color: 'info.main' }}
+                  onClick={handleEditClick(id)}
+                  color="inherit"
+                />,
                 <GridActionsCellItem
                   icon={<DeleteIcon />}
                   sx={{ color: 'error.main' }}

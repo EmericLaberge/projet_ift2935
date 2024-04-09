@@ -1337,6 +1337,39 @@ IF (SELECT COUNT(*) FROM Players)=0
     (26, 1), (27, 4);
 
 GO
+IF OBJECT_ID('EventsView') IS NOT NULL
+    DROP VIEW EventsView;
+GO
+
+CREATE VIEW EventsView AS
+SELECT 
+    ID, 
+    Name, 
+    CONVERT(NVARCHAR(10), StartDate, 23) AS StartDateAsString,
+    CONVERT(NVARCHAR(10), EndDate, 23) AS EndDateAsString
+FROM Events;
+GO
+
+IF OBJECT_ID ('GamesView') IS NOT NULL
+    DROP VIEW GamesView;
+GO 
+
+CREATE VIEW GamesView  AS 
+SELECT
+    ID,
+    SportName,
+    EventID,
+    FirstTeamID,
+    SecondTeamID,
+    CONVERT(NVARCHAR(10), GameDate, 23) AS GameDateAsString,  
+    FinalScore 
+    FROM Games;
+    GO
+
+  
+
+
+
 IF (SELECT COUNT(*) FROM Events)=0 
     INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
     ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');

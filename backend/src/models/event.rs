@@ -1,10 +1,11 @@
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
-use tiberius::ToSql;
+use tiberius::{ToSql};
+use tiberius::time::Date;
 
 #[derive(Serialize, Deserialize, Debug, derive_new::new)]
 pub struct Event {
-    event_id: i32,
+    id: i32,
     name: String,
     date_start: String,
     date_end: String,

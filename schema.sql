@@ -39,20 +39,20 @@ GO
 IF OBJECT_ID('Sports') IS NULL
 BEGIN
     CREATE TABLE Sports (
-        Name VARCHAR(50) PRIMARY KEY,
+        Name NVARCHAR(50) PRIMARY KEY,
         minJoueurs INT NOT NULL,
         maxJoueurs INT NOT NULL,
         scoreFormat NVARCHAR(50) NOT NULL,
-        CHECK (scoreFormat LIKE '("%[0]-[0]%")')
+        CHECK (scoreFormat LIKE '%[0]-[0]%')
     );
     INSERT INTO Sports
     VALUES
-    ('None',0,0,'("0-0")'),
-    ('Soccer',12,20,'("0-0")'),
-    ('Basketball',12,20,'("00-00")'),
-    ('Volleyball',12, 12, '("00-00")'),
-    ('Baseball', 14, 20, '("00-00")'),
-    ('Football', 16, 20, '("00-00")');
+    ('None',0,0,'##0-0##'),
+    ('Soccer',12,20,'##0-0##'),
+    ('Basketball',12,20,'##0-0##'),
+    ('Volleyball',12, 12, '##0-0##'),
+    ('Baseball', 14, 20, '##0-0##'),
+    ('Football', 16, 20, '##0-0##');
 END
 GO
 
@@ -60,7 +60,7 @@ GO
 IF OBJECT_ID('TeamLevel') IS NULL
 BEGIN
     CREATE TABLE TeamLevel (
-        Level VARCHAR(50) PRIMARY KEY
+        Level NVARCHAR(50) PRIMARY KEY
     );
     INSERT INTO TeamLevel (Level)
     VALUES
@@ -74,7 +74,7 @@ GO
 IF OBJECT_ID('TeamType') IS NULL
 BEGIN
     CREATE TABLE TeamType (
-        Type VARCHAR(50) PRIMARY KEY
+        Type NVARCHAR(50) PRIMARY KEY
     );
     INSERT INTO TeamType (Type)
     VALUES
@@ -90,9 +90,9 @@ BEGIN
     CREATE TABLE Teams (
         ID INT IDENTITY PRIMARY KEY,
         Name NVARCHAR(50) NOT NULL,
-        Level VARCHAR(50) NOT NULL,
-        TeamType VARCHAR(50) NOT NULL,
-        SportName VARCHAR(50) NOT NULL,
+        Level NVARCHAR(50) NOT NULL,
+        TeamType NVARCHAR(50) NOT NULL,
+        SportName NVARCHAR(50) NOT NULL,
         FOREIGN KEY (Level) REFERENCES TeamLevel(Level) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (TeamType) REFERENCES TeamType(Type) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (SportName) REFERENCES Sports(Name) ON DELETE CASCADE ON UPDATE CASCADE
@@ -151,7 +151,7 @@ IF OBJECT_ID('Games') IS NULL
 BEGIN
     CREATE TABLE Games (
         ID INT IDENTITY PRIMARY KEY,
-        SportName VARCHAR(50) NOT NULL,
+        SportName NVARCHAR(50) NOT NULL,
         EventID INT NOT NULL,
         FirstTeamID INT NOT NULL,
         SecondTeamID INT NOT NULL,
@@ -352,7 +352,7 @@ RETURN (
 GO
 
 --REQUÊTE COMPLEXE 2
-CREATE OR ALTER FUNCTION getPlayersByEventAndLevel(@EventID INT, @Level VARCHAR(50))
+CREATE OR ALTER FUNCTION getPlayersByEventAndLevel(@EventID INT, @Level NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN (
@@ -363,7 +363,7 @@ RETURN (
 GO
 
 --REQUÊTE COMPLEXE 3
-CREATE OR ALTER FUNCTION getPlayersBySportAndLevel(@SportName NVARCHAR(50), @Level VARCHAR(50))
+CREATE OR ALTER FUNCTION getPlayersBySportAndLevel(@SportName NVARCHAR(50), @Level NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN (
@@ -373,7 +373,7 @@ RETURN (
 GO
 
 
-CREATE OR ALTER FUNCTION getScoreFormat(@SportName VARCHAR(50))
+CREATE OR ALTER FUNCTION getScoreFormat(@SportName NVARCHAR(50))
 RETURNS NVARCHAR(50)
 AS
 BEGIN
@@ -388,7 +388,7 @@ CREATE OR ALTER VIEW [Top 5 Teams with most games played] AS
 SELECT TOP 5 Teams.Name, Teams.SportName AS [Sport], COUNT(Games.ID) AS [Games]
 FROM Teams JOIN Games ON Teams.ID = Games.FirstTeamID OR Teams.ID = Games.SecondTeamID
 GROUP BY Teams.ID, Name, Teams.SportName
-ORDER BY COUNT(Games.ID)
+ORDER BY COUNT(Games.ID);
 GO
 
 --Vue pour voir les 5 évènements les plus populaires présentement en cours
@@ -397,7 +397,13 @@ SELECT TOP 5 e.Name, e.StartDate, e.EndDate
 FROM ((Events e JOIN TeamInEvent te ON TeamID = ID) JOIN Players p ON p.TeamID=te.TeamID)
 WHERE e.StartDate<GETDATE() AND e.EndDate>GETDATE()
 GROUP BY EventID, e.Name, e.StartDate, e.EndDate
-ORDER BY COUNT(p.UserID)
+ORDER BY COUNT(p.UserID);
+GO
+
+CREATE OR ALTER VIEW [displayGame] AS
+SELECT g.ID, g.sportName, e.Name AS [Event name], t1.Name AS [Team 1], t2.Name AS [Team 2], g.GameDate, g.FinalScore
+FROM ((Games g JOIN Teams t1 ON g.FirstTeamID = t1.ID) JOIN Teams t2 ON g.SecondTeamID = t2.ID) JOIN Events e ON g.EventID = e.ID
+;
 GO
 
 --Procédure pour ajouter le score final à une partie
@@ -405,7 +411,10 @@ CREATE OR ALTER PROCEDURE addFinalScore(@GameID INT, @scoreTeam1 INT, @scoreTeam
 AS
 BEGIN 
     UPDATE Games 
-    SET FinalScore = FORMAT(CAST(CONCAT(@scoreTeam1,@scoreTeam2) AS INT),
+    SET FinalScore = FORMAT(CAST(
+            CONCAT(
+                FORMAT(@scoreTeam1,'000'),FORMAT(@scoreTeam2, '##0')) AS integer
+        ),
         (SELECT ScoreFormat 
         FROM Sports s 
         JOIN Games g 

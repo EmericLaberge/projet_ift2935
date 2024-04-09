@@ -544,40 +544,37 @@ IF (SELECT COUNT(*) FROM Teams)=0
     Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'); 
     Insert INTO Teams(Name, Level, TeamType, SportName) VALUES ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'); 
 GO
-GO
-IF (SELECT COUNT(*) FROM Players)=0
-    Insert INTO Players(UserID, TeamID) VALUES (1, 1);
-    Insert INTO Players(UserID, TeamID) VALUES (2, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (3, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (4, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (5, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (6, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (7, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (8, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (9, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (10, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (11, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (12, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (13, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (14, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (15, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (16, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (17, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (18, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (19, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (20, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (21, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (22, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (23, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (24, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (25, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (26, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (27, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (28, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (29, 3);
-    Insert INTO Players(UserID, TeamID) VALUES (30, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (31, 3);
 
+
+IF (SELECT COUNT(*) FROM Players)=0
+    Insert INTO Players(UserID, TeamID) VALUES 
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 2),
+    (5, 3),
+    (6, 2),
+    (7, 3),
+    (8, 2),
+    (9, 3),
+    (10, 2),
+    (11, 3),
+    (12, 2),
+    (13, 3),
+    (14, 2),
+    (15, 3),
+    (16, 2),
+    (17, 3),
+    (18, 2),
+    (19, 3),
+    (20, 2),
+    (21, 3),
+    (22, 2),
+    (23, 3),
+    (24, 2),
+    (25, 3),
+    (26, 2),
+    (27, 3);
 GO
 IF (SELECT COUNT(*) FROM Events)=0 
     INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02')
@@ -593,3 +590,5 @@ IF (SELECT COUNT(*) FROM Games)=0
     INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
     VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##')
 GO
+
+select * from Teams

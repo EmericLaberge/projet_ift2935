@@ -512,6 +512,34 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE getEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(50))
+AS
+BEGIN
+    DECLARE @type AS NVARCHAR(64)
+    SET @type = CASE 
+                    WHEN @tableName = 'Games' 
+                        OR @tableName = 'Events' 
+                        OR @tableName = 'Users'
+                        OR @tableName = 'Staff'
+                        OR @tableName = 'Teams'
+                        OR @tableName = 'Credentials'
+                        THEN 'INT'
+                    WHEN @tableName = 'Sports'
+                        OR @tableName = 'TeamLevel'
+                        OR @tableName = 'TeamType'
+                        THEN 'NVARCHAR(50)'
+    END;
+    DECLARE @query AS NVARCHAR(500), @field AS NVARCHAR(100)
+
+    set @field = (SELECT top 1 COLUMN_NAME 
+    FROM INFORMATION_SCHEMA.Columns 
+    WHERE TABLE_NAME = @tableName)
+
+    SET @query = 'SELECT * FROM '+@tableName+' WHERE '+@field+'= CAST('+@PK+') AS '+@type
+    RETURN EXEC(@query)
+END;
+GO
+
 CREATE OR ALTER PROCEDURE deleteEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(50))
 AS
 BEGIN
@@ -535,7 +563,7 @@ BEGIN
     FROM INFORMATION_SCHEMA.Columns 
     WHERE TABLE_NAME = @tableName)
 
-    SET @query = 'DELETE FROM '+@tableName+' WHERE '+@field+'= CAST(@PK) AS '+@type
+    SET @query = 'DELETE FROM '+@tableName+' WHERE '+@field+'= CAST('+@PK+') AS '+@type
     EXEC(@query)
 END;
 GO

@@ -587,6 +587,7 @@ GO
 
 IF (SELECT COUNT(*) FROM Players)=0
     Insert INTO Players(UserID, TeamID) VALUES 
+    -- Team de Baseball
     (1, 1),
     (2, 2),  (3, 3),
     (4, 2),  (5, 3),
@@ -602,6 +603,7 @@ IF (SELECT COUNT(*) FROM Players)=0
     (24, 2), (25, 3),
     (26, 2), (27, 3),
 
+    --Team de Soccer
     (2, 1),  (3, 4),
     (4, 1),  (5, 4),
     (6, 1),  (7, 4),

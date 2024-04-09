@@ -494,15 +494,41 @@ CREATE OR ALTER PROCEDURE makeCursor(@topNum INT, @tableName VARCHAR(50))
 AS
 BEGIN
     DECLARE @query AS NVARCHAR(500)
-    SET @query = 'DECLARE '+'@tableName'+'Cursor CURSOR GLOBAL SCROLL 
-    FOR SELECT TOP ('+'@topNum'+') *
-    FROM '+'@tableName'+' 
+    SET @query = 'DECLARE '+@tableName+'Cursor CURSOR GLOBAL SCROLL 
+    FOR SELECT TOP ('+@topNum+') *
+    FROM '+@tableName+' 
     FOR READ_ONLY'
 
     EXEC(@query)
 END;
 GO
 
+CREATE OR ALTER PROCEDURE deleteEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(50))
+AS
+BEGIN
+    DECLARE @type AS NVARCHAR(64)
+    SET @type = CASE 
+                    WHEN @tableName = 'Games' 
+                        OR @tableName = 'Events' 
+                        OR @tableName = 'Users'
+                        OR @tableName = 'Staff'
+                        OR @tableName = 'Teams'
+                        OR @tableName = 'Credentials'
+                        THEN 'INT'
+                    WHEN @tableName = 'Sports'
+                        OR @tableName = 'TeamLevel'
+                        OR @tableName = 'TeamType'
+                        THEN 'NVARCHAR(50)'
+    END;
+    DECLARE @query AS NVARCHAR(500), @field AS NVARCHAR(100)
+
+    set @field = (SELECT top 1 COLUMN_NAME 
+    FROM INFORMATION_SCHEMA.Columns 
+    WHERE TABLE_NAME = @tableName)
+    
+    SET @query = 'DELETE FROM '+@tableName+' WHERE '+@field+'= CAST(@PK) AS '+@type
+END;
+GO
 
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 

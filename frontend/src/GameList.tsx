@@ -43,7 +43,7 @@ function GameList() {
     if (isAllGames) {
       // refetch all usersTeams
       setIsAllGames(false);
-      const response = await fetch(`http://127.0.0.1:6969/user_games/${userId}`);
+      const response = await fetch(`http://127.0.0.1:42069/user_games/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch your games');
       }
@@ -53,7 +53,7 @@ function GameList() {
     else {
       setIsAllGames(true);
       // refetch all teams
-      const response = await fetch(`http://127.0.0.1:6969/games`);
+      const response = await fetch(`http://127.0.0.1:42069/games`);
       if (!response.ok) {
         throw new Error('Failed to fetch all games');
       }
@@ -67,7 +67,7 @@ function GameList() {
 
   const handleEditClick = (id: GridRowId) => async () => {
     // query the user by id 
-    const response = await fetch(`http://127.0.0.1:6969/games/${id}`);
+    const response = await fetch(`http://127.0.0.1:42069/games/${id}`);
     const data: Game = await response.json();
     setEditGame(data);
     setOpenEdit(true);
@@ -117,7 +117,7 @@ function GameList() {
 
   const handleDeleteGameSubmit = async (id: GridRowId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:6969/games/${id}`, {
+      const response = await fetch(`http://127.0.0.1:42069/games/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -128,7 +128,7 @@ function GameList() {
       toast.error('Failed to delete game');
 
     }
-    const response = await fetch('http://127.0.0.1:6969/games');
+    const response = await fetch('http://127.0.0.1:42069/games');
     if (!response.ok) {
       throw new Error('Failed to fetch games');
     }
@@ -138,7 +138,7 @@ function GameList() {
   const handleNewGameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:6969/create_game', {
+      const response = await fetch('http://127.0.0.1:42069/create_game', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ function GameList() {
       toast.error('Failed to create game');
     }
 
-    const response = await fetch('http://127.0.0.1:6969/games');
+    const response = await fetch('http://127.0.0.1:42069/games');
     if (!response.ok) {
       throw new Error('Failed to fetch games');
     }
@@ -166,7 +166,7 @@ function GameList() {
 
   const EditGameSubmit = async (game: Game) => {
     try {
-      const response = await fetch(`http://127.0.0.1:6969/games/${game.id}`, {
+      const response = await fetch(`http://127.0.0.1:42069/games/${game.id}`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -179,7 +179,7 @@ function GameList() {
     } catch (error) {
       toast.error('Failed to update game');
     }
-    const response = await fetch('http://127.0.0.1:6969/games');
+    const response = await fetch('http://127.0.0.1:42069/games');
     if (!response.ok) {
       throw new Error('Failed to fetch games');
     }
@@ -195,7 +195,7 @@ function GameList() {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:6969/games');
+        const response = await fetch('http://127.0.0.1:42069/games');
         if (!response.ok) {
           throw new Error('Failed to fetch games');
         }

@@ -633,7 +633,8 @@ IF (SELECT COUNT(*) FROM StaffInEvent)=0
 GO
 IF (SELECT COUNT(*) FROM Games)=0 
     INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
-    VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##')
+    VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##');
+           --('Soccer', 2, 1, 4, '2024-06-03','##1-0##'); cette ligne fait bugger 
 GO
 
 

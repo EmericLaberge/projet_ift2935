@@ -321,6 +321,19 @@ WHERE
 Players.UserID = @identifiant);
 GO
 
+CREATE OR ALTER FUNCTION getEventsByUserId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT e.ID AS EventID, e.Name, e.StartDate, e.EndDate
+FROM  (Players p JOIN TeamInEvent te ON p.UserID = @identifiant AND te.TeamID = p.TeamID) 
+JOIN Events e ON te.EventID = e.ID
+UNION
+SELECT e.ID AS EventID, e.Name, e.StartDate, e.EndDate
+FROM StaffInEvent se JOIN Events e ON se.UserID = @identifiant AND se.EventID=e.ID)
+
+GO
+
 CREATE OR ALTER FUNCTION getGamesByPlayerId(@identifiant INT)
 RETURNS TABLE
 AS

@@ -6,11 +6,10 @@ import NavBar from './Components/Navbar/NavBar';
 import { Card } from '@mui/material';
 import UserList from './UserList';
 import { Toaster } from 'react-hot-toast';
-import { AuthAtom, UserIdAtom } from './atoms';
+import {AuthAtom, UserIdAtom}from './atoms';
 import { useAtom } from 'jotai';
 import Login from './Login';
 import TeamList from './TeamList';
-import GameList from './GameList';
 
 
 function App() {
@@ -20,8 +19,8 @@ function App() {
   if (!auth) {
     return (
       <>
-        <Login />
-        <Toaster />
+      <Login />
+      <Toaster />
       </>
     )
 
@@ -35,9 +34,6 @@ function App() {
           <Route path="/Users" element={<UserList />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Teams" element={<TeamList />} />
-          <Route path="/Profile" element={<Card />} />
-          <Route path="/Events" element={<Card />} />
-          <Route path="/Games" element={<GameList />} />
         </Routes>
       </Router>
       <Toaster />

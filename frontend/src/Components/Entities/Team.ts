@@ -23,7 +23,7 @@ export enum Sport {
 
 type Team = {
   id: number;
-  team_name: string;
+  name: string;
   level: Level;
   type: Type;
   sport: Sport;

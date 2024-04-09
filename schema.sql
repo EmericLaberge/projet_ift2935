@@ -510,9 +510,33 @@ GO
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 
     Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh')
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('VladGuerrero@gmail.com', '2105 de la Savane', 'Vladimir', 'Guerrero')
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('GaryCarter@Hotmail.com', '123 Rue Laurier', 'Gary', 'Carter')
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('SteveRogers@yahoo.ca', '1324 Rue Rivard', 'Steve', 'Rogers')
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('FelipeAlou@gmail.com', '123 Rue Saint-Jacques', 'Felipe', 'Alou');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('RustyStaub@Hotmail.com', '456 Rue Sainte-Catherine', 'Rusty', 'Staub');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('GaryCarter@yahoo.ca', '789 Avenue du Parc', 'Gary', 'Carter');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('TimRaines@gmail.com', '132 Avenue des Pins', 'Tim', 'Raines');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('AndreDawson@Hotmail.com', '567 Rue Sherbrooke', 'Andre', 'Dawson');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('TimWallach@yahoo.ca', '910 Boulevard Saint-Laurent', 'Tim', 'Wallach');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('DennisMartinez@gmail.com', '1112 Rue Saint-Denis', 'Dennis', 'Martinez');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('PascualPerez@Hotmail.com', '1314 Avenue McGill College', 'Pascual', 'Perez');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('BillLee@yahoo.ca', '1516 Rue Peel', 'Bill', 'Lee');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('SteveRogers@gmail.com', '1718 Rue de la Montagne', 'Steve', 'Rogers');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('JohnDooley@Hotmail.com', '1920 Rue de Bleury', 'John', 'Dooley');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('WarrenCromartie@yahoo.ca', '2122 Avenue du Docteur-Penfield', 'Warren', 'Cromartie');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('ElliottMaddox@gmail.com', '2324 Rue Guy', 'Elliott', 'Maddox');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('LarryParish@Hotmail.com', '2526 Rue de la Gauchetiere', 'Larry', 'Parish');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('RowlandOffice@yahoo.ca', '2728 Rue Crescent', 'Rowland', 'Office');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('PedroMartinez@gmail.com', '2930 Avenue Atwater', 'Pedro', 'Martinez');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('KenSingleton@Hotmail.com', '3132 Rue Sainte-Famille', 'Ken', 'Singleton');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('DarrinFletcher@yahoo.ca', '3334 Rue de Bullion', 'Darrin', 'Fletcher');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('MarquisGrissom@gmail.com', '3536 Rue de la Commune', 'Marquis', 'Grissom');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('MoisesAlou@Hotmail.com', '3738 Rue Notre-Dame', 'Moises', 'Alou');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('MelRojas@yahoo.ca', '3940 Rue Saint-Paul', 'Mel', 'Rojas');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('UguethUrbina@gmail.com', '4142 Rue Saint-Antoine', 'Ugueth', 'Urbina');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('VladimirGuerrero@Hotmail.com', '4344 Rue de la Gauchetiere', 'Vladimir', 'Guerrero');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('OrlandoCabrera@yahoo.ca', '4546 Rue de Bleury', 'Orlando', 'Cabrera');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('JavierVazquez@gmail.com', '4748 Avenue du Parc', 'Javier', 'Vazquez');
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon');
+
 
 GO
 IF (SELECT COUNT(*) FROM Teams)=0
@@ -524,8 +548,36 @@ GO
 IF (SELECT COUNT(*) FROM Players)=0
     Insert INTO Players(UserID, TeamID) VALUES (1, 1);
     Insert INTO Players(UserID, TeamID) VALUES (2, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (3, 2);
-    Insert INTO Players(UserID, TeamID) VALUES (4, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (3, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (4, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (5, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (6, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (7, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (8, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (9, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (10, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (11, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (12, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (13, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (14, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (15, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (16, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (17, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (18, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (19, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (20, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (21, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (22, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (23, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (24, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (25, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (26, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (27, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (28, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (29, 3);
+    Insert INTO Players(UserID, TeamID) VALUES (30, 2);
+    Insert INTO Players(UserID, TeamID) VALUES (31, 3);
+
 GO
 IF (SELECT COUNT(*) FROM Events)=0 
     INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02')

@@ -12,7 +12,7 @@ use db::connect_to_db;
 use jsonwebtoken::{encode, DecodingKey, EncodingKey, Header, Validation};
 use models::{staff, team, users};
 use routes::team_routes::create_team;
-use routes::{create_player, create_user, delete_user, get_all_players, get_all_teams, get_all_users, get_user_by_id, login, update_user};
+use routes::{create_event, create_player, create_user, delete_event, delete_user, get_all_events, get_all_players, get_all_teams, get_all_users, get_event_by_id, get_user_by_id, get_user_events, login, update_user};
 use serde::{Deserialize, Serialize};
 use staff::Staff;
 use team::Team;
@@ -93,6 +93,12 @@ async fn main() -> anyhow::Result<()> {
             .service(delete_user)
             .service(get_all_players)
             .service(create_player)
+            .service(get_user_events)
+            .service(create_team) 
+            .service(get_all_events)
+            .service(get_event_by_id)
+
+            .service(delete_event)
     })
     .bind(("127.0.0.1", 6516))?
     .run()

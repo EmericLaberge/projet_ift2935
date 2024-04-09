@@ -1,5 +1,6 @@
 
 use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
+use chrono::{Date, NaiveDate};
 use serde::{Deserialize, Serialize};
 use tiberius::ToSql;
 use crate::db::connect_to_db;
@@ -68,7 +69,7 @@ async fn get_all_events() -> impl Responder {
         }
     };
 
-    let mut user_list: Vec<eventInfos> = Vec::new();
+    let mut event_list: Vec<eventInfos> = Vec::new();
     for row in row {
         let event = eventInfos::new(
             row.get(0),
@@ -76,11 +77,12 @@ async fn get_all_events() -> impl Responder {
             row.get::<&str, usize>(2).unwrap().to_owned(),
             row.get::<&str, usize>(3).unwrap().to_owned(),
         );
+        event_list.push(event);
     }
-    serde_json::to_string(&user_list).unwrap();
-    println!("This is the list of all users");
 
-    HttpResponse::Ok().json(user_list)
+    println!("This is the list of events: {:?}", event_list);
+
+    HttpResponse::Ok().json(event_list)
 }
 
 // get the users events 
@@ -169,7 +171,6 @@ async fn get_event_by_id(id: web::Path<i32>) -> impl Responder {
     event.name = row.get::<&str, usize>(1).unwrap().to_owned();
     event.start_date = row.get::<&str, usize>(2).unwrap().to_owned();
     event.end_date = row.get::<&str, usize>(3).unwrap().to_owned();
-    serde_json::to_string(&event).unwrap();
     HttpResponse::Ok().json(event)
     }
 

@@ -1,7 +1,9 @@
+use std::sync::Arc;
+
 use fake::Fake;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use tiberius;
+use tiberius::{self, ToSql};
 
 #[derive(Debug, derive_new::new, Deserialize, Serialize)]
 pub struct Team {
@@ -49,10 +51,14 @@ pub mod fake_data {
 }
 
 impl Team {
-    pub fn to_insert_query(&self) -> (&str, Vec<Box<dyn tiberius::ToSql>>) {
-        let query =
-            "INSERT INTO Teams (Name, Level, TeamType, SportName) VALUES (@P1, @P2, @P3, @P4)";
-        let params: Vec<Box<dyn tiberius::ToSql>> = vec![Box::new(self.team_name.clone())];
+    pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
+        let query = "EXEC spCreateTeam @Name = @p1, @TeamLevel = @p2, @TeamType = @p3, @SportName = @p4";
+        let params = vec![
+            Arc::new(self.team_name.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.team_level.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.team_type.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.sport.clone()) as Arc<dyn ToSql>,
+        ];
         (query, params)
     }
 

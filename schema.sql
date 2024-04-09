@@ -488,6 +488,19 @@ BEGIN
 END;
 GO
 
+
+CREATE OR ALTER PROCEDURE spCreateTeam
+    @Name NVARCHAR(50),
+    @TeamLevel NVARCHAR(50),
+    @TeamType NVARCHAR(50),
+    @SportName NVARCHAR(50)
+AS 
+BEGIN
+    INSERT INTO Teams (Name, TeamLevel, TeamType, SportName)
+    VALUES (@Name, @TeamLevel, @TeamType, @SportName);
+END;
+GO
+
 -- Fonction pour récupérer les joueurs d'une équipe
 CREATE OR ALTER FUNCTION fnGetPlayers (@TeamID INT)
 RETURNS TABLE
@@ -1153,6 +1166,19 @@ BEGIN
     VALUES (@UserID, @Username, @Password);
 END;
 GO
+
+
+CREATE OR ALTER PROCEDURE spCreateTeam
+    @Name NVARCHAR(50),
+    @TeamLevel NVARCHAR(50),
+    @TeamType NVARCHAR(50),
+    @SportName NVARCHAR(50)
+AS 
+BEGIN
+    INSERT INTO Teams (Name, TeamLevel, TeamType, SportName)
+    VALUES (@Name, @TeamLevel, @TeamType, @SportName);
+END; 
+GO 
 
 -- Fonction pour récupérer les joueurs d'une équipe
 CREATE OR ALTER FUNCTION fnGetPlayers (@TeamID INT)

@@ -47,7 +47,7 @@ function TeamList() {
         throw new Error('Failed to fetch your teams');
       }
       const data: Team[] = await response.json();
-      setUserTeams(data);
+      setTeams(data);
     }
     else {
       setIsAllTeams(true);
@@ -223,19 +223,19 @@ function TeamList() {
   return (
     <div className="App">
       <div className="w-3/4 justify-items-start m-auto flex mt-3">
-<Stack direction="row" spacing={1} alignItems="center">
-    <Typography variant="h6" component="h2"> 
-      View My Teams 
-    </Typography>
-        <Switch
-          checked={isAllTeams}
-          onChange={() => handleViewClick()}
-          inputProps={{ 'aria-label': 'controlled' }}
-        />
-        <Typography variant="h6" component="h2">
-          View All Teams
-        </Typography>
-      </Stack>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="h6" component="h2">
+            View My Teams
+          </Typography>
+          <Switch
+            checked={isAllTeams}
+            onChange={() => handleViewClick()}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+          <Typography variant="h6" component="h2">
+            View All Teams
+          </Typography>
+        </Stack>
       </div>
       <h1 id="header-title">Team Management</h1>
       <div className="w-3/4 align-center justify-end m-auto flex mb-3">
@@ -267,8 +267,8 @@ function TeamList() {
         columns={[
           { field: 'id', headerName: 'ID', width: 90 },
           { field: 'team_name', headerName: 'Team Name', width: 150 },
-          { field: 'level', headerName: 'Level', width: 150 },
-          { field: 'type', headerName: 'Type', width: 150 },
+          { field: 'team_level', headerName: 'Level', width: 150 },
+          { field: 'team_type', headerName: 'Type', width: 150 },
           { field: 'sport', headerName: 'Sport', width: 150 },
           {
             field: 'actions',

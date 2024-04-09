@@ -7,8 +7,8 @@ use tiberius::time::Date;
 pub struct Event {
     id: i32,
     name: String,
-    date_start: String,
-    date_end: String,
+    start_date: String,
+    end_date: String,
 }
 
 impl Event {
@@ -17,8 +17,8 @@ impl Event {
         let query = "INSERT INTO Events (Name, StartDate, EndDate) VALUES (@P1, @P2, @P3)";
         let params = vec![
             Arc::new(self.name.clone()) as Arc<dyn ToSql>,
-            Arc::new(self.date_start.clone()) as Arc<dyn ToSql>,
-            Arc::new(self.date_end.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.start_date.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.end_date.clone()) as Arc<dyn ToSql>,
         ];
         (query, params)
     }

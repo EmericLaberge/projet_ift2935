@@ -10,8 +10,8 @@ use tiberius::ToSql;
 pub struct EventInfo {
     event_id: i32,
     name: String,
-    date_start: String,
-    date_end: String,
+    start_date: String,
+    end_date: String,
 }
 
 #[post("/events")]

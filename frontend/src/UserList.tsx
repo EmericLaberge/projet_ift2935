@@ -217,11 +217,11 @@ function UserList() {
           rows={users}
 
           columns={[
-            { field: 'id', headerName: 'ID', width: 90 },
-            { field: 'email', headerName: 'Email', width: 200, editable: true },
-            { field: 'address', headerName: 'Address', width: 200 },
-            { field: 'first_name', headerName: 'First Name', width: 150 },
-            { field: 'last_name', headerName: 'Last Name', width: 150 },
+            { field: 'id', headerName: 'ID', width: 50 },
+            { field: 'email', headerName: 'Email', width:150 },
+            { field: 'address', headerName: 'Address', width: 150 },
+            { field: 'first_name', headerName: 'First Name', width: 100 },
+            { field: 'last_name', headerName: 'Last Name', width: 100 },
             {
               field: 'actions',
               type: 'actions',

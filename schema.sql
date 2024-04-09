@@ -580,47 +580,53 @@ IF (SELECT COUNT(*) FROM Teams)=0
     Insert INTO Teams(Name, Level, TeamType, SportName) VALUES
     ('Les Tigres', 'Junior', 'Mixed', 'Soccer'),
     ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'),
-    ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball');
+    ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'),
+    ('The Kicks', 'Junior', 'Mixed', 'Soccer');
 GO
 
 
 IF (SELECT COUNT(*) FROM Players)=0
     Insert INTO Players(UserID, TeamID) VALUES 
     (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 2),
-    (5, 3),
-    (6, 2),
-    (7, 3),
-    (8, 2),
-    (9, 3),
-    (10, 2),
-    (11, 3),
-    (12, 2),
-    (13, 3),
-    (14, 2),
-    (15, 3),
-    (16, 2),
-    (17, 3),
-    (18, 2),
-    (19, 3),
-    (20, 2),
-    (21, 3),
-    (22, 2),
-    (23, 3),
-    (24, 2),
-    (25, 3),
-    (26, 2),
-    (27, 3);
+    (2, 2),  (3, 3),
+    (4, 2),  (5, 3),
+    (6, 2),  (7, 3),
+    (8, 2),  (9, 3),
+    (10, 2), (11, 3),
+    (12, 2), (13, 3),
+    (14, 2), (15, 3),
+    (16, 2), (17, 3),
+    (18, 2), (19, 3),
+    (20, 2), (21, 3),
+    (22, 2), (23, 3),
+    (24, 2), (25, 3),
+    (26, 2), (27, 3),
+
+    (2, 1),  (3, 4),
+    (4, 1),  (5, 4),
+    (6, 1),  (7, 4),
+    (8, 1),  (9, 4),
+    (10, 1), (11, 4),
+    (12, 1), (13, 4),
+    (14, 1), (15, 4),
+    (16, 1), (17, 4),
+    (18, 1), (19, 4),
+    (20, 1), (21, 4),
+    (22, 1), (23, 4),
+    (24, 1), (25, 4),
+    (26, 1), (27, 4);
+
 GO
 IF (SELECT COUNT(*) FROM Events)=0 
-    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02')
+    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
+    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');
 GO
 IF (SELECT COUNT(*) FROM TeamInEvent)=0 
     INSERT INTO TeamInEvent(EventID, TeamID) VALUES 
     (1, 2),
-    (1, 3);
+    (1, 3),
+    (2, 1),
+    (2, 4);
 GO
 IF (SELECT COUNT(*) FROM StaffInEvent)=0 
     INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
@@ -630,4 +636,4 @@ IF (SELECT COUNT(*) FROM Games)=0
     VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##')
 GO
 
-select * from Teams
+

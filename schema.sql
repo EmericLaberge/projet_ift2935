@@ -1,13 +1,11 @@
 USE master
 GO
 
-DROP DATABASE Jasson
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
-    CREATE DATABASE Jasson;
+    DROP DATABASE Jasson;
 END
+CREATE DATABASE Jasson
 GO
 USE Jasson;
 GO
@@ -35,7 +33,6 @@ BEGIN
 END
 GO
 
---("####0-####0")
 IF OBJECT_ID('Sports') IS NULL
 BEGIN
     CREATE TABLE Sports (
@@ -316,12 +313,25 @@ CREATE OR ALTER FUNCTION getEventsByPlayerId(@identifiant INT)
 RETURNS TABLE
 AS
 RETURN
-(SELECT Events.ID AS EventID, Events.StartDate, Events.EndDate
+(SELECT Events.ID AS EventID, Events.Name, Events.StartDate, Events.EndDate
 FROM Events
 JOIN TeamInEvent ON Events.ID = TeamInEvent.EventID
 JOIN Players ON TeamInEvent.TeamID = Players.TeamID
 WHERE
 Players.UserID = @identifiant);
+GO
+
+CREATE OR ALTER FUNCTION getEventsByUserId(@identifiant INT)
+RETURNS TABLE
+AS
+RETURN
+(SELECT e.ID AS EventID, e.Name, e.StartDate, e.EndDate
+FROM  (Players p JOIN TeamInEvent te ON p.UserID = @identifiant AND te.TeamID = p.TeamID) 
+JOIN Events e ON te.EventID = e.ID
+UNION
+SELECT e.ID AS EventID, e.Name, e.StartDate, e.EndDate
+FROM StaffInEvent se JOIN Events e ON se.UserID = @identifiant AND se.EventID=e.ID)
+
 GO
 
 CREATE OR ALTER FUNCTION getGamesByPlayerId(@identifiant INT)
@@ -497,15 +507,42 @@ CREATE OR ALTER PROCEDURE makeCursor(@topNum INT, @tableName VARCHAR(50))
 AS
 BEGIN
     DECLARE @query AS NVARCHAR(500)
-    SET @query = 'DECLARE '+'@tableName'+'Cursor CURSOR GLOBAL SCROLL 
-    FOR SELECT TOP ('+'@topNum'+') *
-    FROM '+'@tableName'+' 
+    SET @query = 'DECLARE '+@tableName+'Cursor CURSOR GLOBAL SCROLL 
+    FOR SELECT TOP ('+@topNum+') *
+    FROM '+@tableName+' 
     FOR READ_ONLY'
 
     EXEC(@query)
 END;
 GO
 
+CREATE OR ALTER PROCEDURE deleteEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(50))
+AS
+BEGIN
+    DECLARE @type AS NVARCHAR(64)
+    SET @type = CASE 
+                    WHEN @tableName = 'Games' 
+                        OR @tableName = 'Events' 
+                        OR @tableName = 'Users'
+                        OR @tableName = 'Staff'
+                        OR @tableName = 'Teams'
+                        OR @tableName = 'Credentials'
+                        THEN 'INT'
+                    WHEN @tableName = 'Sports'
+                        OR @tableName = 'TeamLevel'
+                        OR @tableName = 'TeamType'
+                        THEN 'NVARCHAR(50)'
+    END;
+    DECLARE @query AS NVARCHAR(500), @field AS NVARCHAR(100)
+
+    set @field = (SELECT top 1 COLUMN_NAME 
+    FROM INFORMATION_SCHEMA.Columns 
+    WHERE TABLE_NAME = @tableName)
+
+    SET @query = 'DELETE FROM '+@tableName+' WHERE '+@field+'= CAST(@PK) AS '+@type
+    EXEC(@query)
+END;
+GO
 
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0 

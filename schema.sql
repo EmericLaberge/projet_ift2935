@@ -537,3 +537,7 @@ GO
 IF (SELECT COUNT(*) FROM StaffInEvent)=0 
     INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
 GO
+IF (SELECT COUNT(*) FROM Games)=0 
+    INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
+    VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##')
+GO

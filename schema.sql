@@ -681,7 +681,41 @@ IF (SELECT COUNT(*) FROM Users)=0
     ('ZaraZimmerman@hotmail.com', '2828 Tranquility Trail', 'Zara', 'Zimmerman'),
     ('IvyIngram@yahoo.com', '2929 Unicorn Lane', 'Ivy', 'Ingram'),
     ('QuinnQuinn@outlook.com', '3030 Stardust Street', 'Quinn', 'Quinn'),
-    ('YaraYang@hotmail.com', '3232 Zephyr Way', 'Yara', 'Yang');
+    ('YaraYang@hotmail.com', '3232 Zephyr Way', 'Yara', 'Yang'),
+
+    --90 a 121
+    ('RemingtonRhodes@yahoo.com', '101 Serendipity Lane', 'Remington', 'Rhodes'),
+    ('SloaneSullivan@outlook.com', '202 Whimsy Way', 'Sloane', 'Sullivan'),
+    ('HoldenHayes@gmail.com', '303 Euphoria Avenue', 'Holden', 'Hayes'),
+    ('AveryAdkins@hotmail.com', '404 Dream Drive', 'Avery', 'Adkins'),
+    ('BeckettBishop@yahoo.com', '505 Adventure Avenue', 'Beckett', 'Bishop'),
+    ('KennedyKing@outlook.com', '606 Harmony Lane', 'Kennedy', 'King'),
+    ('AsherArmstrong@gmail.com', '707 Wonderland Road', 'Asher', 'Armstrong'),
+    ('DelilahDiaz@hotmail.com', '808 Serendipity Street', 'Delilah', 'Diaz'),
+    ('GriffinGraham@yahoo.com', '909 Melody Lane', 'Griffin', 'Graham'),
+    ('EmeryEllis@outlook.com', '1010 Illusion Way', 'Emery', 'Ellis'),
+    ('LeoLamb@gmail.com', '1111 Rhapsody Road', 'Leo', 'Lamb'),
+    ('ScarlettSawyer@hotmail.com', '1212 Bliss Boulevard', 'Scarlett', 'Sawyer'),
+    ('JasperJames@yahoo.com', '1313 Enchantment Way', 'Jasper', 'James'),
+    ('ElianaEstrada@outlook.com', '1414 Serenity Street', 'Eliana', 'Estrada'),
+    ('CarterCampbell@gmail.com', '1515 Imagination Avenue', 'Carter', 'Campbell'),
+    ('BrielleBarnes@hotmail.com', '1616 Elysium Avenue', 'Brielle', 'Barnes'),
+    ('MaverickMiller@yahoo.com', '1717 Utopia Drive', 'Maverick', 'Miller'),
+    ('LilaLawson@outlook.com', '1818 Chimera Court', 'Lila', 'Lawson'),
+    ('RowanReyes@gmail.com', '1919 Nirvana Street', 'Rowan', 'Reyes'),
+    ('ParkerPatterson@hotmail.com', '2020 Arcadia Avenue', 'Parker', 'Patterson'),
+    ('HarperHarrison@yahoo.com', '2121 Paradise Lane', 'Harper', 'Harrison'),
+    ('SterlingSnyder@outlook.com', '2222 Oasis Drive', 'Sterling', 'Snyder'),
+    ('IvyInman@gmail.com', '2323 Rainbow Road', 'Ivy', 'Inman'),
+    ('JaxonJacobs@hotmail.com', '2424 Eden Avenue', 'Jaxon', 'Jacobs'),
+    ('WillowWood@yahoo.com', '2525 Cloud Nine Court', 'Willow', 'Wood'),
+    ('EzraEllison@outlook.com', '2626 Heavenly Way', 'Ezra', 'Ellison'),
+    ('PeytonPorter@gmail.com', '2727 Tranquility Trail', 'Peyton', 'Porter'),
+    ('FinleyFisher@hotmail.com', '2828 Unicorn Lane', 'Finley', 'Fisher'),
+    ('DakotaDuncan@yahoo.com', '2929 Stardust Street', 'Dakota', 'Duncan'),
+    ('QuinnQuigley@outlook.com', '3030 Zephyr Way', 'Quinn', 'Quigley'),
+    ('ZaraZuniga@gmail.com', '3131 Utopia Avenue', 'Zara', 'Zuniga'),
+    ('RyderRamos@hotmail.com', '3232 Serendipity Street', 'Ryder', 'Ramos');
 
 
 GO
@@ -793,7 +827,24 @@ IF (SELECT COUNT(*) FROM Players)=0
     (82, 11),  (83, 12),
     (84, 11),  (85, 12),
     (86, 11),  (87, 12),
-    (88, 11),  (89, 12);
+    (88, 11),  (89, 12),
+
+    (90, 13),  (91, 14),
+    (92, 13),  (93, 14),
+    (94, 13),  (95, 14),
+    (96, 13),  (97, 14),
+    (98, 13),  (99, 14),
+    (100, 13), (101, 14),
+    (102, 13), (103, 14),
+    (104, 13), (105, 14),
+    (106, 13), (107, 14),
+    (108, 13), (109, 14),
+    (110, 13), (111, 14),
+    (112, 13), (113, 14),
+    (114, 13), (115, 14),
+    (116, 13), (117, 14),
+    (118, 13), (119, 14),
+    (120, 13), (121, 14);
 
 
 
@@ -844,7 +895,9 @@ IF (SELECT COUNT(*) FROM TeamInEvent)=0
     (3, 6),
 
     (6, 11),
-    (6, 12);
+    (6, 12),
+    (6, 13),
+    (6, 14);
 GO
 IF (SELECT COUNT(*) FROM StaffInEvent)=0
     INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
@@ -866,7 +919,11 @@ IF (SELECT COUNT(*) FROM Games)=0
            ('Baseball', 8, 7, 8, '2024-06-07'),
            ('Baseball', 8, 2, 8, '2024-06-08'),
            ('Baseball', 8, 7, 10, '2024-06-09'),
-           ('Baseball', 8, 9, 10, '2024-06-07');
+           ('Baseball', 8, 9, 10, '2024-06-07'),
+           ('Football', 6, 13, 14, '2024-11-22'),
+           ('Football', 6, 12, 14, '2024-11-22'),
+           ('Football', 6, 11, 12, '2024-11-23'),
+           ('Football', 6, 11, 13, '2024-11-23');
 GO
 
 IF OBJECT_ID('EventsView') IS NOT NULL

@@ -36,7 +36,6 @@ function App() {
           <Route path="/Users" element={<UserList />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Teams" element={<TeamList />} />
-          <Route path="/Profile" element={<Card />} />
           <Route path="/Events" element={<EventList />} />
           <Route path="/Games" element={<GameList />} />
         </Routes>

@@ -178,6 +178,7 @@ GO
 -- Insert with a coherent data using the identity values
 IF (SELECT COUNT(*) FROM Users)=0
     Insert INTO Users(Email, Address, FirstName, LastName) VALUES
+    --1 a 27
     ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh'),
     ('FelipeAlou@gmail.com', '123 Rue Saint-Jacques', 'Felipe', 'Alou'),
     ('RustyStaub@Hotmail.com', '456 Rue Sainte-Catherine', 'Rusty', 'Staub'),
@@ -206,7 +207,7 @@ IF (SELECT COUNT(*) FROM Users)=0
     ('JavierVazquez@gmail.com', '4748 Avenue du Parc', 'Javier', 'Vazquez'),
     ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon'),
 
-
+    --28 a 57
     ('SarahSmith@gmail.com', '123 Main St', 'Sarah', 'Smith'),
     ('EmmaJohnson@gmail.com', '456 Elm St', 'Emma', 'Johnson'),
     ('AvaWilliams@gmail.com', '789 Pine St', 'Ava', 'Williams'),
@@ -235,7 +236,78 @@ IF (SELECT COUNT(*) FROM Users)=0
     ('MiaTorres@gmail.com', '2045 Redwood St', 'Mia', 'Torres'),
     ('EmilyRamirez@gmail.com', '2156 Sprucewood St', 'Emily', 'Ramirez'),
     ('HannahReyes@gmail.com', '2267 Willowwood St', 'Hannah', 'Reyes'),
-    ('MadisonFlores@gmail.com', '2378 Birchwood St', 'Madison', 'Flores');
+    ('MadisonFlores@gmail.com', '2378 Birchwood St', 'Madison', 'Flores'),
+    ('admin@gmail.com', '123admin', 'admin', 'admin'),
+
+    --58 a 72
+    ('JasperJones@yahoo.com', '101 Adventure Lane', 'Jasper', 'Jones'), 
+    ('AtticusAdams@yahoo.com', '505 Serendipity Street', 'Atticus', 'Adams'),
+    ('MagnusMurphy@gmail.com', '707 Fantasia Lane', 'Magnus', 'Murphy'),
+    ('HuxleyHarris@yahoo.com', '909 Imagination Avenue', 'Huxley', 'Harris'),
+    ('OrionOliver@gmail.com', '1111 Enchantment Way', 'Orion', 'Oliver'),
+    ('CaspianCarter@yahoo.com', '1313 Rhapsody Road', 'Caspian', 'Carter'),
+    ('FenwickFoster@gmail.com', '1515 Melody Lane', 'Fenwick', 'Foster'),
+    ('FinneganFitzgerald@gmail.com', '303 Whimsy Way', 'Finnegan', 'Fitzgerald'),
+    ('DeclanDavis@yahoo.com', '1717 Illusion Way', 'Declan', 'Davis'),
+    ('GideonGutierrez@gmail.com', '1919 Chimera Court', 'Gideon', 'Gutierrez'),
+    ('HugoHernandez@yahoo.com', '2121 Arcadia Avenue', 'Hugo', 'Hernandez'),
+    ('JulesJohnson@gmail.com', '2323 Oasis Drive', 'Jules', 'Johnson'),
+    ('RaffertyRodriguez@yahoo.com', '2525 Eden Avenue', 'Rafferty', 'Rodriguez'),
+    ('TheodoreTorres@gmail.com', '2727 Heavenly Way', 'Theodore', 'Torres'),
+    ('XanderXavier@gmail.com', '3131 Utopia Avenue', 'Xander', 'Xavier'),
+
+    --73 a 89
+    ('RosalindRivera@outlook.com', '202 Dream Drive', 'Rosalind', 'Rivera'),
+    ('IsabellaIbarra@hotmail.com', '404 Euphoria Avenue', 'Isabella', 'Ibarra'),
+    ('PenelopePerez@outlook.com', '606 Wonderland Road', 'Penelope', 'Perez'),
+    ('EvelynEspinoza@hotmail.com', '808 Harmony Drive', 'Evelyn', 'Espinoza'),
+    ('LunaLopez@outlook.com', '1010 Inspiration Street', 'Luna', 'Lopez'),
+    ('NovaNunez@hotmail.com', '1212 Bliss Boulevard', 'Nova', 'Nunez'),
+    ('AuroraAlvarez@outlook.com', '1414 Serenity Street', 'Aurora', 'Alvarez'),
+    ('BiancaBenitez@hotmail.com', '1616 Elysium Avenue', 'Bianca', 'Benitez'),
+    ('FreyaFlores@outlook.com', '1818 Utopia Drive', 'Freya', 'Flores'),
+    ('CelesteCastillo@hotmail.com', '2020 Nirvana Street', 'Celeste', 'Castillo'),
+    ('AriaAndrews@outlook.com', '2222 Paradise Lane', 'Aria', 'Andrews'),
+    ('LilaLee@hotmail.com', '2424 Rainbow Road', 'Lila', 'Lee'),
+    ('SageSanchez@outlook.com', '2626 Cloud Nine Court', 'Sage', 'Sanchez'),
+    ('ZaraZimmerman@hotmail.com', '2828 Tranquility Trail', 'Zara', 'Zimmerman'),
+    ('IvyIngram@yahoo.com', '2929 Unicorn Lane', 'Ivy', 'Ingram'),
+    ('QuinnQuinn@outlook.com', '3030 Stardust Street', 'Quinn', 'Quinn'),
+    ('YaraYang@hotmail.com', '3232 Zephyr Way', 'Yara', 'Yang'),
+
+    --90 a 121
+    ('RemingtonRhodes@yahoo.com', '101 Serendipity Lane', 'Remington', 'Rhodes'),
+    ('SloaneSullivan@outlook.com', '202 Whimsy Way', 'Sloane', 'Sullivan'),
+    ('HoldenHayes@gmail.com', '303 Euphoria Avenue', 'Holden', 'Hayes'),
+    ('AveryAdkins@hotmail.com', '404 Dream Drive', 'Avery', 'Adkins'),
+    ('BeckettBishop@yahoo.com', '505 Adventure Avenue', 'Beckett', 'Bishop'),
+    ('KennedyKing@outlook.com', '606 Harmony Lane', 'Kennedy', 'King'),
+    ('AsherArmstrong@gmail.com', '707 Wonderland Road', 'Asher', 'Armstrong'),
+    ('DelilahDiaz@hotmail.com', '808 Serendipity Street', 'Delilah', 'Diaz'),
+    ('GriffinGraham@yahoo.com', '909 Melody Lane', 'Griffin', 'Graham'),
+    ('EmeryEllis@outlook.com', '1010 Illusion Way', 'Emery', 'Ellis'),
+    ('LeoLamb@gmail.com', '1111 Rhapsody Road', 'Leo', 'Lamb'),
+    ('ScarlettSawyer@hotmail.com', '1212 Bliss Boulevard', 'Scarlett', 'Sawyer'),
+    ('JasperJames@yahoo.com', '1313 Enchantment Way', 'Jasper', 'James'),
+    ('ElianaEstrada@outlook.com', '1414 Serenity Street', 'Eliana', 'Estrada'),
+    ('CarterCampbell@gmail.com', '1515 Imagination Avenue', 'Carter', 'Campbell'),
+    ('BrielleBarnes@hotmail.com', '1616 Elysium Avenue', 'Brielle', 'Barnes'),
+    ('MaverickMiller@yahoo.com', '1717 Utopia Drive', 'Maverick', 'Miller'),
+    ('LilaLawson@outlook.com', '1818 Chimera Court', 'Lila', 'Lawson'),
+    ('RowanReyes@gmail.com', '1919 Nirvana Street', 'Rowan', 'Reyes'),
+    ('ParkerPatterson@hotmail.com', '2020 Arcadia Avenue', 'Parker', 'Patterson'),
+    ('HarperHarrison@yahoo.com', '2121 Paradise Lane', 'Harper', 'Harrison'),
+    ('SterlingSnyder@outlook.com', '2222 Oasis Drive', 'Sterling', 'Snyder'),
+    ('IvyInman@gmail.com', '2323 Rainbow Road', 'Ivy', 'Inman'),
+    ('JaxonJacobs@hotmail.com', '2424 Eden Avenue', 'Jaxon', 'Jacobs'),
+    ('WillowWood@yahoo.com', '2525 Cloud Nine Court', 'Willow', 'Wood'),
+    ('EzraEllison@outlook.com', '2626 Heavenly Way', 'Ezra', 'Ellison'),
+    ('PeytonPorter@gmail.com', '2727 Tranquility Trail', 'Peyton', 'Porter'),
+    ('FinleyFisher@hotmail.com', '2828 Unicorn Lane', 'Finley', 'Fisher'),
+    ('DakotaDuncan@yahoo.com', '2929 Stardust Street', 'Dakota', 'Duncan'),
+    ('QuinnQuigley@outlook.com', '3030 Zephyr Way', 'Quinn', 'Quigley'),
+    ('ZaraZuniga@gmail.com', '3131 Utopia Avenue', 'Zara', 'Zuniga'),
+    ('RyderRamos@hotmail.com', '3232 Serendipity Street', 'Ryder', 'Ramos');
 
 
 GO
@@ -250,14 +322,18 @@ IF (SELECT COUNT(*) FROM Teams)=0
     ('The Blundettos', 'Competitive', 'Mixed', 'Baseball'),
     ('Les instincteurs', 'Competitive', 'Mixed', 'Baseball'),
     ('The Thunder Bears', 'Competitive', 'Mixed', 'Baseball'),
-    ('The Swamp Cats', 'Competitive', 'Mixed', 'Baseball');
+    ('The Swamp Cats', 'Competitive', 'Mixed', 'Baseball'),
+    ('Nebula Knights', 'Recreational', 'Mixed', 'Football'),
+    ('Phoenix Pirates', 'Recreational', 'Mixed', 'Football'),
+    ('Stardust Stallions', 'Recreational', 'Mixed', 'Football'),
+    ('Twilight Titans', 'Recreational', 'Mixed', 'Football');
+
 GO
 
 
 IF (SELECT COUNT(*) FROM Players)=0
     Insert INTO Players(UserID, TeamID) VALUES
     -- Team de Baseball
-    (1, 1),
     (2, 2),  (3, 3),
     (4, 2),  (5, 3),
     (6, 2),  (7, 3),
@@ -325,7 +401,45 @@ IF (SELECT COUNT(*) FROM Players)=0
     (48, 5),  (49, 6),
     (50, 5),  (51, 6),
     (52, 5),  (53, 6),
-    (54, 5),  (55, 6);
+    (54, 5),  (55, 6),
+
+    --team de Football
+    (58, 11),  (59, 12),
+    (60, 11),  (61, 12),
+    (62, 11),  (63, 12),
+    (64, 11),  (65, 12),
+    (66, 11),  (67, 12),
+    (68, 11),  (69, 12),
+    (70, 11),  (71, 12),
+    (72, 11),  (73, 12),
+    (74, 11),  (75, 12),
+    (76, 11),  (77, 12),
+    (78, 11),  (79, 12),
+    (80, 11),  (81, 12),
+    (82, 11),  (83, 12),
+    (84, 11),  (85, 12),
+    (86, 11),  (87, 12),
+    (88, 11),  (89, 12),
+
+    (90, 13),  (91, 14),
+    (92, 13),  (93, 14),
+    (94, 13),  (95, 14),
+    (96, 13),  (97, 14),
+    (98, 13),  (99, 14),
+    (100, 13), (101, 14),
+    (102, 13), (103, 14),
+    (104, 13), (105, 14),
+    (106, 13), (107, 14),
+    (108, 13), (109, 14),
+    (110, 13), (111, 14),
+    (112, 13), (113, 14),
+    (114, 13), (115, 14),
+    (116, 13), (117, 14),
+    (118, 13), (119, 14),
+    (120, 13), (121, 14);
+
+
+
 GO
 IF (SELECT COUNT(*) FROM Events)=0
     INSERT INTO Events(Name, StartDate, EndDate) VALUES
@@ -341,16 +455,41 @@ IF (SELECT COUNT(*) FROM Events)=0
 GO
 IF (SELECT COUNT(*) FROM TeamInEvent)=0
     INSERT INTO TeamInEvent(EventID, TeamID) VALUES
+    --Baseball MileEnd
     (1, 2),
     (1, 3),
+    (1, 7),
+    (1, 8),
+    (1, 9),
+    (1, 10),
+    --Quebec Baseball Classic
+    (4, 2),
+    (4, 3),
+    (4, 7),
+    (4, 8),
+    (4, 9),
+    (4, 10),
+
+    --Trois-Rivières Baseball open
+    (8, 2),
+    (8, 3),
+    (8, 7),
+    (8, 8),
+    (8, 9),
+    (8, 10),
+
+
+
+
     (2, 1),
     (2, 4),
     (3, 5),
     (3, 6),
-    (1, 7),
-    (1, 8),
-    (1, 9),
-    (1, 10);
+
+    (6, 11),
+    (6, 12),
+    (6, 13),
+    (6, 14);
 GO
 IF (SELECT COUNT(*) FROM StaffInEvent)=0
     INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
@@ -364,5 +503,17 @@ IF (SELECT COUNT(*) FROM Games)=0
            ('Baseball', 1, 2, 8, '2024-08-02'),
            ('Baseball', 1, 7, 10, '2024-08-01'),
            ('Baseball', 1, 9, 10, '2024-08-01'),
-           ('Baseball', 1, 9, 8, '2024-08-02');
+           ('Baseball', 1, 9, 8, '2024-08-02'),
+           ('Baseball', 4, 7, 8, '2024-07-01'),
+           ('Baseball', 4, 2, 8, '2024-07-02'),
+           ('Baseball', 4, 7, 10, '2024-07-03'),
+           ('Baseball', 4, 9, 10, '2024-07-04'),
+           ('Baseball', 8, 7, 8, '2024-06-07'),
+           ('Baseball', 8, 2, 8, '2024-06-08'),
+           ('Baseball', 8, 7, 10, '2024-06-09'),
+           ('Baseball', 8, 9, 10, '2024-06-07'),
+           ('Football', 6, 13, 14, '2024-11-22'),
+           ('Football', 6, 12, 14, '2024-11-22'),
+           ('Football', 6, 11, 12, '2024-11-23'),
+           ('Football', 6, 11, 13, '2024-11-23');
 GO

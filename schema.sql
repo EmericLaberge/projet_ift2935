@@ -1,14 +1,16 @@
-USE master
+USE master;
 GO
 
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
     DROP DATABASE Jasson;
 END
-CREATE DATABASE Jasson
 GO
-USE Jasson;
+
+CREATE DATABASE Jasson;
 GO
+use Jasson;
+go
 
 IF OBJECT_ID('Users') IS NULL
 BEGIN
@@ -57,9 +59,9 @@ GO
 IF OBJECT_ID('TeamLevel') IS NULL
 BEGIN
     CREATE TABLE TeamLevel (
-        Level NVARCHAR(50) PRIMARY KEY
+        TeamLevel NVARCHAR(50) PRIMARY KEY
     );
-    INSERT INTO TeamLevel (Level)
+    INSERT INTO TeamLevel (TeamLevel)
     VALUES
     ('None'),
     ('Junior'),
@@ -87,10 +89,10 @@ BEGIN
     CREATE TABLE Teams (
         ID INT IDENTITY PRIMARY KEY,
         Name NVARCHAR(50) NOT NULL,
-        Level NVARCHAR(50) NOT NULL,
+        TeamLevel NVARCHAR(50) NOT NULL,
         TeamType NVARCHAR(50) NOT NULL,
         SportName NVARCHAR(50) NOT NULL,
-        FOREIGN KEY (Level) REFERENCES TeamLevel(Level) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (TeamLevel) REFERENCES TeamLevel(TeamLevel) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (TeamType) REFERENCES TeamType(Type) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (SportName) REFERENCES Sports(Name) ON DELETE CASCADE ON UPDATE CASCADE
     );
@@ -262,7 +264,7 @@ RETURN
 FROM Players
 JOIN Teams ON Players.TeamID = Teams.ID
 WHERE
-Teams.Level = @identifiant);
+Teams.TeamLevel = @identifiant);
 GO
 
 CREATE OR ALTER FUNCTION getPlayersByTeamType(@identifiant NVARCHAR(50))
@@ -302,7 +304,7 @@ CREATE OR ALTER FUNCTION getTeamsByUserId(@identifiant INT)
 RETURNS TABLE
 AS
 RETURN
-(SELECT Teams.ID AS TeamID, Teams.Name, Teams.Level, Teams.TeamType, Teams.SportName
+(SELECT Teams.ID AS TeamID, Teams.Name, Teams.TeamLevel, Teams.TeamType, Teams.SportName
 FROM Teams
 JOIN Players ON Teams.ID = Players.TeamID
 WHERE
@@ -358,23 +360,23 @@ RETURN (
 GO
 
 --REQUÊTE COMPLEXE 2
-CREATE OR ALTER FUNCTION getPlayersByEventAndLevel(@EventID INT, @Level NVARCHAR(50))
+CREATE OR ALTER FUNCTION getPlayersByEventAndLevel(@EventID INT, @TeamLevel NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN (
     SELECT UserID AS PlayerID, p.TeamID
-    FROM (TeamInEvent te JOIN Teams t ON t.[level]= @Level) 
+    FROM (TeamInEvent te JOIN Teams t ON t.[TeamLevel] = @TeamLevel AND te.TeamID = t.ID AND @EventID = te.EventID)
     JOIN Players p ON te.TeamID = p.TeamID 
 );
 GO
 
 --REQUÊTE COMPLEXE 3
-CREATE OR ALTER FUNCTION getPlayersBySportAndLevel(@SportName NVARCHAR(50), @Level NVARCHAR(50))
+CREATE OR ALTER FUNCTION getPlayersBySportAndLevel(@SportName NVARCHAR(50), @TeamLevel NVARCHAR(50))
 RETURNS TABLE
 AS
 RETURN (
     SELECT UserID AS PlayerID, p.TeamID
-    FROM Players p JOIN Teams t ON p.TeamID = t.ID AND @SportName = t.SportName AND @Level = t.[Level] 
+    FROM Players p JOIN Teams t ON p.TeamID = t.ID AND @SportName = t.SportName AND @TeamLevel = t.TeamLevel
 );
 GO
 
@@ -483,6 +485,19 @@ BEGIN
 
     INSERT INTO Credentials (id, username, password)
     VALUES (@UserID, @Username, @Password);
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE spCreateTeam
+    @Name NVARCHAR(50),
+    @TeamLevel NVARCHAR(50),
+    @TeamType NVARCHAR(50),
+    @SportName NVARCHAR(50)
+AS 
+BEGIN
+    INSERT INTO Teams (Name, TeamLevel, TeamType, SportName)
+    VALUES (@Name, @TeamLevel, @TeamType, @SportName);
 END;
 GO
 
@@ -601,7 +616,7 @@ IF (SELECT COUNT(*) FROM Users)=0
 
 GO
 IF (SELECT COUNT(*) FROM Teams)=0
-    Insert INTO Teams(Name, Level, TeamType, SportName) VALUES
+    Insert INTO Teams(Name, TeamLevel, TeamType, SportName) VALUES
     ('Les Tigres', 'Junior', 'Mixed', 'Soccer'),
     ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'),
     ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'),
@@ -643,6 +658,59 @@ IF (SELECT COUNT(*) FROM Players)=0
     (26, 1), (27, 4);
 
 GO
+IF (SELECT COUNT(*) FROM Events)=0 
+    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
+    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');
+GO
+IF (SELECT COUNT(*) FROM TeamInEvent)=0 
+    INSERT INTO TeamInEvent(EventID, TeamID) VALUES 
+    (1, 2),
+    (1, 3),
+    (2, 1),
+    (2, 4);
+GO
+IF (SELECT COUNT(*) FROM StaffInEvent)=0 
+    INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
+GO
+IF (SELECT COUNT(*) FROM Games)=0 
+    INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
+    VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##');
+           --('Soccer', 2, 1, 4, '2024-06-03','##1-0##'); cette ligne fait bugger 
+GO
+
+IF OBJECT_ID('EventsView') IS NOT NULL
+    DROP VIEW EventsView;
+GO
+
+CREATE VIEW EventsView AS
+SELECT 
+    ID, 
+    Name, 
+    CONVERT(NVARCHAR(10), StartDate, 23) AS StartDateAsString,
+    CONVERT(NVARCHAR(10), EndDate, 23) AS EndDateAsString
+FROM Events;
+GO
+
+IF OBJECT_ID ('GamesView') IS NOT NULL
+    DROP VIEW GamesView;
+GO 
+
+CREATE VIEW GamesView  AS 
+SELECT
+    ID,
+    SportName,
+    EventID,
+    FirstTeamID,
+    SecondTeamID,
+    CONVERT(NVARCHAR(10), GameDate, 23) AS GameDateAsString,  
+    FinalScore 
+    FROM Games;
+    GO
+
+  
+
+
+
 IF (SELECT COUNT(*) FROM Events)=0 
     INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
     ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');

@@ -1,29 +1,24 @@
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
-use tiberius::ToSql;
+use tiberius::{ToSql};
+use tiberius::time::Date;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, derive_new::new)]
 pub struct Event {
-    event_id: i32,
-    date_start: String,
-    date_end: String,
+    id: i32,
+    name: String,
+    start_date: String,
+    end_date: String,
 }
 
 impl Event {
-    pub fn new(event_id: i32, date_start: &str, date_end: &str) -> Self {
-        Self {
-            event_id,
-            date_start: date_start.to_string(),
-            date_end: date_end.to_string(),
-        }
-    }
 
     pub fn to_insert_query(&self) -> (&str, Vec<Arc<dyn ToSql>>) {
-        let query = "INSERT INTO Events (EventID, DateStart, DateEnd) VALUES (@P1, @P2, @P3);";
+        let query = "INSERT INTO Events (Name, StartDate, EndDate) VALUES (@P1, @P2, @P3)";
         let params = vec![
-            Arc::new(self.event_id.clone()) as Arc<dyn ToSql>,
-            Arc::new(self.date_start.clone()),
-            Arc::new(self.date_end.clone()),
+            Arc::new(self.name.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.start_date.clone()) as Arc<dyn ToSql>,
+            Arc::new(self.end_date.clone()) as Arc<dyn ToSql>,
         ];
         (query, params)
     }

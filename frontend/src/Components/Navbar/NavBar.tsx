@@ -44,12 +44,6 @@ const NavBar: React.FC = () => {
           </NavLink>
         </li>
 
-        <li id="my profile">
-          <NavLink to="/profile" style={getLinkStyle("/profile")}>
-            Profile
-          </NavLink>
-        </li>
-
 
       </ul>
     </div>

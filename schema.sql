@@ -959,5 +959,3 @@ IF (SELECT COUNT(*) FROM Credentials)=0
     INSERT INTO Credentials(id, username, password) VALUES
     (57, 'admin', 'admin'),
     (2, 'Falou', '123');
-
-SELECT * FROM Users

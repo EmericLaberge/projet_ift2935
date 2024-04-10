@@ -67,7 +67,7 @@ async fn get_games() -> impl Responder {
         game_list.push(game);
     }
 
-    println!("This is the list of events: {:?}", game_list);
+    println!("This is the list of Games: {:?}", game_list);
 
     HttpResponse::Ok().json(game_list)
 }

@@ -235,7 +235,7 @@ SELECT TOP 5 e.Name, e.StartDate, e.EndDate
 FROM ((Events e JOIN TeamInEvent te ON TeamID = ID) JOIN Players p ON p.TeamID=te.TeamID)
 WHERE e.StartDate<GETDATE() AND e.EndDate>GETDATE()
 GROUP BY EventID, e.Name, e.StartDate, e.EndDate
-ORDER BY COUNT(p.UserID);
+ORDER BY COUNT(DISTINCT p.UserID);
 GO
 
 --REQUÊTE COMPLEXE 5

@@ -72,7 +72,7 @@ async fn main() -> anyhow::Result<()> {
     let row = row.unwrap();
     let user_count = row.unwrap().get(0);
 
-    if user_count == Some(0) {
+    if user_count < Some(200) {
         // create 100 users
         let config2: Config = get_config().await?;
         let mut client2 = connect_to_db(config2.clone()).await?;

@@ -643,7 +643,8 @@ IF (SELECT COUNT(*) FROM Users)=0
     ('MiaTorres@gmail.com', '2045 Redwood St', 'Mia', 'Torres'),
     ('EmilyRamirez@gmail.com', '2156 Sprucewood St', 'Emily', 'Ramirez'),
     ('HannahReyes@gmail.com', '2267 Willowwood St', 'Hannah', 'Reyes'),
-    ('MadisonFlores@gmail.com', '2378 Birchwood St', 'Madison', 'Flores');
+    ('MadisonFlores@gmail.com', '2378 Birchwood St', 'Madison', 'Flores'),
+    ('admin@gmail.com', '123admin', 'admin', 'admin');
 
 
 GO
@@ -802,9 +803,10 @@ SELECT
     CONVERT(NVARCHAR(10), GameDate, 23) AS GameDateAsString,
     FinalScore
     FROM Games;
-    GO
+GO
 
-
-
+IF (SELECT COUNT(*) FROM Credentials)=0
+    INSERT INTO Credentials(id, username, password) VALUES
+    (57, 'admin', 'admin');
 
 

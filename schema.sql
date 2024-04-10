@@ -316,7 +316,7 @@ RETURNS TABLE
 AS
 RETURN
 (SELECT e.ID AS EventID, e.Name, e.StartDate, e.EndDate
-FROM  (Players p JOIN TeamInEvent te ON p.UserID = @identifiant AND te.TeamID = p.TeamID) 
+FROM  (Players p JOIN TeamInEvent te ON p.UserID = @identifiant AND te.TeamID = p.TeamID)
 JOIN Events e ON te.EventID = e.ID);
 GO
 
@@ -325,7 +325,7 @@ RETURNS TABLE
 AS
 RETURN
 (SELECT e.ID AS EventID, e.Name, e.StartDate, e.EndDate
-FROM  (Players p JOIN TeamInEvent te ON p.UserID = @identifiant AND te.TeamID = p.TeamID) 
+FROM  (Players p JOIN TeamInEvent te ON p.UserID = @identifiant AND te.TeamID = p.TeamID)
 JOIN Events e ON te.EventID = e.ID
 UNION
 SELECT e.ID AS EventID, e.Name, e.StartDate, e.EndDate
@@ -350,11 +350,11 @@ CREATE OR ALTER FUNCTION getUsersByEventId(@EventID INT)
 RETURNS TABLE
 AS
 RETURN (
-    SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName 
+    SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName
     FROM ((TeamInEvent t JOIN Players p ON p.TeamID = t.TeamID AND @EventID= t.EventID)
-    JOIN Users u ON u.ID = p.UserID) 
-    UNION 
-    SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName 
+    JOIN Users u ON u.ID = p.UserID)
+    UNION
+    SELECT u.ID, u.Email, u.Address, u.FirstName, u.LastName
     FROM (StaffInEvent st JOIN Users u ON @EventID = st.EventID AND u.ID = st.UserID)
 );
 GO
@@ -366,7 +366,7 @@ AS
 RETURN (
     SELECT UserID AS PlayerID, p.TeamID
     FROM (TeamInEvent te JOIN Teams t ON t.[TeamLevel] = @TeamLevel AND te.TeamID = t.ID AND @EventID = te.EventID)
-    JOIN Players p ON te.TeamID = p.TeamID 
+    JOIN Players p ON te.TeamID = p.TeamID
 );
 GO
 
@@ -417,17 +417,17 @@ GO
 --Procédure pour ajouter le score final à une partie
 CREATE OR ALTER PROCEDURE addFinalScore(@GameID INT, @scoreTeam1 INT, @scoreTeam2 INT)
 AS
-BEGIN 
-    UPDATE Games 
+BEGIN
+    UPDATE Games
     SET FinalScore = FORMAT(CAST(
             CONCAT(
                 FORMAT(@scoreTeam1,'000'),FORMAT(@scoreTeam2, '##0')) AS integer
         ),
-        (SELECT ScoreFormat 
-        FROM Sports s 
-        JOIN Games g 
+        (SELECT ScoreFormat
+        FROM Sports s
+        JOIN Games g
         ON @GameID=g.ID AND g.SportName = s.Name))
-        
+
 END;
 GO
 
@@ -494,7 +494,7 @@ CREATE OR ALTER PROCEDURE spCreateTeam
     @TeamLevel NVARCHAR(50),
     @TeamType NVARCHAR(50),
     @SportName NVARCHAR(50)
-AS 
+AS
 BEGIN
     INSERT INTO Teams (Name, TeamLevel, TeamType, SportName)
     VALUES (@Name, @TeamLevel, @TeamType, @SportName);
@@ -518,9 +518,9 @@ CREATE OR ALTER PROCEDURE makeCursor(@topNum INT, @tableName VARCHAR(50))
 AS
 BEGIN
     DECLARE @query AS NVARCHAR(500)
-    SET @query = 'DECLARE '+@tableName+'Cursor CURSOR GLOBAL SCROLL 
+    SET @query = 'DECLARE '+@tableName+'Cursor CURSOR GLOBAL SCROLL
     FOR SELECT TOP ('+@topNum+') *
-    FROM '+@tableName+' 
+    FROM '+@tableName+'
     FOR READ_ONLY'
 
     EXEC(@query)
@@ -531,9 +531,9 @@ GO
 AS
 BEGIN
     DECLARE @type AS NVARCHAR(64)
-    SET @type = CASE 
-                    WHEN @tableName = 'Games' 
-                        OR @tableName = 'Events' 
+    SET @type = CASE
+                    WHEN @tableName = 'Games'
+                        OR @tableName = 'Events'
                         OR @tableName = 'Users'
                         OR @tableName = 'Staff'
                         OR @tableName = 'Teams'
@@ -546,8 +546,8 @@ BEGIN
     END;
     DECLARE @query AS NVARCHAR(500), @field AS NVARCHAR(100)
 
-    set @field = (SELECT top 1 COLUMN_NAME 
-    FROM INFORMATION_SCHEMA.Columns 
+    set @field = (SELECT top 1 COLUMN_NAME
+    FROM INFORMATION_SCHEMA.Columns
     WHERE TABLE_NAME = @tableName)
     --needs fixing because procedure can't return a table
     SET @query = 'SELECT * FROM '+@tableName+' WHERE '+@field+'= CAST('+@PK+') AS '+@type
@@ -559,9 +559,9 @@ CREATE OR ALTER PROCEDURE deleteEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(5
 AS
 BEGIN
     DECLARE @type AS NVARCHAR(64)
-    SET @type = CASE 
-                    WHEN @tableName = 'Games' 
-                        OR @tableName = 'Events' 
+    SET @type = CASE
+                    WHEN @tableName = 'Games'
+                        OR @tableName = 'Events'
                         OR @tableName = 'Users'
                         OR @tableName = 'Staff'
                         OR @tableName = 'Teams'
@@ -574,8 +574,8 @@ BEGIN
     END;
     DECLARE @query AS NVARCHAR(500), @field AS NVARCHAR(100)
 
-    set @field = (SELECT top 1 COLUMN_NAME 
-    FROM INFORMATION_SCHEMA.Columns 
+    set @field = (SELECT top 1 COLUMN_NAME
+    FROM INFORMATION_SCHEMA.Columns
     WHERE TABLE_NAME = @tableName)
 
     SET @query = 'DELETE FROM '+@tableName+' WHERE '+@field+'= CAST('+@PK+') AS '+@type
@@ -584,8 +584,9 @@ END;
 GO
 
 -- Insert with a coherent data using the identity values
-IF (SELECT COUNT(*) FROM Users)=0 
-    Insert INTO Users(Email, Address, FirstName, LastName) VALUES ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh'),
+IF (SELECT COUNT(*) FROM Users)=0
+    Insert INTO Users(Email, Address, FirstName, LastName) VALUES
+    ('sheesh@gmail.com', '1234 rue de la rue', 'Sheesh', 'Sheesh'),
     ('FelipeAlou@gmail.com', '123 Rue Saint-Jacques', 'Felipe', 'Alou'),
     ('RustyStaub@Hotmail.com', '456 Rue Sainte-Catherine', 'Rusty', 'Staub'),
     ('GaryCarter@yahoo.ca', '789 Avenue du Parc', 'Gary', 'Carter'),
@@ -611,7 +612,38 @@ IF (SELECT COUNT(*) FROM Users)=0
     ('VladimirGuerrero@Hotmail.com', '4344 Rue de la Gauchetiere', 'Vladimir', 'Guerrero'),
     ('OrlandoCabrera@yahoo.ca', '4546 Rue de Bleury', 'Orlando', 'Cabrera'),
     ('JavierVazquez@gmail.com', '4748 Avenue du Parc', 'Javier', 'Vazquez'),
-    ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon');
+    ('BartoloColon@Hotmail.com', '4950 Rue Saint-Urbain', 'Bartolo', 'Colon'),
+
+
+    ('SarahSmith@gmail.com', '123 Main St', 'Sarah', 'Smith'),
+    ('EmmaJohnson@gmail.com', '456 Elm St', 'Emma', 'Johnson'),
+    ('AvaWilliams@gmail.com', '789 Pine St', 'Ava', 'Williams'),
+    ('OliviaBrown@gmail.com', '321 Oak St', 'Olivia', 'Brown'),
+    ('SophiaDavis@gmail.com', '654 Maple St', 'Sophia', 'Davis'),
+    ('IsabellaMiller@gmail.com', '987 Birch St', 'Isabella', 'Miller'),
+    ('MiaWilson@gmail.com', '135 Cedar St', 'Mia', 'Wilson'),
+    ('CharlotteMoore@gmail.com', '246 Cherry St', 'Charlotte', 'Moore'),
+    ('AmeliaTaylor@gmail.com', '357 Walnut St', 'Amelia', 'Taylor'),
+    ('HarperAnderson@gmail.com', '468 Hickory St', 'Harper', 'Anderson'),
+    ('EvelynThomas@gmail.com', '579 Magnolia St', 'Evelyn', 'Thomas'),
+    ('AbigailWhite@gmail.com', '690 Spruce St', 'Abigail', 'White'),
+    ('EmilyHarris@gmail.com', '701 Willow St', 'Emily', 'Harris'),
+    ('HannahClark@gmail.com', '812 Chestnut St', 'Hannah', 'Clark'),
+    ('MadisonLewis@gmail.com', '923 Ash St', 'Madison', 'Lewis'),
+    ('AveryMartin@gmail.com', '1034 Beech St', 'Avery', 'Martin'),
+    ('SophiaGarcia@gmail.com', '1145 Dogwood St', 'Sophia', 'Garcia'),
+    ('IsabellaRodriguez@gmail.com', '1256 Elmwood St', 'Isabella', 'Rodriguez'),
+    ('MiaMartinez@gmail.com', '1367 Fern St', 'Mia', 'Martinez'),
+    ('EmilyHernandez@gmail.com', '1478 Hazel St', 'Emily', 'Hernandez'),
+    ('HannahLopez@gmail.com', '1589 Juniper St', 'Hannah', 'Lopez'),
+    ('MadisonGonzalez@gmail.com', '1601 Locust St', 'Madison', 'Gonzalez'),
+    ('AveryWright@gmail.com', '1712 Maplewood St', 'Avery', 'Wright'),
+    ('SophiaScott@gmail.com', '1823 Oakwood St', 'Sophia', 'Scott'),
+    ('IsabellaJones@gmail.com', '1934 Pinewood St', 'Isabella', 'Jones'),
+    ('MiaTorres@gmail.com', '2045 Redwood St', 'Mia', 'Torres'),
+    ('EmilyRamirez@gmail.com', '2156 Sprucewood St', 'Emily', 'Ramirez'),
+    ('HannahReyes@gmail.com', '2267 Willowwood St', 'Hannah', 'Reyes'),
+    ('MadisonFlores@gmail.com', '2378 Birchwood St', 'Madison', 'Flores');
 
 
 GO
@@ -620,12 +652,18 @@ IF (SELECT COUNT(*) FROM Teams)=0
     ('Les Tigres', 'Junior', 'Mixed', 'Soccer'),
     ('The Sluggers', 'Competitive', 'Masculine', 'Baseball'),
     ('Les Hard Hitters', 'Competitive', 'Masculine', 'Baseball'),
-    ('The Kicks', 'Junior', 'Mixed', 'Soccer');
+    ('The Kicks', 'Junior', 'Mixed', 'Soccer'),
+    ('The Beach Girls', 'Recreational', 'Feminine', 'Volleyball'),
+    ('VolleyGirls', 'Recreational', 'Feminine', 'Volleyball'),
+    ('The Blundettos', 'Competitive', 'Mixed', 'Baseball'),
+    ('Les instincteurs', 'Competitive', 'Mixed', 'Baseball'),
+    ('The Thunder Bears', 'Competitive', 'Mixed', 'Baseball'),
+    ('The Swamp Cats', 'Competitive', 'Mixed', 'Baseball');
 GO
 
 
 IF (SELECT COUNT(*) FROM Players)=0
-    Insert INTO Players(UserID, TeamID) VALUES 
+    Insert INTO Players(UserID, TeamID) VALUES
     -- Team de Baseball
     (1, 1),
     (2, 2),  (3, 3),
@@ -642,6 +680,30 @@ IF (SELECT COUNT(*) FROM Players)=0
     (24, 2), (25, 3),
     (26, 2), (27, 3),
 
+    --Teams de baseBall mixte
+    (20, 7),  (21, 8),
+    (22, 7),  (23, 8),
+    (24, 7),  (25, 8),
+    (26, 7),  (27, 8),
+    (28, 7),  (29, 8),
+    (30, 7),  (31, 8),
+    (32, 7),  (33, 8),
+    (34, 7),  (35, 8),
+    (36, 7),  (37, 8),
+    (38, 7),  (39, 8),
+    (40, 7),  (41, 8),
+    (42, 7),  (43, 8),
+    (44, 7),  (45, 8),
+    (46, 7),  (47, 8),
+    (48, 7),  (49, 8),
+    (50, 7),  (51, 8),
+
+    (2, 9),   (3, 10),
+    (4, 9),   (5, 10),
+    (6, 9),   (7, 10),
+    (8, 9),   (9, 10),
+    (10, 9),  (11, 10),
+
     --Team de Soccer
     (2, 1),  (3, 4),
     (4, 1),  (5, 4),
@@ -655,27 +717,62 @@ IF (SELECT COUNT(*) FROM Players)=0
     (20, 1), (21, 4),
     (22, 1), (23, 4),
     (24, 1), (25, 4),
-    (26, 1), (27, 4);
+    (26, 1), (27, 4),
 
+    --team de VolleyBall
+    (28, 5),  (29, 6),
+    (30, 5),  (31, 6),
+    (32, 5),  (33, 6),
+    (34, 5),  (35, 6),
+    (36, 5),  (37, 6),
+    (38, 5),  (39, 6),
+    (40, 5),  (41, 6),
+    (42, 5),  (43, 6),
+    (44, 5),  (45, 6),
+    (46, 5),  (47, 6),
+    (48, 5),  (49, 6),
+    (50, 5),  (51, 6),
+    (52, 5),  (53, 6),
+    (54, 5),  (55, 6);
 GO
-IF (SELECT COUNT(*) FROM Events)=0 
-    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
-    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');
+IF (SELECT COUNT(*) FROM Events)=0
+    INSERT INTO Events(Name, StartDate, EndDate) VALUES
+    ('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
+    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04'),
+    ('Beach Volleyball feminin', '2024-07-20', '2024-07-22'),
+    ('Quebec City Baseball Classic', '2024-07-01', '2024-07-04'),
+    ('Gatineau Volleyball Tournament', '2024-05-17', '2024-05-19'),
+    ('Montreal Football Championship', '2024-11-22', '2024-11-24'),
+    ('Sherbrooke Soccer Cup', '2024-08-15', '2024-08-18'),
+    ('Trois-Rivières Baseball Open', '2024-06-07', '2024-06-09'),
+    ('Laval Volleyball Challenge', '2024-03-15', '2024-03-17');
 GO
-IF (SELECT COUNT(*) FROM TeamInEvent)=0 
-    INSERT INTO TeamInEvent(EventID, TeamID) VALUES 
+IF (SELECT COUNT(*) FROM TeamInEvent)=0
+    INSERT INTO TeamInEvent(EventID, TeamID) VALUES
     (1, 2),
     (1, 3),
     (2, 1),
-    (2, 4);
+    (2, 4),
+    (3, 5),
+    (3, 6),
+    (1, 7),
+    (1, 8),
+    (1, 9),
+    (1, 10);
 GO
-IF (SELECT COUNT(*) FROM StaffInEvent)=0 
+IF (SELECT COUNT(*) FROM StaffInEvent)=0
     INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
 GO
-IF (SELECT COUNT(*) FROM Games)=0 
-    INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
-    VALUES ('Baseball', 1, 2, 3, '2024-08-01','##0-0##');
-           --('Soccer', 2, 1, 4, '2024-06-03','##1-0##'); cette ligne fait bugger 
+IF (SELECT COUNT(*) FROM Games)=0
+    INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate)
+    VALUES ('Baseball', 1, 2, 3, '2024-08-01'),
+           ('Soccer', 2, 1, 4, '2024-06-03'),
+           ('Volleyball', 3, 5, 6, '2024-07-21'),
+           ('Baseball', 1, 7, 8, '2024-08-01'),
+           ('Baseball', 1, 2, 8, '2024-08-02'),
+           ('Baseball', 1, 7, 10, '2024-08-01'),
+           ('Baseball', 1, 9, 10, '2024-08-01'),
+           ('Baseball', 1, 9, 8, '2024-08-02');
 GO
 
 IF OBJECT_ID('EventsView') IS NOT NULL
@@ -683,9 +780,9 @@ IF OBJECT_ID('EventsView') IS NOT NULL
 GO
 
 CREATE VIEW EventsView AS
-SELECT 
-    ID, 
-    Name, 
+SELECT
+    ID,
+    Name,
     CONVERT(NVARCHAR(10), StartDate, 23) AS StartDateAsString,
     CONVERT(NVARCHAR(10), EndDate, 23) AS EndDateAsString
 FROM Events;
@@ -693,42 +790,21 @@ GO
 
 IF OBJECT_ID ('GamesView') IS NOT NULL
     DROP VIEW GamesView;
-GO 
+GO
 
-CREATE VIEW GamesView  AS 
+CREATE VIEW GamesView  AS
 SELECT
     ID,
     SportName,
     EventID,
     FirstTeamID,
     SecondTeamID,
-    CONVERT(NVARCHAR(10), GameDate, 23) AS GameDateAsString,  
-    FinalScore 
+    CONVERT(NVARCHAR(10), GameDate, 23) AS GameDateAsString,
+    FinalScore
     FROM Games;
     GO
 
-  
 
 
-
-IF (SELECT COUNT(*) FROM Events)=0 
-    INSERT INTO Events(Name, StartDate, EndDate) VALUES('Tournois BaseBall Mile End','2024-08-01', '2024-08-02'),
-    ('Soccer Mixte Valleyfield', '2024-06-02', '2024-06-04');
-GO
-IF (SELECT COUNT(*) FROM TeamInEvent)=0 
-    INSERT INTO TeamInEvent(EventID, TeamID) VALUES 
-    (1, 2),
-    (1, 3),
-    (2, 1),
-    (2, 4);
-GO
-IF (SELECT COUNT(*) FROM StaffInEvent)=0 
-    INSERT INTO StaffInEvent(UserID, EventID) VALUES(1, 1)
-GO
-IF (SELECT COUNT(*) FROM Games)=0 
-    INSERT INTO Games(SportName, EventID, FirstTeamID, SecondTeamID, GameDate, FinalScore)
-    VALUES ('Baseball', 1, 2, 3, '2024-08-01','0-0'),
-           ('Soccer', 2, 1, 4, '2024-06-03','1-1'); 
-GO
 
 

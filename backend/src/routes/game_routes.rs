@@ -62,7 +62,7 @@ async fn get_games() -> impl Responder {
             row.get(3).unwrap(),
             row.get(4).unwrap(),
             row.get::<&str, usize>(5).unwrap().to_owned(),
-            row.get::<&str, usize>(6).unwrap().to_owned(),
+            row.get::<&str, usize>(6).unwrap_or("N-A").to_owned(),
         );
         game_list.push(game);
     }
@@ -104,7 +104,7 @@ async fn get_game_by_id(id: web::Path<i32>) -> impl Responder {
             row.get(3).unwrap(),
             row.get(4).unwrap(),
             row.get::<&str, usize>(5).unwrap().to_owned(),
-            row.get::<&str, usize>(6).unwrap().to_owned(),
+            row.get::<&str, usize>(6).unwrap_or("N-A").to_owned(),
         );
     }
 

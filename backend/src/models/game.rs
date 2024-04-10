@@ -22,7 +22,7 @@ impl Game {
             Arc::new(self.first_team_id),
             Arc::new(self.second_team_id),
             Arc::new(self.game_date.clone()),
-            Arc::new(self.final_score.clone()),
+            Arc::new(Some(self.final_score.clone()).unwrap_or("N-A".to_owned())),
         ];
         (query, params)
     }

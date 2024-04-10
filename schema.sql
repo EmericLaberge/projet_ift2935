@@ -1,6 +1,6 @@
 USE master;
 GO
-
+alter database [Jasson] set single_user with rollback immediate
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'Jasson')
 BEGIN
     DROP DATABASE Jasson;
@@ -436,7 +436,7 @@ CREATE OR ALTER TRIGGER trScoreFormatCheck
 ON Games
 AFTER UPDATE, INSERT
 AS
-    IF (COLUMNS_UPDATED() & 64)>0 AND EXISTS(SELECT inserted.FinalScore FROM inserted WHERE FinalScore NOT LIKE '%-%')
+    IF (COLUMNS_UPDATED() & 64)>0 AND EXISTS (SELECT inserted.FinalScore FROM inserted WHERE FinalScore NOT LIKE '%-%' AND FinalScore NOT LIKE 'N-A')
         BEGIN
             RAISERROR ('A formatting problem occured. Operation has been rolled back',16,1)
             ROLLBACK TRANSACTION
@@ -527,7 +527,7 @@ BEGIN
 END;
 GO
 
-CREATE OR ALTER PROCEDURE getEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(50))
+/*CREATE OR ALTER PROCEDURE getEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(50))
 AS
 BEGIN
     DECLARE @type AS NVARCHAR(64)
@@ -549,11 +549,11 @@ BEGIN
     set @field = (SELECT top 1 COLUMN_NAME
     FROM INFORMATION_SCHEMA.Columns
     WHERE TABLE_NAME = @tableName)
-
+    --needs fixing because procedure can't return a table
     SET @query = 'SELECT * FROM '+@tableName+' WHERE '+@field+'= CAST('+@PK+') AS '+@type
     RETURN EXEC(@query)
 END;
-GO
+GO*/
 
 CREATE OR ALTER PROCEDURE deleteEntryByPK(@tableName VARCHAR(50), @PK NVARCHAR(50))
 AS
